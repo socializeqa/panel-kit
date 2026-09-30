@@ -1,0 +1,380 @@
+/* ════════════════════════════════════════════════════════════════
+   @socialize/panel-kit — the tokens, the motion and the few base rules
+   every panel shares.
+
+   An app imports this once, after Tailwind, and points Tailwind at the
+   kit's source so the classes the kit uses get generated:
+
+     @import "tailwindcss";
+     @import "@socialize/panel-kit/kit.css";
+     @source "../node_modules/@socialize/panel-kit/src";
+
+   Panels share how they work, not their colours or their fonts. The values
+   below are the house defaults; an app sets its own after this import, on
+   :root for light and again on .dark if it opts into dark mode. The brand
+   colour arrives inline on <html> from brandVars(hex) (src/brand.ts).
+
+   Components never type a colour. They speak these names, and the names
+   flip with the lights.
+   ════════════════════════════════════════════════════════════════ */
+
+/* Dark mode is a class, set by the app on <html> when the person asks for
+   it (LightsToggle). Without the class a panel is light, whatever the
+   operating system says: dark is opt-in, per app. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* A desk with a mouse. Hover MOTION goes behind this (fine:hover:…); a
+   phone fires a hover on tap and would leave the thing half moved. Colour
+   changes on hover don't need it — Tailwind's hover already waits for a
+   device that can hover. */
+@custom-variant fine (@media (hover: hover) and (pointer: fine));
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-quiet: var(--quiet);
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-rail: var(--rail);
+  --color-on-rail: var(--on-rail);
+  --color-rail-accent: var(--rail-accent);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-bright: var(--brand-bright);
+  --color-brand-soft: var(--brand-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --shadow-panel: var(--shadow-panel);
+  --shadow-menu: var(--shadow-menu);
+  --shadow-tile: var(--shadow-tile);
+  --shadow-lift: var(--shadow-lift);
+  --shadow-focus: var(--shadow-focus);
+
+  --radius-panel: var(--radius-panel);
+  --radius-control: var(--radius-control);
+
+  --font-panel: var(--font-panel);
+  --font-panel-arabic: var(--font-panel-arabic);
+  /* No monospace in the house: where another kit would reach for mono,
+     figures line up with tabular-nums in the panel's own face. */
+  --font-mono: var(--font-panel);
+}
+
+/* The curves and the moves. Static, so the variables exist at runtime:
+   components read var(--ease-drawer) in arbitrary values, and the reduced
+   motion rule below swaps the --animate-* values under .kit.
+   Every exit eases OUT. Nothing here eases in: an ease-in waits at the
+   start, the moment the eye is on it. */
+@theme static {
+  /* The strong ease-out, for anything entering or answering a press. It
+     replaces Tailwind's weak default, so `ease-out` means this app-wide. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Drawers and sheets: the iOS drawer curve. */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  /* The house's soft outQuint, the lift a menu or a bar rises on. */
+  --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-menu-in: kit-menu-in 160ms var(--ease-brand);
+  --animate-menu-out: kit-fade-out 120ms var(--ease-out);
+  --animate-dialog-in: kit-dialog-in 200ms var(--ease-out);
+  --animate-drawer-in: kit-drawer-in 280ms var(--ease-drawer);
+  --animate-drawer-out: kit-drawer-out 200ms var(--ease-drawer);
+  /* The phone's rail, from the start edge. */
+  --animate-rail-in: kit-rail-in 240ms var(--ease-drawer);
+  --animate-scrim-in: kit-fade-in 200ms ease;
+  --animate-scrim-out: kit-fade-out 200ms ease;
+  --animate-fade-in: kit-fade-in 160ms var(--ease-out);
+  --animate-bar-rise: kit-bar-rise 220ms var(--ease-brand);
+  /* A locked form's footer gives a small bounce when the locked fields are
+     tapped. Elite Touch ran it at 350ms; the house ceiling is 300. */
+  --animate-bar-nudge: kit-bar-nudge 260ms var(--ease-out);
+
+  /* Floating menus grow a hair from their trigger (the popover sets the
+     origin) — never from nothing. */
+  @keyframes kit-menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  /* A dialog stays centred and settles from 0.96. */
+  @keyframes kit-dialog-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  /* The drawer comes from its own edge: the right in English, the left in
+     Arabic (--kit-dir, below). */
+  @keyframes kit-drawer-in {
+    from {
+      transform: translateX(calc(var(--kit-dir) * 100%));
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes kit-drawer-out {
+    from {
+      transform: none;
+    }
+    to {
+      transform: translateX(calc(var(--kit-dir) * 100%));
+    }
+  }
+  @keyframes kit-rail-in {
+    from {
+      transform: translateX(calc(var(--kit-dir) * -100%));
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes kit-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes kit-fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes kit-bar-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes kit-bar-nudge {
+    0% {
+      transform: none;
+    }
+    30% {
+      transform: translateY(-5px);
+    }
+    60% {
+      transform: translateY(2px);
+    }
+    100% {
+      transform: none;
+    }
+  }
+  /* The nudge with the travel taken out: a blink of the bar, for a person
+     who asked for less motion. */
+  @keyframes kit-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    40% {
+      opacity: 0.6;
+    }
+  }
+}
+
+/* ── The house defaults, light ──────────────────────────────────
+   Every word colour reads 4.5:1 on the ground and on a surface. */
+:root {
+  /* Words, lines and the hairlines between them. */
+  --ink: #16181b;
+  /* Secondary words: a date under a title, a caption. */
+  --quiet: #62666b;
+  /* The page, the cards on it, and a quieter card inside a card. */
+  --ground: #f6f6f3;
+  --surface: #ffffff;
+  --surface-2: #efefea;
+  /* The rail: dark in both lights, the one ink band of the panel. */
+  --rail: #16181b;
+  --on-rail: #f6f6f3;
+  --rail-accent: var(--brand-bright);
+
+  /* The house lime until an app stamps its own colour (brandVars):
+     --brand fills, --brand-ink reads on the fill, --brand-deep is the
+     brand as words on a light page, --brand-bright the brand on the dark. */
+  --brand: #d1fe17;
+  --brand-ink: #0a0a0a;
+  --brand-deep: #61760b;
+  --brand-bright: #d1fe17;
+  --brand-bright-ink: #0a0a0a;
+
+  /* States. `ok` is its own green, never the brand: a brand may be green,
+     red or black, and success must read the same in every panel. */
+  --ok: #1f7a3a;
+  --warn: #a15c07;
+  --danger: #c62828;
+  --info: #1d5f99;
+
+  /* Shadows are cast by the rail's ink, which stays dark in both lights. */
+  --shadow-panel: 0 1px 2px 0 color-mix(in oklab, var(--rail) 7%, transparent);
+  --shadow-menu:
+    0 18px 40px -18px color-mix(in oklab, var(--rail) 45%, transparent),
+    0 2px 8px -4px color-mix(in oklab, var(--rail) 20%, transparent);
+  --shadow-tile: 0 6px 14px -8px color-mix(in oklab, var(--rail) 70%, transparent);
+  --shadow-lift: 0 10px 22px -10px color-mix(in oklab, var(--brand-deep) 55%, transparent);
+  --shadow-focus:
+    0 0 0 1px color-mix(in oklab, var(--brand-deep) 35%, transparent),
+    0 1px 2px 0 color-mix(in oklab, var(--rail) 5%, transparent);
+
+  --radius-panel: 12px;
+  --radius-control: 8px;
+
+  /* The panel's face. An app hands in its loaded font (next/font's
+     variable) here, and the Arabic one for a panel that speaks Arabic. */
+  --font-panel: ui-sans-serif, system-ui, sans-serif;
+  --font-panel-arabic: var(--font-panel);
+}
+
+/* The washes are mixed from the colour they belong to. Declared on .kit as
+   well as :root, so a subtree that stamps its own brandVars (a client's
+   portal inside the house panel) mixes from its own colour. */
+:root,
+.kit {
+  --brand-soft: color-mix(in oklab, var(--brand) 14%, transparent);
+  --ok-soft: color-mix(in oklab, var(--ok) 12%, transparent);
+  --warn-soft: color-mix(in oklab, var(--warn) 12%, transparent);
+  --danger-soft: color-mix(in oklab, var(--danger) 10%, transparent);
+  --info-soft: color-mix(in oklab, var(--info) 12%, transparent);
+  /* 1 left to right, -1 right to left: a sideways move multiplies by it. */
+  --kit-dir: 1;
+}
+
+/* ── The house defaults, dark ───────────────────────────────────
+   Only for an app that opted in and put .dark on <html>. */
+.dark {
+  --ink: #ececea;
+  --quiet: #a3a7ab;
+  --ground: #0f1113;
+  --surface: #17191c;
+  --surface-2: #1e2024;
+  --rail: #0a0b0d;
+  --on-rail: #ececea;
+
+  --ok: #6fcf8a;
+  --warn: #f0b04a;
+  --danger: #ff7a70;
+  --info: #7cb8f0;
+
+  --shadow-panel: 0 1px 0 0 color-mix(in oklab, white 5%, transparent) inset;
+  --shadow-menu:
+    0 18px 40px -18px color-mix(in oklab, black 80%, transparent),
+    0 0 0 1px color-mix(in oklab, white 8%, transparent);
+  --shadow-tile: 0 6px 14px -8px color-mix(in oklab, black 80%, transparent);
+}
+
+/* On the dark ground a fill has to stand out, so the brand turns to its
+   bright variant: black answers in white, a deep blue lightens. brandVars
+   stamps --brand inline, which only an important rule outranks. The class
+   rides the page root and any branded subtree, so both are matched. */
+.dark,
+.dark .kit {
+  --brand: var(--brand-bright) !important;
+  --brand-ink: var(--brand-bright-ink) !important;
+  --brand-deep: var(--brand-bright) !important;
+}
+
+/* Arabic runs right to left: the drawer arrives from the left, a switch's
+   knob travels left. */
+.kit:where([dir="rtl"], [dir="rtl"] *),
+.kit :where([dir="rtl"]) {
+  --kit-dir: -1;
+}
+
+/* ── The kit's own ground ───────────────────────────────────────
+   .kit sits on the Shell, on every kit portal (drawers, dialogs, menus,
+   toasts) and on the doors (DoorPage). An app that is only a panel may put
+   it on <html> as well. Nothing here reaches a website beside the panel. */
+@layer base {
+  .kit {
+    font-family: var(--font-panel);
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+    color: var(--ink);
+    accent-color: var(--brand-deep);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .kit:where([dir="rtl"], [dir="rtl"] *),
+  .kit :where([dir="rtl"]) {
+    font-family: var(--font-panel-arabic);
+  }
+
+  /* A website beside the panel may set its headings in a display face; the
+     panel is its own face alone. */
+  .kit :is(h1, h2, h3, h4, h5, h6) {
+    font-family: inherit;
+  }
+
+  /* The brand's deep tone for the focus ring, so a keyboard user always
+     sees where they are. In the base layer, so a field that draws its own
+     ring with `outline-none` still wins. */
+  .kit :focus-visible,
+  .kit:focus-visible {
+    outline: 2px solid var(--brand-deep);
+    outline-offset: 2px;
+  }
+
+  /* The brand where the browser would paint its own blue: scrollbars and
+     the text selection. */
+  .kit,
+  .kit * {
+    scrollbar-color: color-mix(in oklab, var(--brand-deep) 40%, transparent) transparent;
+    scrollbar-width: thin;
+  }
+  .kit ::selection {
+    background: color-mix(in oklab, var(--brand) 28%, transparent);
+  }
+}
+
+/* Scroll without a visible scrollbar — for the rail's nav, which scrolls
+   only as a safety net on short screens. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────
+   Gentler, not none: every fade stays, every travel goes. The kit's
+   animations read these variables, so a menu, a drawer or a dialog just
+   fades in and out. The few transitions that move (a switch's knob, a
+   pressed button) carry motion-safe: in their own class lists. */
+@media (prefers-reduced-motion: reduce) {
+  .kit {
+    --animate-menu-in: kit-fade-in 160ms var(--ease-out);
+    --animate-dialog-in: kit-fade-in 160ms var(--ease-out);
+    --animate-drawer-in: kit-fade-in 200ms var(--ease-out);
+    --animate-drawer-out: kit-fade-out 160ms var(--ease-out);
+    --animate-rail-in: kit-fade-in 200ms var(--ease-out);
+    --animate-bar-rise: kit-fade-in 200ms var(--ease-out);
+    --animate-bar-nudge: kit-pulse 260ms var(--ease-out);
+  }
+}

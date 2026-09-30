@@ -1,0 +1,32 @@
+name: CI
+
+# The kit ships TypeScript source that apps compile, so CI proves what an app
+# would meet: the types hold, the tests pass, the kit keeps its own house
+# rules, and a real Next app builds on it with the kit's classes in its CSS
+# (a missing @source fails silently, so the stylesheet is read, not trusted).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+      - run: pnpm run test
+      - name: The kit keeps its own rules
+        run: node bin/panel-kit-check.mjs --check
+      - name: The fixture builds on the kit
+        working-directory: fixture
+        run: pnpm run build
+      - name: The kit's classes reached the fixture's CSS
+        working-directory: fixture
+        run: pnpm run css-proof

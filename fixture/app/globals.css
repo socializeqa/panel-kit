@@ -1,0 +1,6 @@
+/* The three lines an app adds to take the kit. The @source path is relative
+   to this file; without it the kit's classes are never generated and nothing
+   says so — css-proof.mjs checks the built stylesheet for that reason. */
+@import "tailwindcss";
+@import "@socialize/panel-kit/kit.css";
+@source "../node_modules/@socialize/panel-kit/src";

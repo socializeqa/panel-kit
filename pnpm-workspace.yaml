@@ -1,0 +1,26 @@
+# The kit, plus fixture/: a tiny Next app that installs the kit the way an app
+# does and must build. The fixture is not shipped (package.json `files`).
+packages:
+  - fixture
+
+# pnpm keeps install scripts off until a human says otherwise. The only one
+# here is sharp's, which Next brings for image resizing; it ships prebuilt
+# binaries and the fixture resizes no images, so it stays off.
+allowBuilds:
+  sharp: false
+
+# pnpm 11 holds back any version younger than a day. Next 16.3.7 came out on
+# 29 Sep 2026 and X Capital, the first panel to adopt the kit, runs it, so the
+# fixture builds on the same one. Once it is a day old these lines do nothing
+# and can go.
+minimumReleaseAgeExclude:
+  - '@next/env@16.3.7'
+  - '@next/swc-darwin-arm64@16.3.7'
+  - '@next/swc-darwin-x64@16.3.7'
+  - '@next/swc-linux-arm64-gnu@16.3.7'
+  - '@next/swc-linux-arm64-musl@16.3.7'
+  - '@next/swc-linux-x64-gnu@16.3.7'
+  - '@next/swc-linux-x64-musl@16.3.7'
+  - '@next/swc-win32-arm64-msvc@16.3.7'
+  - '@next/swc-win32-x64-msvc@16.3.7'
+  - next@16.3.7
