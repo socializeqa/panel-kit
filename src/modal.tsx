@@ -66,6 +66,7 @@ export function ConfirmDialog({
   reason,
   confirmLabel = "Delete",
   confirmIcon,
+  kicker,
   pendingLabel = "Working…",
   tone = "danger",
   pending = false,
@@ -85,6 +86,10 @@ export function ConfirmDialog({
   reason?: { label: string; placeholder?: string; required?: boolean };
   confirmLabel?: string;
   confirmIcon?: LucideIcon;
+  /** The lead-in over the question; by default the tone's ("Before you
+   *  remove it" / "Before you continue"). A discard of unsaved edits is
+   *  red but removes nothing, so it says "Before you leave". */
+  kicker?: string;
   pendingLabel?: string;
   tone?: "danger" | "brand";
   pending?: boolean;
@@ -129,7 +134,7 @@ export function ConfirmDialog({
                     tone === "danger" ? "text-danger" : "text-brand-deep",
                   )}
                 >
-                  {tone === "danger" ? t("Before you remove it") : t("Before you continue")}
+                  {t(kicker ?? (tone === "danger" ? "Before you remove it" : "Before you continue"))}
                 </p>
                 <Dialog.Title className="mt-1 text-[19px] font-semibold leading-tight tracking-[-0.015em] text-ink">
                   {t(title)}

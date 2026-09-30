@@ -7,7 +7,9 @@ import { DrawerTabs } from "@socialize/panel-kit/drawer-tabs";
 import { Button, Field, Input } from "@socialize/panel-kit/fields";
 import { ConfirmDialog } from "@socialize/panel-kit/modal";
 import { PhoneInput } from "@socialize/panel-kit/phone-field";
+import type { ActionResult } from "@socialize/panel-kit/action-result";
 import { Panel } from "@socialize/panel-kit/record";
+import { RecordForm } from "@socialize/panel-kit/record-form";
 import { Segmented } from "@socialize/panel-kit/segmented";
 import { SelectMenu } from "@socialize/panel-kit/select-menu";
 import { StarRating } from "@socialize/panel-kit/star-rating";
@@ -17,6 +19,9 @@ import { useToast } from "@socialize/panel-kit/toast";
 
 // The browser half of the fixture: fields, a toast, a confirm gate and a
 // controlled drawer with its rooms, each from the kit and nothing hand-built.
+// The drawer's Guest room is a record form, so Save, Cancel and the
+// "Discard changes?" question can be clicked for real.
+const saveNothing = async (): Promise<ActionResult> => ({ ok: true });
 export function Demo() {
   const toast = useToast();
   const [drawer, setDrawer] = useState(false);
@@ -70,7 +75,18 @@ export function Demo() {
           title="Booking"
           sub="Tonight, 8:30 PM"
           tabs={[
-            { key: "guest", label: "Guest", icon: null, content: <p className="text-[13px]">A controlled drawer from the kit.</p> },
+            {
+              key: "guest",
+              label: "Guest",
+              icon: null,
+              content: (
+                <RecordForm action={saveNothing}>
+                  <Field label="Guest's name">
+                    <Input name="guest" placeholder="Who is coming" />
+                  </Field>
+                </RecordForm>
+              ),
+            },
             { key: "notes", label: "Notes", icon: null, count: 2, content: <p className="text-[13px]">Two notes.</p> },
           ]}
         />

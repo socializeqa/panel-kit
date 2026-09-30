@@ -1,6 +1,6 @@
 {
   "name": "@socialize/panel-kit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The admin panel kit every Socialize Team panel shares: the shell, the drawers, the lists, the fields and the house rules, shipped as TypeScript source.",
   "license": "MIT",
   "type": "module",

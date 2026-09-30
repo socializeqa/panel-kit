@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, startTransition, useActionState, useContext, useEffect, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Undo2 } from "lucide-react";
 import type { ActionResult } from "./action-result";
 import { useDrawerDirty } from "./drawer";
 import { Button } from "./fields";
@@ -21,8 +21,8 @@ import { useUnsavedGuard } from "./unsaved-guard";
 //   refresh or tab close while there are unsaved edits.
 // - A failed save stays in the bar and the form stays dirty, so nothing can
 //   look saved that isn't.
-// - Ctrl+S saves. Cancel closes through the drawer, which asks first if there
-//   is unsaved work.
+// - Ctrl+S saves. Cancel asks "Discard changes?" first when there is unsaved
+//   work, in a drawer and on a page alike, and only then empties the form.
 
 // The last save result, for fields that want to react to a refusal (a
 // duplicate-phone offer) without RecordForm knowing their shape.
@@ -73,7 +73,7 @@ export function RecordForm<R extends ActionResult>({
   const t = usePanelT();
   const [result, formAction, pending] = useActionState<R | null, FormData>(action, null);
   const toast = useToast();
-  const { isDirty, markClean, close, inDrawer } = useDrawerDirty();
+  const { isDirty, markClean, close, inDrawer, askThen } = useDrawerDirty();
   const formRef = useRef<HTMLFormElement>(null);
   // Outside a drawer there is no dirty tracking to borrow — isDirty is a
   // constant true there, which would make the browser warn on EVERY leave. So
@@ -169,8 +169,16 @@ export function RecordForm<R extends ActionResult>({
                 onClick={() => {
                   // Uncontrolled fields (the pill bars) live in the DOM, so
                   // dropping the edits has to reach them as well as the state.
-                  formRef.current?.reset();
-                  cancel();
+                  // Only after the person agreed: with unsaved edits Cancel
+                  // asks first, the same question as Esc and the X.
+                  const discard = () => {
+                    formRef.current?.reset();
+                    setTouched(false);
+                    cancel();
+                  };
+                  if (inDrawer) askThen(discard);
+                  else if (touched) setLeaving(() => discard);
+                  else discard();
                 }}
                 disabled={pending}
                 className="bg-surface"
@@ -192,6 +200,8 @@ export function RecordForm<R extends ActionResult>({
         title="Discard changes?"
         body="You have unsaved edits on this page. Leaving it will discard them."
         confirmLabel="Discard"
+        kicker="Before you leave"
+        confirmIcon={Undo2}
       />
     </>
   );

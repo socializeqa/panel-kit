@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { Undo2, X } from "lucide-react";
 import { BACKDROP, CTRL_BTN } from "./classes";
 import { cn } from "./cn";
 import { IconTile } from "./icon-tile";
@@ -49,6 +49,11 @@ export function useDrawerHeaderSetter() {
 //    going back (a create form walking onto the record it just made).
 //  - inDrawer — false outside a Drawer, so a form shared with a full page
 //    knows to navigate instead of calling close() into the void.
+//  - askThen — a way out the PERSON chose (a Cancel): with unsaved edits it
+//    asks "Discard changes?" first, exactly as Esc, the scrim and the X do,
+//    and runs the action only on Discard. Without edits it just runs. Cancel
+//    used to empty the form before anything could ask (X Capital, 30 Sep
+//    2026), so it was the one way out that lost work silently.
 // Two contexts on purpose: the ACTIONS are stable for the drawer's life, so a
 // component that only marks state never re-renders when the flag flips; the
 // FLAG lives apart, read only by what gates on it (a Save button). The split
@@ -60,6 +65,7 @@ type DrawerActions = {
   close: () => void;
   closeTo: (href: string) => void;
   inDrawer: boolean;
+  askThen: (action: () => void) => void;
 };
 const NOOP_ACTIONS: DrawerActions = {
   markClean: () => {},
@@ -67,6 +73,7 @@ const NOOP_ACTIONS: DrawerActions = {
   close: () => {},
   closeTo: () => {},
   inDrawer: false,
+  askThen: (action) => action(),
 };
 const DrawerActionsContext = createContext<DrawerActions>(NOOP_ACTIONS);
 
@@ -212,9 +219,22 @@ export function Drawer({
     closeToRef.current = href;
     closeRef.current();
   }, []);
+  // Read through a ref so askThen keeps one identity for the drawer's life,
+  // like the other actions, and never re-renders the editors inside.
+  const dirtyRef = useRef(false);
+  useEffect(() => {
+    dirtyRef.current = dirty;
+  });
+  const askThen = useCallback((action: () => void) => {
+    if (!dirtyRef.current) return action();
+    setPending(() => () => {
+      setDirty(false);
+      action();
+    });
+  }, []);
   const actions = useMemo<DrawerActions>(
-    () => ({ markClean, markDirty, close: requestClose, closeTo: requestCloseTo, inDrawer: true }),
-    [markClean, markDirty, requestClose, requestCloseTo],
+    () => ({ markClean, markDirty, close: requestClose, closeTo: requestCloseTo, inDrawer: true, askThen }),
+    [markClean, markDirty, requestClose, requestCloseTo, askThen],
   );
 
   // History entries the guard parked and this close must step over, so a
@@ -415,6 +435,8 @@ export function Drawer({
         title="Discard changes?"
         body="You have unsaved edits in this panel. Leaving it will discard them."
         confirmLabel="Discard"
+        kicker="Before you leave"
+        confirmIcon={Undo2}
       />
     </Dialog.Root>
   );

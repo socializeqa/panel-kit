@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 — 30 Sep 2026
+
+- **Cancel asks before it throws away edits.** A record form's Cancel used to empty the form first, so it was the one way out that lost unsaved work without a word (found moving X Capital). It now asks "Discard changes?" first, like Esc, the scrim and the X, in a drawer and on a page. Keep returns to the edits untouched; Discard empties them. With nothing unsaved it asks nothing.
+- The drawer's actions gain `askThen(action)`: run `action`, asking first when there are unsaved edits. Use it for any way out the person chooses.
+- The "Discard changes?" question says "Before you leave" with an undo mark, not the delete wording and bin. `ConfirmDialog` takes an optional `kicker`.
+- The fixture's drawer holds a record form, so Save, Cancel and the question can be clicked for real.
+
 ## 0.1.1 — 30 Sep 2026
 
 The kit stays inside the panel. Found moving X Capital, whose website shares the app:
