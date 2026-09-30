@@ -275,7 +275,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
                       names the room, and next to the menu button and four tools
                       it needs the width ("Bookings" read "Booki…" at 390px). */}
                   {room ? (
-                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-rail text-on-rail shadow-tile max-sm:hidden">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-rail text-on-rail shadow-kit-tile max-sm:hidden">
                       <room.Icon size={17} strokeWidth={1.9} aria-hidden="true" />
                     </span>
                   ) : null}

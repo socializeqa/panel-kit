@@ -186,7 +186,7 @@ function HeaderSearch({ hint }: { hint: string }) {
 
       {open && (
         <div className="absolute left-1/2 top-1/2 z-40 w-[min(520px,calc(100%-120px))] -translate-x-1/2 -translate-y-1/2">
-          <div className="flex h-10 items-center gap-2.5 rounded-panel border border-brand-deep/45 bg-surface px-3.5 shadow-menu ring-4 ring-brand/10 animate-fade-in">
+          <div className="flex h-10 items-center gap-2.5 rounded-panel border border-brand-deep/45 bg-surface px-3.5 shadow-kit-menu ring-4 ring-brand/10 animate-fade-in">
             <Search className="size-4 shrink-0 text-brand-deep" strokeWidth={2} />
             <input
               ref={inputRef}

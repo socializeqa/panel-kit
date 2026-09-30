@@ -24,7 +24,7 @@ export function PanelLoader({ label = "Loading", className }: { label?: string; 
           aria-hidden="true"
           className="absolute inset-0 animate-spin rounded-2xl border-2 border-transparent border-t-brand-deep [animation-duration:0.9s]"
         />
-        <span aria-hidden="true" className="absolute inset-[7px] rounded-xl bg-rail shadow-tile">
+        <span aria-hidden="true" className="absolute inset-[7px] rounded-xl bg-rail shadow-kit-tile">
           <span className="absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-rail-accent" />
         </span>
       </span>

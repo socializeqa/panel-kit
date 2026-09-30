@@ -53,7 +53,7 @@ export function Switch({
     >
       <span
         className={cn(
-          "absolute start-0.5 rounded-full bg-surface shadow-panel transition-transform duration-150 ease-out motion-reduce:transition-none group-aria-checked:bg-brand-ink",
+          "absolute start-0.5 rounded-full bg-surface shadow-kit-panel transition-transform duration-150 ease-out motion-reduce:transition-none group-aria-checked:bg-brand-ink",
           knob,
         )}
       />

@@ -99,6 +99,15 @@ const block = (selector: string) => {
   if (start < 0) throw new Error(`${selector} missing from kit.css`);
   return css.slice(start, css.indexOf("\n}", start));
 };
+// Both dark rules share the panel-only selector (0.1.1); pick one by what it holds.
+const DARK = ".kit.dark,\n.dark .kit";
+const darkBlock = (holding: string) => {
+  for (let start = css.indexOf(`\n${DARK} {`); start >= 0; start = css.indexOf(`\n${DARK} {`, start + 1)) {
+    const body = css.slice(start, css.indexOf("\n}", start));
+    if (body.includes(holding)) return body;
+  }
+  throw new Error(`no dark rule in kit.css holds ${holding}`);
+};
 const token = (inside: string, name: string) => {
   const found = new RegExp(`--${name}: (#[0-9a-f]{6});`, "i").exec(inside);
   if (!found) throw new Error(`--${name} missing`);
@@ -107,7 +116,7 @@ const token = (inside: string, name: string) => {
 
 describe("kit.css on the dark", () => {
   it("fills with the bright variant, which only an important rule can do over the inline style", () => {
-    const dark = block(".dark,\n.dark .kit");
+    const dark = darkBlock("--brand: var(--brand-bright)");
     expect(dark).toContain("--brand: var(--brand-bright) !important;");
     expect(dark).toContain("--brand-ink: var(--brand-bright-ink) !important;");
     expect(dark).toContain("--brand-deep: var(--brand-bright) !important;");
@@ -116,7 +125,7 @@ describe("kit.css on the dark", () => {
 
 describe("kit.css's house defaults", () => {
   const light = block(":root");
-  const dark = block(".dark");
+  const dark = darkBlock("--ink:");
 
   it("are brandVars of the house lime, so a panel with no colour wears exactly it", () => {
     const house = brandVars(HOUSE_BRAND) as Record<string, string>;

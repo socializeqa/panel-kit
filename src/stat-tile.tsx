@@ -85,7 +85,7 @@ export function StatTile({
     </>
   );
   return href ? (
-    <Link href={href} className={cn(frame, "block transition-shadow hover:shadow-tile")}>
+    <Link href={href} className={cn(frame, "block transition-shadow hover:shadow-kit-tile")}>
       {body}
     </Link>
   ) : (

@@ -240,7 +240,7 @@ export function DateField({
 // A picked day, a picked month and a day in a plan wear the one fill the
 // house allows in a calendar: the brand, with its own ink.
 const PICKED =
-  "[&>button]:bg-brand [&>button]:text-brand-ink [&>button]:font-semibold [&>button]:shadow-tile [&>button]:hover:bg-[color-mix(in_oklab,var(--brand)_88%,black)] [&>button]:hover:text-brand-ink";
+  "[&>button]:bg-brand [&>button]:text-brand-ink [&>button]:font-semibold [&>button]:shadow-kit-tile [&>button]:hover:bg-[color-mix(in_oklab,var(--brand)_88%,black)] [&>button]:hover:text-brand-ink";
 
 // The calendar itself — caption row, day grid or month grid, footer. Small in
 // DateField's popover; a form can lay it out `large` and inline (a schedule

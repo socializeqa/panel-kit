@@ -116,7 +116,7 @@ export function ConfirmDialog({
             <div className="flex items-center gap-3.5">
               <span
                 className={cn(
-                  "grid size-10 shrink-0 place-items-center rounded-xl shadow-tile",
+                  "grid size-10 shrink-0 place-items-center rounded-xl shadow-kit-tile",
                   tone === "danger" ? "bg-danger text-surface" : "bg-rail text-on-rail",
                 )}
               >

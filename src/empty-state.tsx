@@ -62,7 +62,7 @@ export function EmptyState({
         <div className="relative mb-5 grid size-16 place-items-center">
           <span aria-hidden="true" className="absolute inset-0 rounded-full bg-brand/[0.07]" />
           <span aria-hidden="true" className="absolute inset-[5px] rounded-full border border-dashed border-brand-deep/25" />
-          <span className="relative grid size-11 place-items-center rounded-full bg-surface shadow-tile ring-1 ring-ink/[0.06]">
+          <span className="relative grid size-11 place-items-center rounded-full bg-surface shadow-kit-tile ring-1 ring-ink/[0.06]">
             <Icon size={20} strokeWidth={1.8} className="text-brand-deep" aria-hidden="true" />
           </span>
         </div>

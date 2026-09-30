@@ -55,9 +55,9 @@ export function buttonClass({
 }: ButtonLook = {}): string {
   const styles =
     variant === "primary" && emphasis === "gradient"
-      ? "bg-gradient-to-br from-brand-bright via-brand to-brand-deep text-brand-ink shadow-lift hover:opacity-95"
+      ? "bg-gradient-to-br from-brand-bright via-brand to-brand-deep text-brand-ink shadow-kit-lift hover:opacity-95"
       : variant === "primary" && tone === "ink"
-        ? "bg-ink text-surface shadow-tile hover:opacity-90"
+        ? "bg-ink text-surface shadow-kit-tile hover:opacity-90"
         : {
             primary: cn("bg-brand text-brand-ink", DEEPER_BRAND),
             ghost: "border-ink/15 text-ink hover:bg-ink/5",
@@ -73,7 +73,7 @@ export function buttonClass({
     size === "sm"
       ? "px-3 py-1.5 text-[12px] [&_svg]:size-3.5"
       : size === "lg"
-        ? "px-5 py-2.5 text-[14px] shadow-lift [&_svg]:size-4"
+        ? "px-5 py-2.5 text-[14px] shadow-kit-lift [&_svg]:size-4"
         : "px-3.5 py-2 text-[13px] [&_svg]:size-4",
     styles,
   );
@@ -90,7 +90,7 @@ export const PILL_BUTTON = cn(
 
 // ── Surfaces ──────────────────────────────────────────────────────────────
 // The one card shell — the audit found ~30 hand copies with 8 paddings.
-export const PANEL_SHELL = "rounded-panel border border-ink/10 bg-surface shadow-panel";
+export const PANEL_SHELL = "rounded-panel border border-ink/10 bg-surface shadow-kit-panel";
 
 // The one floating surface — pickers, row menus, the calendar and the clock
 // (Elite Touch's POPOVER_SHELL, 28 Sep 2026: five components had typed it by
@@ -100,7 +100,7 @@ export const PANEL_SHELL = "rounded-panel border border-ink/10 bg-surface shadow
 // outside the Shell.
 export const POPOVER_SHELL = cn(
   PANEL_SHELL,
-  "kit z-[80] shadow-menu outline-none origin-[var(--radix-popover-content-transform-origin,var(--radix-select-content-transform-origin))] data-[state=open]:animate-menu-in data-[state=closed]:animate-menu-out",
+  "kit z-[80] shadow-kit-menu outline-none origin-[var(--radix-popover-content-transform-origin,var(--radix-select-content-transform-origin))] data-[state=open]:animate-menu-in data-[state=closed]:animate-menu-out",
 );
 
 // ── The header's seats ────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ export const CTRL_LABEL = "sr-only";
 // A header menu: dropped under its seat, in the popover's dress.
 export const MENU_PANEL = cn(
   PANEL_SHELL,
-  "absolute end-0 z-40 mt-2 w-56 origin-top-right p-1.5 shadow-menu animate-menu-in rtl:origin-top-left",
+  "absolute end-0 z-40 mt-2 w-56 origin-top-right p-1.5 shadow-kit-menu animate-menu-in rtl:origin-top-left",
 );
 export const MENU_ITEM =
   "flex w-full items-center justify-between gap-2 rounded-control px-2.5 py-2 text-start text-[13px] transition-colors hover:bg-ink/[0.04]";
@@ -249,7 +249,7 @@ const TILE_TONE: Record<TileTone, string> = {
   quiet: "bg-ink/[0.05] text-ink/60",
   brand: "bg-brand-soft text-brand-deep",
   ok: "bg-ok-soft text-ok",
-  solid: "bg-brand text-brand-ink shadow-lift",
+  solid: "bg-brand text-brand-ink shadow-kit-lift",
   ink: "bg-rail text-on-rail",
   warn: "bg-warn-soft text-warn",
   danger: "bg-danger-soft text-danger",
@@ -294,5 +294,5 @@ export const DIALOG_OVERLAY = cn(
 // The frame alone — the confirm gate pads its own bands so its fused foot
 // reaches the true edge. A dialog stays centred and settles from 0.96.
 export const DIALOG_FRAME =
-  "kit fixed left-1/2 top-1/2 z-[70] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-surface shadow-menu focus:outline-none data-[state=open]:animate-dialog-in data-[state=closed]:animate-menu-out";
+  "kit fixed left-1/2 top-1/2 z-[70] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-surface shadow-kit-menu focus:outline-none data-[state=open]:animate-dialog-in data-[state=closed]:animate-menu-out";
 export const DIALOG_CONTENT = cn(DIALOG_FRAME, "p-5");

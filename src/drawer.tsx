@@ -305,7 +305,7 @@ export function Drawer({
             <div className="flex flex-wrap items-center gap-x-3.5 gap-y-3">
               <div className="flex min-w-0 flex-1 items-center gap-3.5 @[1080px]:basis-0">
                 {room ? (
-                  <IconTile size="lg" tone="ink" className="shadow-tile">
+                  <IconTile size="lg" tone="ink" className="shadow-kit-tile">
                     <room.Icon aria-hidden="true" />
                   </IconTile>
                 ) : null}

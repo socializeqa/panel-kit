@@ -11,8 +11,12 @@
 
    Panels share how they work, not their colours or their fonts. The values
    below are the house defaults; an app sets its own after this import, on
-   :root for light and again on .dark if it opts into dark mode. The brand
-   colour arrives inline on <html> from brandVars(hex) (src/brand.ts).
+   :root for light and again on `.kit.dark, .dark .kit` if it opts into dark
+   mode. The brand colour arrives inline on <html> from brandVars(hex)
+   (src/brand.ts). Everything the kit adds stays inside the panel: shadows
+   are shadow-kit-*, the strong ease-out and the dark values apply under
+   .kit only, so an app's own website, its own shadow-lift and its own dark
+   theme are untouched (0.1.1, found moving X Capital).
 
    Components never type a colour. They speak these names, and the names
    flip with the lights.
@@ -52,11 +56,11 @@
   --color-info: var(--info);
   --color-info-soft: var(--info-soft);
 
-  --shadow-panel: var(--shadow-panel);
-  --shadow-menu: var(--shadow-menu);
-  --shadow-tile: var(--shadow-tile);
-  --shadow-lift: var(--shadow-lift);
-  --shadow-focus: var(--shadow-focus);
+  --shadow-kit-panel: var(--kit-shadow-panel);
+  --shadow-kit-menu: var(--kit-shadow-menu);
+  --shadow-kit-tile: var(--kit-shadow-tile);
+  --shadow-kit-lift: var(--kit-shadow-lift);
+  --shadow-kit-focus: var(--kit-shadow-focus);
 
   --radius-panel: var(--radius-panel);
   --radius-control: var(--radius-control);
@@ -74,9 +78,6 @@
    Every exit eases OUT. Nothing here eases in: an ease-in waits at the
    start, the moment the eye is on it. */
 @theme static {
-  /* The strong ease-out, for anything entering or answering a press. It
-     replaces Tailwind's weak default, so `ease-out` means this app-wide. */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   /* Drawers and sheets: the iOS drawer curve. */
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   /* The house's soft outQuint, the lift a menu or a bar rises on. */
@@ -232,13 +233,13 @@
   --info: #1d5f99;
 
   /* Shadows are cast by the rail's ink, which stays dark in both lights. */
-  --shadow-panel: 0 1px 2px 0 color-mix(in oklab, var(--rail) 7%, transparent);
-  --shadow-menu:
+  --kit-shadow-panel: 0 1px 2px 0 color-mix(in oklab, var(--rail) 7%, transparent);
+  --kit-shadow-menu:
     0 18px 40px -18px color-mix(in oklab, var(--rail) 45%, transparent),
     0 2px 8px -4px color-mix(in oklab, var(--rail) 20%, transparent);
-  --shadow-tile: 0 6px 14px -8px color-mix(in oklab, var(--rail) 70%, transparent);
-  --shadow-lift: 0 10px 22px -10px color-mix(in oklab, var(--brand-deep) 55%, transparent);
-  --shadow-focus:
+  --kit-shadow-tile: 0 6px 14px -8px color-mix(in oklab, var(--rail) 70%, transparent);
+  --kit-shadow-lift: 0 10px 22px -10px color-mix(in oklab, var(--brand-deep) 55%, transparent);
+  --kit-shadow-focus:
     0 0 0 1px color-mix(in oklab, var(--brand-deep) 35%, transparent),
     0 1px 2px 0 color-mix(in oklab, var(--rail) 5%, transparent);
 
@@ -265,9 +266,18 @@
   --kit-dir: 1;
 }
 
+/* The strong ease-out, for anything entering or answering a press, inside
+   the panel only: `ease-out` in the kit means this curve, while the app's
+   website keeps Tailwind's own (X Capital, 30 September 2026: set app-wide,
+   it changed the site's 22 transitions). */
+.kit {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
 /* ── The house defaults, dark ───────────────────────────────────
    Only for an app that opted in and put .dark on <html>. */
-.dark {
+.kit.dark,
+.dark .kit {
   --ink: #ececea;
   --quiet: #a3a7ab;
   --ground: #0f1113;
@@ -281,18 +291,18 @@
   --danger: #ff7a70;
   --info: #7cb8f0;
 
-  --shadow-panel: 0 1px 0 0 color-mix(in oklab, white 5%, transparent) inset;
-  --shadow-menu:
+  --kit-shadow-panel: 0 1px 0 0 color-mix(in oklab, white 5%, transparent) inset;
+  --kit-shadow-menu:
     0 18px 40px -18px color-mix(in oklab, black 80%, transparent),
     0 0 0 1px color-mix(in oklab, white 8%, transparent);
-  --shadow-tile: 0 6px 14px -8px color-mix(in oklab, black 80%, transparent);
+  --kit-shadow-tile: 0 6px 14px -8px color-mix(in oklab, black 80%, transparent);
 }
 
 /* On the dark ground a fill has to stand out, so the brand turns to its
    bright variant: black answers in white, a deep blue lightens. brandVars
    stamps --brand inline, which only an important rule outranks. The class
    rides the page root and any branded subtree, so both are matched. */
-.dark,
+.kit.dark,
 .dark .kit {
   --brand: var(--brand-bright) !important;
   --brand-ink: var(--brand-bright-ink) !important;

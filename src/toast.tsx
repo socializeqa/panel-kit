@@ -87,7 +87,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               // transition picks up from wherever the last one left off. It
               // rises 6px from its @starting-style; with less motion asked
               // for, it only fades.
-              "pointer-events-auto flex w-full items-start gap-2.5 px-3.5 py-2.5 shadow-menu transition-[opacity,translate] duration-200 ease-out starting:opacity-0 motion-safe:starting:translate-y-1.5",
+              "pointer-events-auto flex w-full items-start gap-2.5 px-3.5 py-2.5 shadow-kit-menu transition-[opacity,translate] duration-200 ease-out starting:opacity-0 motion-safe:starting:translate-y-1.5",
               item.leaving && "opacity-0 duration-150",
             )}
           >

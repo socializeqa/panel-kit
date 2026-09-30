@@ -1,8 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
 
-// tailwind-merge only knows Tailwind's own names. Without these, `shadow-menu`
-// reads as a shadow COLOUR and `cn("shadow-sm", "shadow-menu")` keeps both, so
+// tailwind-merge only knows Tailwind's own names. Without these, `shadow-kit-menu`
+// reads as a shadow COLOUR and `cn("shadow-sm", "shadow-kit-menu")` keeps both, so
 // the menu loses its shadow to whichever the stylesheet printed last; and
 // `cn("bg-surface", "bg-brand")` keeps both, so a lit seat stays white. Every
 // name kit.css adds is taught here.
@@ -33,7 +33,7 @@ const twMerge = extendTailwindMerge({
         "info",
         "info-soft",
       ],
-      shadow: ["panel", "menu", "tile", "lift", "focus"],
+      shadow: ["kit-panel", "kit-menu", "kit-tile", "kit-lift", "kit-focus"],
       radius: ["panel", "control"],
       ease: ["drawer", "brand"],
       font: ["panel", "panel-arabic"],

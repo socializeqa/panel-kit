@@ -110,7 +110,7 @@ export function PhotoField({
               </span>
             </span>
           ) : null}
-          <SeatStrip className="absolute end-2 top-2 shadow-panel">
+          <SeatStrip className="absolute end-2 top-2 shadow-kit-panel">
             {seats}
             <button
               type="button"

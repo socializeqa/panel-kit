@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.1 — 30 Sep 2026
+
+The kit stays inside the panel. Found moving X Capital, whose website shares the app:
+
+- Shadows are `shadow-kit-panel`, `-menu`, `-tile`, `-lift` and `-focus` (raw values `--kit-shadow-*`), so an app's own `shadow-lift` is its own. **Rename** `shadow-panel|menu|tile|lift|focus` to `shadow-kit-*` in any room that used them.
+- The strong ease-out is set on `.kit` only; the website keeps Tailwind's own `ease-out`.
+- The dark values switch on `.kit.dark, .dark .kit` only, so a website's own dark theme no longer turns the kit's tokens. An app that sets its own dark tokens uses the same selector.
+- On a phone the room tile steps aside so the page title reads whole.
+
 ## 0.1.0 — 29 Sep 2026
 
 The first kit, built from the copies the panels had drifted into.

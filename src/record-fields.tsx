@@ -76,7 +76,7 @@ export function Section({
         PANEL_SHELL,
         // The section you are working in shows it: an outline in the brand's
         // deep tone while a field inside holds focus.
-        "group/section overflow-hidden transition-[border-color,box-shadow] duration-150 focus-within:border-brand-deep/70 focus-within:shadow-focus",
+        "group/section overflow-hidden transition-[border-color,box-shadow] duration-150 focus-within:border-brand-deep/70 focus-within:shadow-kit-focus",
         customer && "border-brand-deep/30",
         grow && "flex min-h-0 flex-1 flex-col",
         className,
