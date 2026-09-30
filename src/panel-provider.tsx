@@ -68,6 +68,13 @@ export interface PanelConfig {
   t?: Translate;
   /** The panel's mark at the top of the rail. */
   logo?: ReactNode;
+  /** Where the mark sits on the rail: the start (the default) or the
+   *  centre, for a stacked wordmark like X Capital's. */
+  logoAlign?: "start" | "center";
+  /** The mark on the light top bar (a phone, a page with no title). The
+   *  rail is dark and the bar is light, so a white rail mark would vanish
+   *  there; without it the bar wears `logo`. */
+  barLogo?: ReactNode;
   /** Something under the logo — a branch switch. */
   railTop?: ReactNode;
   /** Who is signed in, for the rail's foot. */
@@ -112,6 +119,8 @@ export interface ResolvedPanel {
   can: (capability: string) => boolean;
   t: Translate;
   logo: ReactNode;
+  logoAlign: "start" | "center";
+  barLogo: ReactNode;
   railTop: ReactNode;
   user?: { name: string | null; role?: string };
   signOut?: () => void | Promise<void>;
@@ -138,6 +147,8 @@ function resolve(config: PanelConfig): ResolvedPanel {
     can: config.can ?? EVERYONE,
     t: config.t ?? fill,
     logo: config.logo ?? null,
+    logoAlign: config.logoAlign ?? "start",
+    barLogo: config.barLogo ?? config.logo ?? null,
     railTop: config.railTop ?? null,
     user: config.user,
     signOut: config.signOut,
@@ -161,17 +172,17 @@ export function PanelProvider({ children, ...config }: PanelConfig & { children:
   // The app's wrapper usually rebuilds the config object on every render;
   // reading it field by field keeps the context steady unless one changed.
   const {
-    nav, host, lists, create, can, t, logo, railTop, user, signOut, tools, credit,
+    nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, credit,
     countries, defaultCountry, flag, lights, paging, timeZone, statuses,
   } = config;
   const value = useMemo(
     () =>
       resolve({
-        nav, host, lists, create, can, t, logo, railTop, user, signOut, tools, credit,
+        nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, credit,
         countries, defaultCountry, flag, lights, paging, timeZone, statuses,
       }),
     [
-      nav, host, lists, create, can, t, logo, railTop, user, signOut, tools, credit,
+      nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, credit,
       countries, defaultCountry, flag, lights, paging, timeZone, statuses,
     ],
   );

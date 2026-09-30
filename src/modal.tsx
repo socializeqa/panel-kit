@@ -65,6 +65,7 @@ export function ConfirmDialog({
   consequences,
   reason,
   confirmLabel = "Delete",
+  cancelLabel = "Cancel",
   confirmIcon,
   kicker,
   pendingLabel = "Working…",
@@ -85,6 +86,9 @@ export function ConfirmDialog({
    *  won't fire without it. */
   reason?: { label: string; placeholder?: string; required?: boolean };
   confirmLabel?: string;
+  /** The way back. "Keep editing" on a discard, where "Cancel" is the
+   *  very word that opened the question. */
+  cancelLabel?: string;
   confirmIcon?: LucideIcon;
   /** The lead-in over the question; by default the tone's ("Before you
    *  remove it" / "Before you continue"). A discard of unsaved edits is
@@ -168,7 +172,7 @@ export function ConfirmDialog({
               the error riding above them. */}
           <FormBar error={error} className="mt-0 pt-4">
             <Button type="button" size="lg" variant="ghost" onClick={close} disabled={pending}>
-              {error ? t("Close") : t("Cancel")}
+              {error ? t("Close") : t(cancelLabel)}
             </Button>
             <Button
               type="button"

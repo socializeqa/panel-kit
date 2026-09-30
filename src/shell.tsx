@@ -33,7 +33,7 @@ function initials(name: string): string {
 
 function Rail({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePanelPathname();
-  const { nav, host, can, t, logo, railTop, user, signOut, lights, credit } = usePanel();
+  const { nav, host, can, t, logo, logoAlign, railTop, user, signOut, lights, credit } = usePanel();
 
   // A room that names a capability shows only to someone who has it; a group
   // left with no rooms goes too.
@@ -66,7 +66,12 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="relative flex h-full flex-col p-3">
         {logo ? (
-          <Link href={host.home} onClick={onNavigate} aria-label={t("Home")} className="block self-start px-2 py-1.5">
+          <Link
+            href={host.home}
+            onClick={onNavigate}
+            aria-label={t("Home")}
+            className={cn("block px-2 py-1.5", logoAlign === "center" ? "self-center" : "self-start")}
+          >
             {logo}
           </Link>
         ) : null}
@@ -208,7 +213,7 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function Shell({ children }: { children: React.ReactNode }) {
-  const { nav, host, t, logo, tools } = usePanel();
+  const { nav, host, t, barLogo, tools } = usePanel();
   const [open, setOpen] = useState(false);
   const [published, setHeader] = useState<PageHeaderData | null>(null);
   const pathname = usePanelPathname();
@@ -303,8 +308,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
                     ) : null}
                   </div>
                 </div>
-              ) : logo ? (
-                <span className="lg:hidden">{logo}</span>
+              ) : barLogo ? (
+                <span className="lg:hidden">{barLogo}</span>
               ) : null}
 
               <div className="flex-1" />

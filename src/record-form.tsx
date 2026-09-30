@@ -200,6 +200,7 @@ export function RecordForm<R extends ActionResult>({
         title="Discard changes?"
         body="You have unsaved edits on this page. Leaving it will discard them."
         confirmLabel="Discard"
+        cancelLabel="Keep editing"
         kicker="Before you leave"
         confirmIcon={Undo2}
       />

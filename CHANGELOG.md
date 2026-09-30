@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3 — 30 Sep 2026
+
+From moving X Capital, whose panel should keep its own look:
+
+- `PanelProvider` takes `logoAlign: "start" | "center"` for the mark's seat on the rail (X Capital's stacked wordmark sits centred), and `barLogo` for the light top bar, where a white rail mark would vanish. Without `barLogo` the bar wears `logo`.
+- `DoorPage` takes `headingFont`, a display face for the sign-in heading only (X Capital's Marcellus). Past the door the panel reads in its own face.
+- The "Discard changes?" question's way back says "Keep editing"; "Cancel" was the word that had opened it. `ConfirmDialog` takes `cancelLabel`.
+
 ## 0.1.2 — 30 Sep 2026
 
 - **Cancel asks before it throws away edits.** A record form's Cancel used to empty the form first, so it was the one way out that lost unsaved work without a word (found moving X Capital). It now asks "Discard changes?" first, like Esc, the scrim and the X, in a drawer and on a page. Keep returns to the edits untouched; Discard empties them. With nothing unsaved it asks nothing.
