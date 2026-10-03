@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.4 — 3 Oct 2026
+
+From X Capital's door, which Damine wanted richer:
+
+- `DoorPage` takes `scene`: a picture of the client's world (`picture`, the app's own `<Image fill>`), its `mark` drawn light, and an optional `caption`. On a wide screen the picture fills one side under a veil, with the mark at its top and the caption at its foot, and the form sits on the other; on a phone the picture is a band above the form. Without a scene the door is the centred one it was.
+- Every door ends on a small "Powered by" with Socialize's mark, linked to socialize.qa.
+- `SocializeMark`: the house wordmark from its own file, in the colour of the words around it.
+
 ## 0.1.3 — 30 Sep 2026
 
 From moving X Capital, whose panel should keep its own look:

@@ -372,6 +372,13 @@
   }
 }
 
+/* The veil over a door's scene (DoorPage): dark at the top for the client's
+   mark and at the foot for its line, the picture clear between. The same in
+   either theme: it sits on a photograph, not on the ground. */
+@utility door-veil {
+  background: linear-gradient(180deg, rgb(0 0 0 / 0.5) 0%, rgb(0 0 0 / 0.08) 38%, rgb(0 0 0 / 0.12) 62%, rgb(0 0 0 / 0.72) 100%);
+}
+
 /* ── Reduced motion ─────────────────────────────────────────────
    Gentler, not none: every fade stays, every travel goes. The kit's
    animations read these variables, so a menu, a drawer or a dialog just
