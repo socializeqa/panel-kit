@@ -4,7 +4,7 @@
 
 From X Capital's door, which Damine wanted richer:
 
-- `DoorPage` takes `scene`: a picture of the client's world (`picture`, the app's own `<Image fill>`), its `mark` drawn light, and an optional `caption`. On a wide screen the picture fills one side under a veil, with the mark at its top and the caption at its foot, and the form sits on the other; on a phone the picture is a band above the form. Without a scene the door is the centred one it was.
+- `DoorPage` takes `scene`: a picture of the client's world (`picture`, the app's own `<Image fill>`), its `mark` drawn light, and an optional `caption`. The picture fills the screen under a warm veil (`door-veil`); the mark, heading and form sit on frosted glass cut at two corners (`door-glass`), where the fields read as single lines and the way in is a light bar; the caption and "Powered by" share the foot. Damine's pick of three looks for X Capital. Without a scene the door is the centred one it was.
 - Every door ends on a small "Powered by" with Socialize's mark, linked to socialize.qa.
 - `SocializeMark`: the house wordmark from its own file, in the colour of the words around it.
 

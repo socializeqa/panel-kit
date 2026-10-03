@@ -372,11 +372,54 @@
   }
 }
 
-/* The veil over a door's scene (DoorPage): dark at the top for the client's
-   mark and at the foot for its line, the picture clear between. The same in
-   either theme: it sits on a photograph, not on the ground. */
+/* ── A door with a scene (DoorPage) ────────────────────────────
+   The client's picture fills the screen under a warm veil, darker at the
+   top and the foot; the form sits on frosted glass cut at two corners, the
+   way the client's own cards are cut. On the glass the fields are single
+   lines and the way in is a light bar, so the door reads as the client's
+   world, not a form on a page. The same in either theme: it all sits on a
+   photograph. The field rules are plain (unlayered) so they win over the
+   fields' own utilities, and reach only inside the glass. */
 @utility door-veil {
-  background: linear-gradient(180deg, rgb(0 0 0 / 0.5) 0%, rgb(0 0 0 / 0.08) 38%, rgb(0 0 0 / 0.12) 62%, rgb(0 0 0 / 0.72) 100%);
+  background: linear-gradient(180deg, rgb(8 7 6 / 0.55), rgb(8 7 6 / 0.25) 40%, rgb(8 7 6 / 0.7));
+}
+@utility door-glass {
+  background: rgb(22 19 16 / 0.42);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px);
+}
+.kit .door-glass :is(input[type="email"], input[type="text"], input[type="password"]) {
+  height: 44px;
+  border: 0;
+  border-bottom: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding-inline-start: 2px;
+  color: #fff;
+  font-size: 15px;
+  transition: border-color 150ms ease;
+}
+.kit .door-glass :is(input[type="email"], input[type="text"], input[type="password"]):focus {
+  border-bottom-color: #fff;
+  outline: none;
+  box-shadow: none;
+}
+.kit .door-glass input::placeholder {
+  color: rgb(255 255 255 / 0.35);
+}
+.kit .door-glass input[type="checkbox"] {
+  accent-color: #f4f1ec;
+}
+.kit .door-glass button[type="submit"] {
+  height: 48px;
+  border: 0;
+  border-radius: 0;
+  background: #f4f1ec;
+  color: #0e0e0e;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
 }
 
 /* ── Reduced motion ─────────────────────────────────────────────
