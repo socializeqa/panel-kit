@@ -41,6 +41,21 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
     .map((group) => ({ ...group, items: group.items.filter((i) => !i.cap || can(i.cap)) }))
     .filter((group) => group.items.length > 0);
 
+  // Who is signed in, at the rail's foot: their initials, name and role.
+  const who = (
+    <>
+      {user?.name ? (
+        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-on-rail/10 text-[11px] font-semibold text-on-rail">
+          {initials(user.name)}
+        </span>
+      ) : null}
+      <span className="min-w-0 flex-1">
+        {user ? <span className="block truncate text-[12px] font-medium text-on-rail">{user.name ?? t("Staff")}</span> : null}
+        {user?.role ? <span className="block truncate text-[11px] text-on-rail/45">{t(user.role)}</span> : null}
+      </span>
+    </>
+  );
+
   // One group open at a time: the group holding the current page starts open;
   // opening another folds it. Walking into a different group re-opens that one
   // (adjusted during render, no effect needed).
@@ -170,15 +185,17 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
 
         {user || signOut || lights ? (
           <div className="mt-2 flex items-center gap-2.5 border-t border-on-rail/10 px-2 pt-2.5">
-            {user?.name ? (
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-on-rail/10 text-[11px] font-semibold text-on-rail">
-                {initials(user.name)}
-              </span>
-            ) : null}
-            <span className="min-w-0 flex-1">
-              {user ? <span className="block truncate text-[12px] font-medium text-on-rail">{user.name ?? t("Staff")}</span> : null}
-              {user?.role ? <span className="block truncate text-[11px] text-on-rail/45">{t(user.role)}</span> : null}
-            </span>
+            {user?.href ? (
+              <Link
+                href={user.href}
+                title={t("Your account")}
+                className="-m-1 flex min-w-0 flex-1 items-center gap-2.5 rounded-[6px] p-1 transition-colors duration-150 hover:bg-on-rail/[0.06]"
+              >
+                {who}
+              </Link>
+            ) : (
+              <span className="flex min-w-0 flex-1 items-center gap-2.5">{who}</span>
+            )}
             {lights ? <LightsToggle dark={lights.dark} onChange={lights.onChange} className="h-8 w-14" /> : null}
             {signOut ? (
               <button

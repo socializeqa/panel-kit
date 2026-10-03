@@ -1,6 +1,6 @@
 {
   "name": "@socialize/panel-kit",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "The admin panel kit every Socialize Team panel shares: the shell, the drawers, the lists, the fields and the house rules, shipped as TypeScript source.",
   "license": "MIT",
   "type": "module",
@@ -25,6 +25,7 @@
     "./date-field": "./src/date-field.tsx",
     "./decision-bar": "./src/decision-bar.tsx",
     "./delete-button": "./src/delete-button.tsx",
+    "./door-forms": "./src/door-forms.tsx",
     "./door-page": "./src/door-page.tsx",
     "./drawer-header": "./src/drawer-header.tsx",
     "./drawer-tabs": "./src/drawer-tabs.tsx",
@@ -82,6 +83,7 @@
     "./select-menu": "./src/select-menu.tsx",
     "./shell": "./src/shell.tsx",
     "./socialize-mark": "./src/socialize-mark.tsx",
+    "./staff-door": "./src/staff-door.ts",
     "./star-rating": "./src/star-rating.tsx",
     "./stat-strip": "./src/stat-strip.tsx",
     "./stat-tile": "./src/stat-tile.tsx",

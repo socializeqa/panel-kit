@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.5 — 3 Oct 2026
+
+Staff doors, from X Capital (Damine: sign in "by phone or email", a starting password changed at the first sign-in, and a forgot-password that works by email):
+
+- `staff-door`: `readLogin` reads the door's one box as an email or a mobile; `staffPhone` keeps a mobile as digits with the country code, so "+974 5512 3456", "00974…" and a bare "5512 3456" are one person; `phoneLoginEmail` makes the sign-in address of a mobile-only login at the panel's staff domain; `passwordProblem` is the house rule (10 characters, a capital, a small letter and a number, at most 72) and refuses a password the person was handed; `PASSWORD_DOOR` holds the words for the four ways to a new password (first sign-in, reset link, change, invite).
+- `door-forms`: `SignInForm` (email or mobile, the password, keep me signed in, "Forgot password?"), `ForgotForm` (one box, then the same answer whoever asked, and a word for mobile-only staff) and `NewPasswordForm` (the rule under the field; the current password first when it is a change). Each takes the app's own server action.
+- `PanelProvider` `user` takes `href`: the rail's name block then opens the person's own account.
+
 ## 0.1.4 — 3 Oct 2026
 
 From X Capital's door, which Damine wanted richer:

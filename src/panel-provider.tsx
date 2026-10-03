@@ -77,8 +77,9 @@ export interface PanelConfig {
   barLogo?: ReactNode;
   /** Something under the logo — a branch switch. */
   railTop?: ReactNode;
-  /** Who is signed in, for the rail's foot. */
-  user?: { name: string | null; role?: string };
+  /** Who is signed in, for the rail's foot. With `href` their name opens
+   *  their own account (a new password, at X Capital). */
+  user?: { name: string | null; role?: string; href?: string };
   /** Sign out, from the rail's foot. */
   signOut?: () => void | Promise<void>;
   /** Seats after the list tools in the top bar: a global search, the bell. */
@@ -122,7 +123,7 @@ export interface ResolvedPanel {
   logoAlign: "start" | "center";
   barLogo: ReactNode;
   railTop: ReactNode;
-  user?: { name: string | null; role?: string };
+  user?: { name: string | null; role?: string; href?: string };
   signOut?: () => void | Promise<void>;
   tools: ReactNode;
   credit: ReactNode | undefined;

@@ -250,17 +250,44 @@ The rules: `gradient-button`, `panel-shell`, `chip`, `icon-button`, `field-box`
 `source-present`, and, off until an app turns them on, `date-format`,
 `date-math`, `money-format`, `helper-copy`, `raw-write`.
 
+### 11. The doors
+
+A panel's pages outside the Shell (signing in, a forgotten password, a new
+one) are a `DoorPage` with a form from `door-forms` inside. The forms are the
+kit's; the server actions are the app's, and they read the same rules from
+`staff-door`, so the form and the server never disagree:
+
+```tsx
+<DoorPage scene={DOOR_SCENE} title="Welcome back" lead="Sign in to the panel.">
+  <SignInForm action={signIn} placeholder="you@xcapital.qa or 5512 3456" />
+</DoorPage>
+```
+
+- **Sign in** takes an email or a mobile. `readLogin(form.get("login"))` says
+  which; the app finds the login behind a mobile in its own staff table.
+- **A mobile-only login** signs in by an address made from the number at the
+  app's staff domain (`phoneLoginEmail`). Nothing is ever mailed there: a
+  forgotten password for it goes through a manager.
+- **A starting password** (one the office hands out) is changed at the first
+  sign-in: the app keeps a must-change flag, and `passwordProblem` refuses the
+  handed-out one. `PASSWORD_DOOR[door]` has the heading, line and button for
+  each way in.
+- **Forgot password** answers the same whether the login exists or not.
+
+Give `user.href` to the provider and the name at the rail's foot opens the
+person's own account (X Capital: their password).
+
 ## What's in it
 
 | | |
 |---|---|
-| **Shell** | `shell`, `panel-provider`, `nav`, `page-header-context` (PageMeta), `back-door`, `nav-memory`, `collapse-button`, `new-record-button`, `header-control`, `header-fold`, `lights-toggle`, `use-panel-pathname`, `number-wheel-guard`, `rows-calibrator`, `refresh-if-stale`, `door-page`, `grain` |
+| **Shell** | `shell`, `panel-provider`, `nav`, `page-header-context` (PageMeta), `back-door`, `nav-memory`, `collapse-button`, `new-record-button`, `header-control`, `header-fold`, `lights-toggle`, `use-panel-pathname`, `number-wheel-guard`, `rows-calibrator`, `refresh-if-stale`, `door-page`, `door-forms`, `grain` |
 | **Lists** | `data-table`, `list-config`, `list-controls` (search, filter, sort, the chips), `filter-drawer`, `list-options-context`, `page-size`, `page-size-server`, `link-row`, `row-actions`, `row-menu`, `decision-bar` |
 | **Records** | `drawer`, `drawer-header`, `drawer-tabs`, `record`, `record-fields` (Section), `record-form`, `record-editing`, `record-route`, `unsaved-guard`, `delete-button`, `save-button`, `use-action-success`, `foot-log` |
 | **Fields** | `fields`, `select-menu`, `other-select`, `choice-pills`, `segmented`, `switch`, `number-stepper`, `date-field`, `time-field`, `phone-field`, `password-input`, `note-box`, `grab-resize`, `caret-safe`, `joined-row`, `media-drop-zone`, `photo-field`, `star-rating` |
 | **Feedback** | `modal` (ConfirmDialog, PromptDialog, PickDialog), `toast`, `hint`, `empty-state`, `panel-loader`, `load-error` |
 | **Figures** | `stat-tile`, `stat-strip`, `figure`, `meter`, `status-badge`, `icon-tile`, `icon-btn`, `seat-strip` |
-| **Helpers** | `classes`, `cn`, `brand`, `format`, `tx`, `action-result`, `use-dismiss` |
+| **Helpers** | `classes`, `cn`, `brand`, `format`, `tx`, `action-result`, `use-dismiss`, `staff-door` |
 
 ## Working on the kit
 
