@@ -1,10 +1,9 @@
 "use client";
 
 import type { ComponentType } from "react";
-import { Printer } from "lucide-react";
+import { Info, Printer } from "lucide-react";
 import { CTRL_BTN, PANEL_SHELL } from "./classes";
 import { cn } from "./cn";
-import { Hint } from "./hint";
 import { IconTile, IndexTile } from "./icon-tile";
 import { usePanel } from "./panel-provider";
 
@@ -91,19 +90,21 @@ export function HelpGuide({ sections, intro }: { sections: HelpSection[]; intro?
     .filter((section) => section !== null);
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl gap-8 pb-10 print:block print:max-w-none print:pb-0">
-      {/* The contents: a column that stays put on a wide screen, a row of
-          words above the guide on a narrow one, gone on paper. */}
-      <nav aria-label={t("Contents")} className="hidden w-52 shrink-0 lg:block print:hidden">
-        <div className="sticky top-0 flex flex-col gap-0.5 pt-1">
-          <p className="px-2.5 pb-1.5 text-[12px] font-semibold text-ink/50">{t("Contents")}</p>
+    // The guide takes the whole width of the page (Damine, 4 Oct 2026: "must
+    // be full width"). On a wide screen the contents stand in their own card
+    // beside it, their top on the first section's top; each part puts its
+    // picture beside its steps once the card is wide enough to hold both.
+    <div className="flex w-full items-start gap-6 pb-10 print:block print:pb-0">
+      <nav aria-label={t("Contents")} className="sticky top-0 hidden w-60 shrink-0 lg:block print:hidden">
+        <div className={cn(PANEL_SHELL, "flex flex-col gap-0.5 p-2")}>
+          <p className="px-3 pb-1.5 pt-2 text-[12px] font-semibold text-ink/50">{t("Contents")}</p>
           {shown.map((section) => (
             <a
               key={section.id}
               href={`#${section.id}`}
-              className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] text-ink/70 transition-colors duration-150 hover:bg-ink/[0.04] hover:text-ink"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-ink/70 transition-colors duration-150 hover:bg-ink/[0.04] hover:text-ink"
             >
-              {section.Icon ? <section.Icon size={15} strokeWidth={1.9} aria-hidden /> : null}
+              {section.Icon ? <section.Icon size={16} strokeWidth={1.9} aria-hidden /> : null}
               <span className="truncate">{t(section.title)}</span>
             </a>
           ))}
@@ -123,48 +124,68 @@ export function HelpGuide({ sections, intro }: { sections: HelpSection[]; intro?
           ))}
         </nav>
 
-        {intro ? <p className="max-w-2xl text-[14px] leading-relaxed text-ink/70">{t(intro)}</p> : null}
+        {intro ? <p className="max-w-3xl text-[14px] leading-relaxed text-ink/70">{t(intro)}</p> : null}
 
         {shown.map((section) => (
-          <section key={section.id} id={section.id} className={cn(PANEL_SHELL, "overflow-hidden print:break-before-page print:shadow-none")}>
-            <header className="flex items-start gap-3.5 border-b border-ink/[0.07] bg-ink/[0.015] px-5 py-4 sm:px-6">
+          <section key={section.id} id={section.id} className={cn(PANEL_SHELL, "@container overflow-hidden print:break-before-page print:shadow-none")}>
+            <header className="flex items-center gap-4 border-b border-ink/[0.07] bg-ink/[0.015] px-5 py-5 sm:px-7">
               {section.Icon ? (
-                <IconTile size="md" tone="brand">
+                <IconTile size="lg" tone="brand">
                   <section.Icon aria-hidden />
                 </IconTile>
               ) : null}
               <div className="min-w-0">
-                <h2 className="text-[16px] font-semibold leading-tight text-ink">{t(section.title)}</h2>
+                <h2 className="text-[17px] font-semibold leading-tight text-ink">{t(section.title)}</h2>
                 <p className="mt-1 text-[13px] leading-relaxed text-quiet">{t(section.lead)}</p>
               </div>
             </header>
             <div className="divide-y divide-ink/[0.06]">
               {section.parts.map((part) => (
-                <article key={part.title} className="flex flex-col gap-3 px-5 py-5 sm:px-6 print:break-inside-avoid">
-                  <h3 className="text-[14px] font-semibold text-ink">{t(part.title)}</h3>
-                  {part.lead ? <p className="text-[13px] leading-relaxed text-ink/70">{t(part.lead)}</p> : null}
-                  {part.steps?.length ? (
-                    <ol className="flex flex-col gap-2">
-                      {part.steps.map((step, i) => (
-                        <li key={step} className="flex items-start gap-3 text-[13px] leading-relaxed text-ink/85">
-                          <IndexTile className="size-6 rounded-md text-[11px]">{i + 1}</IndexTile>
-                          <span className="pt-0.5">{t(step)}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  ) : null}
-                  {part.points?.length ? (
-                    <ul className="flex flex-col gap-1.5">
-                      {part.points.map((point) => (
-                        <li key={point} className="flex items-start gap-3 text-[13px] leading-relaxed text-ink/80">
-                          <span aria-hidden className="mt-[7px] size-1.5 shrink-0 rounded-full bg-brand-deep/60" />
-                          <span>{t(point)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
+                <article
+                  key={part.title}
+                  className={cn(
+                    "px-5 py-6 sm:px-7 print:break-inside-avoid",
+                    part.shot && "@5xl:grid @5xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] @5xl:items-start @5xl:gap-10",
+                  )}
+                >
+                  {/* Steps, points and the tip share one left edge: each line
+                      opens on a 24 px slot (the number, the dot, the mark). */}
+                  <div className="flex min-w-0 max-w-3xl flex-col gap-3">
+                    <h3 className="text-[14px] font-semibold text-ink">{t(part.title)}</h3>
+                    {part.lead ? <p className="text-[13px] leading-relaxed text-ink/70">{t(part.lead)}</p> : null}
+                    {part.steps?.length ? (
+                      <ol className="flex flex-col gap-2">
+                        {part.steps.map((step, i) => (
+                          <li key={step} className="flex items-start gap-3 text-[13px] leading-relaxed text-ink/85">
+                            <IndexTile className="size-6 rounded-md text-[11px]">{i + 1}</IndexTile>
+                            <span className="pt-0.5">{t(step)}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : null}
+                    {part.points?.length ? (
+                      <ul className="flex flex-col gap-2">
+                        {part.points.map((point) => (
+                          <li key={point} className="flex items-start gap-3 text-[13px] leading-relaxed text-ink/80">
+                            <span aria-hidden className="flex h-6 w-6 shrink-0 items-center justify-center">
+                              <span className="size-1.5 rounded-full bg-brand-deep/60" />
+                            </span>
+                            <span className="pt-0.5">{t(point)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {part.tip ? (
+                      <p className="flex items-start gap-3 rounded-lg bg-ink/[0.03] py-2 pe-3 text-[13px] leading-relaxed text-ink/70">
+                        <span aria-hidden className="flex h-6 w-6 shrink-0 items-center justify-center text-brand-deep">
+                          <Info size={15} strokeWidth={2} />
+                        </span>
+                        <span className="pt-0.5">{t(part.tip)}</span>
+                      </p>
+                    ) : null}
+                  </div>
                   {part.shot ? (
-                    <figure className="overflow-hidden rounded-xl border border-ink/10 bg-ground">
+                    <figure className="mt-5 overflow-hidden rounded-xl border border-ink/10 bg-ground @5xl:mt-0">
                       {/* The panel as it looks, at its own size; the page
                           shrinks it to the column. A plain image: the app's
                           picture as it is, with no image service between. */}
@@ -179,7 +200,6 @@ export function HelpGuide({ sections, intro }: { sections: HelpSection[]; intro?
                       />
                     </figure>
                   ) : null}
-                  {part.tip ? <Hint tone="info">{t(part.tip)}</Hint> : null}
                 </article>
               ))}
             </div>

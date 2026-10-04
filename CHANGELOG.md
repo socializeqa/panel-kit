@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.9 — 4 Oct 2026
+
+- `HelpGuide` takes the whole width of the page (Damine: "must be full width"). The contents stand in their own card, their top on the first section's top; on a card wide enough (a container query) each part puts its picture beside its steps. Steps, points and the tip open on one 24 px slot, so their words share one left edge.
+
 ## 0.1.8 — 4 Oct 2026
 
 - The panel's guide is named in words: with `help` set, the rail's foot has a **How to use** row above the person's name, lit like a room while the guide is open. The "?" glyph alone at the foot went unseen (X Capital). The top bar's "?" now reads "How to use this page".
