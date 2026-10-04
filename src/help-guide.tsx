@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { Info, Printer } from "lucide-react";
 import { CTRL_BTN, PANEL_SHELL } from "./classes";
 import { cn } from "./cn";
@@ -54,6 +54,155 @@ export type HelpSection = {
   lead: string;
   parts: HelpPart[];
 };
+
+/**
+ * A picture this much wider than tall is a list's rows: under the words and
+ * across the part, until the card is wide enough (a 3072 px desk) to hold it
+ * beside them at its own size like the others.
+ */
+const WIDE = 2;
+
+/** A list this long, with nothing beside it, is split in two halves, one per column. */
+const SPLIT = 4;
+
+// Each line of a list opens on a 24 px slot (the number, the dot, the mark),
+// so steps, points and the tip share one left edge.
+const LINE = "flex items-start gap-3 text-[13px] leading-relaxed";
+
+/** Steps, numbered from `from` + 1, so a list split over two columns keeps counting. */
+function Steps({ steps, from = 0 }: { steps: string[]; from?: number }) {
+  const { t } = usePanel();
+  return (
+    <ol start={from + 1} className="flex flex-col gap-2">
+      {steps.map((step, i) => (
+        <li key={step} className={cn(LINE, "text-ink/85")}>
+          <IndexTile className="size-6 rounded-md text-[11px]">{from + i + 1}</IndexTile>
+          <span className="pt-0.5">{t(step)}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function Points({ points }: { points: string[] }) {
+  const { t } = usePanel();
+  return (
+    <ul className="flex flex-col gap-2">
+      {points.map((point) => (
+        <li key={point} className={cn(LINE, "text-ink/80")}>
+          <span aria-hidden className="flex h-6 w-6 shrink-0 items-center justify-center">
+            <span className="size-1.5 rounded-full bg-brand-deep/60" />
+          </span>
+          <span className="pt-0.5">{t(point)}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Tip({ tip, className }: { tip: string; className?: string }) {
+  const { t } = usePanel();
+  return (
+    <p className={cn(LINE, "rounded-lg bg-ink/[0.03] py-2 pe-3 text-ink/70", className)}>
+      <span aria-hidden className="flex h-6 w-6 shrink-0 items-center justify-center text-brand-deep">
+        <Info size={15} strokeWidth={2} />
+      </span>
+      <span className="pt-0.5">{t(tip)}</span>
+    </p>
+  );
+}
+
+function Shot({ shot, className }: { shot: HelpShot; className?: string }) {
+  const { t } = usePanel();
+  return (
+    // Never larger than it was taken, so the panel's type in it reads at the
+    // panel's own size; smaller only when the column is narrower. A plain
+    // image: the app's picture as it is, with no image service between.
+    <figure style={{ maxWidth: shot.width }} className={cn("w-full overflow-hidden rounded-xl border border-ink/10 bg-ground", className)}>
+      <img src={shot.src} alt={t(shot.alt)} width={shot.width} height={shot.height} loading="lazy" decoding="async" className="block h-auto w-full" />
+    </figure>
+  );
+}
+
+/**
+ * One part of a section, on the guide's one grid (Damine, 4 Oct 2026: "not
+ * professionally aligned"): its title across the top, then two columns, five
+ * to seven, that start on the same line, and everything in the second column
+ * starts on the same edge, part after part:
+ *
+ * - a picture stands there beside the words (a list's wide picture goes under
+ *   them, across both, until the card is desk-wide);
+ * - with no picture, what to know stands there beside the steps;
+ * - a long list with nothing beside it is split, its second half there.
+ *
+ * On a narrow card everything simply follows down one column.
+ */
+function HelpArticle({ part }: { part: HelpPart }) {
+  const { t } = usePanel();
+  const { shot, steps = [], points = [], tip } = part;
+  const wide = Boolean(shot && shot.width / shot.height > WIDE);
+  const both = "@5xl:col-span-2";
+
+  const words = (
+    <div className="flex min-w-0 flex-col gap-3">
+      {steps.length ? <Steps steps={steps} /> : null}
+      {points.length ? <Points points={points} /> : null}
+      {tip ? <Tip tip={tip} /> : null}
+    </div>
+  );
+
+  let body: ReactNode;
+  if (shot && !wide) {
+    body = (
+      <>
+        {words}
+        <Shot shot={shot} />
+      </>
+    );
+  } else if (shot) {
+    // Across the card under a narrower one; in two columns on a desk-wide one.
+    const desk = "@min-[100rem]:col-span-1";
+    body = (
+      <>
+        <div className={cn("min-w-0", both, desk)}>{words}</div>
+        <Shot shot={shot} className={cn(both, desk)} />
+      </>
+    );
+  } else if (steps.length && (points.length || tip)) {
+    body = (
+      <>
+        <Steps steps={steps} />
+        <div className="flex min-w-0 flex-col gap-3">
+          {points.length ? <Points points={points} /> : null}
+          {tip ? <Tip tip={tip} /> : null}
+        </div>
+      </>
+    );
+  } else {
+    // One list: in two halves when it is long, so it fills the card's width
+    // on the same two columns as every other part.
+    const list = steps.length ? steps : points;
+    const half = list.length >= SPLIT ? Math.ceil(list.length / 2) : list.length;
+    const draw = (items: string[], from: number) => (steps.length ? <Steps steps={items} from={from} /> : <Points points={items} />);
+    body = (
+      <>
+        {list.length ? draw(list.slice(0, half), 0) : null}
+        {half < list.length ? draw(list.slice(half), half) : null}
+        {tip ? <Tip tip={tip} className={both} /> : null}
+      </>
+    );
+  }
+
+  return (
+    <article className="grid gap-x-12 gap-y-3 px-5 py-6 sm:px-7 @5xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] @5xl:items-start print:break-inside-avoid">
+      <header className={cn("mb-1 flex min-w-0 flex-col gap-1.5", both)}>
+        <h3 className="text-[14px] font-semibold text-ink">{t(part.title)}</h3>
+        {part.lead ? <p className="max-w-3xl text-[13px] leading-relaxed text-ink/70">{t(part.lead)}</p> : null}
+      </header>
+      {body}
+    </article>
+  );
+}
 
 /** A room's anchor in the guide: "/hiring" and "/hiring/42" are "hiring". */
 export function helpAnchor(roomHref: string): string {
@@ -141,66 +290,7 @@ export function HelpGuide({ sections, intro }: { sections: HelpSection[]; intro?
             </header>
             <div className="divide-y divide-ink/[0.06]">
               {section.parts.map((part) => (
-                <article
-                  key={part.title}
-                  className={cn(
-                    "px-5 py-6 sm:px-7 print:break-inside-avoid",
-                    part.shot && "@5xl:grid @5xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] @5xl:items-start @5xl:gap-10",
-                  )}
-                >
-                  {/* Steps, points and the tip share one left edge: each line
-                      opens on a 24 px slot (the number, the dot, the mark). */}
-                  <div className="flex min-w-0 max-w-3xl flex-col gap-3">
-                    <h3 className="text-[14px] font-semibold text-ink">{t(part.title)}</h3>
-                    {part.lead ? <p className="text-[13px] leading-relaxed text-ink/70">{t(part.lead)}</p> : null}
-                    {part.steps?.length ? (
-                      <ol className="flex flex-col gap-2">
-                        {part.steps.map((step, i) => (
-                          <li key={step} className="flex items-start gap-3 text-[13px] leading-relaxed text-ink/85">
-                            <IndexTile className="size-6 rounded-md text-[11px]">{i + 1}</IndexTile>
-                            <span className="pt-0.5">{t(step)}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    ) : null}
-                    {part.points?.length ? (
-                      <ul className="flex flex-col gap-2">
-                        {part.points.map((point) => (
-                          <li key={point} className="flex items-start gap-3 text-[13px] leading-relaxed text-ink/80">
-                            <span aria-hidden className="flex h-6 w-6 shrink-0 items-center justify-center">
-                              <span className="size-1.5 rounded-full bg-brand-deep/60" />
-                            </span>
-                            <span className="pt-0.5">{t(point)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-                    {part.tip ? (
-                      <p className="flex items-start gap-3 rounded-lg bg-ink/[0.03] py-2 pe-3 text-[13px] leading-relaxed text-ink/70">
-                        <span aria-hidden className="flex h-6 w-6 shrink-0 items-center justify-center text-brand-deep">
-                          <Info size={15} strokeWidth={2} />
-                        </span>
-                        <span className="pt-0.5">{t(part.tip)}</span>
-                      </p>
-                    ) : null}
-                  </div>
-                  {part.shot ? (
-                    <figure className="mt-5 overflow-hidden rounded-xl border border-ink/10 bg-ground @5xl:mt-0">
-                      {/* The panel as it looks, at its own size; the page
-                          shrinks it to the column. A plain image: the app's
-                          picture as it is, with no image service between. */}
-                      <img
-                        src={part.shot.src}
-                        alt={t(part.shot.alt)}
-                        width={part.shot.width}
-                        height={part.shot.height}
-                        loading="lazy"
-                        decoding="async"
-                        className="block h-auto w-full"
-                      />
-                    </figure>
-                  ) : null}
-                </article>
+                <HelpArticle key={part.title} part={part} />
               ))}
             </div>
           </section>

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.10 — 4 Oct 2026
+
+- `HelpGuide` sets every part on one grid (Damine, of 0.1.9 on his 3072 px desk: "not professionally aligned and weird"): the part's title across the top, then two columns, five to seven, that start on the same line, and whatever stands in the second column starts on the same edge part after part. A picture stands there beside the words; a list's wide picture (wider than twice its height) goes under them across the part, and back beside them once the card is desk-wide (100rem). With no picture, what to know stands beside the steps, and a long list with nothing beside it is split in two halves, one per column, still counting. A picture never shows larger than it was taken, so the panel's type in it stays the panel's size. Apps should cut their pictures to what they show; a whole window of white is what made the old pages look empty.
+
 ## 0.1.9 — 4 Oct 2026
 
 - `HelpGuide` takes the whole width of the page (Damine: "must be full width"). The contents stand in their own card, their top on the first section's top; on a card wide enough (a container query) each part puts its picture beside its steps. Steps, points and the tip open on one 24 px slot, so their words share one left edge.
