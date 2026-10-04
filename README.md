@@ -282,8 +282,8 @@ person's own account (X Capital: their password).
 | | |
 |---|---|
 | **Shell** | `shell`, `panel-provider`, `nav`, `page-header-context` (PageMeta), `back-door`, `nav-memory`, `collapse-button`, `new-record-button`, `header-control`, `header-fold`, `lights-toggle`, `use-panel-pathname`, `number-wheel-guard`, `rows-calibrator`, `refresh-if-stale`, `door-page`, `door-forms`, `grain` |
-| **Lists** | `data-table`, `list-config`, `list-controls` (search, filter, sort, the chips), `filter-drawer`, `list-options-context`, `page-size`, `page-size-server`, `link-row`, `row-actions`, `row-menu`, `decision-bar` |
-| **Records** | `drawer`, `drawer-header`, `drawer-tabs`, `record`, `record-fields` (Section), `record-form`, `record-editing`, `record-route`, `unsaved-guard`, `delete-button`, `save-button`, `use-action-success`, `foot-log` |
+| **Lists** | `data-table`, `stage-tabs`, `list-config`, `list-controls` (search, filter, sort, the chips), `filter-drawer`, `list-options-context`, `page-size`, `page-size-server`, `link-row`, `row-actions`, `row-menu`, `decision-bar` |
+| **Records** | `drawer`, `drawer-header`, `drawer-tabs`, `record`, `record-fields` (Section), `record-form`, `record-editing`, `record-route`, `stage-walk`, `unsaved-guard`, `delete-button`, `save-button`, `use-action-success`, `foot-log` |
 | **Fields** | `fields`, `select-menu`, `other-select`, `choice-pills`, `segmented`, `switch`, `number-stepper`, `date-field`, `time-field`, `phone-field`, `password-input`, `note-box`, `grab-resize`, `caret-safe`, `joined-row`, `media-drop-zone`, `photo-field`, `star-rating` |
 | **Feedback** | `modal` (ConfirmDialog, PromptDialog, PickDialog), `toast`, `hint`, `empty-state`, `panel-loader`, `load-error` |
 | **Figures** | `stat-tile`, `stat-strip`, `figure`, `meter`, `status-badge`, `icon-tile`, `icon-btn`, `seat-strip` |

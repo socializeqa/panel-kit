@@ -8,6 +8,12 @@ Staff doors, from X Capital (Damine: sign in "by phone or email", a starting pas
 - `door-forms`: `SignInForm` (email or mobile, the password, keep me signed in, "Forgot password?"), `ForgotForm` (one box, then the same answer whoever asked, and a word for mobile-only staff) and `NewPasswordForm` (the rule under the field; the current password first when it is a change). Each takes the app's own server action.
 - `PanelProvider` `user` takes `href`: the rail's name block then opens the person's own account.
 
+Stages you can see, from X Capital's candidates (Damine: "i dont see phases"):
+
+- `StageTabs`: a list's stages as one strip across its head, each with its count: All, the path left to right, the ways out set apart. Each stage is a link that filters the list and keeps its other filters. It replaces a row of figures when the stages are the figures.
+- `StageWalk`: where one record stands on its path, as points on a line (done, here, ahead), the way out apart at the end. With `onPick` each point moves the record; the app decides what a pick means. In a narrow seat (a phone) only the current stage keeps its name under its point.
+- `RecordForm` takes `top`: a long record in a drawer starts at the top instead of sitting in the middle (X Capital's candidate file opened on an empty band).
+
 ## 0.1.4 — 3 Oct 2026
 
 From X Capital's door, which Damine wanted richer:

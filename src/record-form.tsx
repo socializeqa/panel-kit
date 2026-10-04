@@ -4,6 +4,7 @@ import { createContext, startTransition, useActionState, useContext, useEffect, 
 import { Loader2, Undo2 } from "lucide-react";
 import type { ActionResult } from "./action-result";
 import { useDrawerDirty } from "./drawer";
+import { cn } from "./cn";
 import { Button } from "./fields";
 import { ConfirmDialog } from "./modal";
 import { usePanelT } from "./panel-provider";
@@ -43,6 +44,7 @@ export function RecordForm<R extends ActionResult>({
   cancelLabel = "Cancel",
   alwaysSavable = false,
   readOnly = false,
+  top = false,
   page = false,
   className,
 }: {
@@ -68,6 +70,12 @@ export function RecordForm<R extends ActionResult>({
    * the rest of the page, and its bar bleeds to the frame's edges.
    */
   page?: boolean;
+  /**
+   * A long record in a drawer (a candidate's whole file) starts at the top. A
+   * short form keeps the default: it sits in the middle of the drawer, where
+   * a few fields look placed rather than stranded at the top.
+   */
+  top?: boolean;
   className?: string;
 }) {
   const t = usePanelT();
@@ -146,7 +154,7 @@ export function RecordForm<R extends ActionResult>({
         className={className ?? (page ? "flex flex-col" : "flex min-h-full flex-1 flex-col")}
       >
         {hidden ? Object.entries(hidden).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />) : null}
-        <LockedFields className={page ? "flex flex-col gap-5" : "flex flex-1 flex-col justify-center gap-4 px-5 pt-6 sm:px-7"}>
+        <LockedFields className={page ? "flex flex-col gap-5" : cn("flex flex-1 flex-col gap-4 px-5 pt-6 sm:px-7", !top && "justify-center")}>
           {/* Freeze every field while the save round-trips; `contents` keeps
               the section gap untouched. */}
           <fieldset disabled={pending || readOnly} className="contents">

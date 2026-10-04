@@ -84,6 +84,8 @@
     "./shell": "./src/shell.tsx",
     "./socialize-mark": "./src/socialize-mark.tsx",
     "./staff-door": "./src/staff-door.ts",
+    "./stage-tabs": "./src/stage-tabs.tsx",
+    "./stage-walk": "./src/stage-walk.tsx",
     "./star-rating": "./src/star-rating.tsx",
     "./stat-strip": "./src/stat-strip.tsx",
     "./stat-tile": "./src/stat-tile.tsx",
