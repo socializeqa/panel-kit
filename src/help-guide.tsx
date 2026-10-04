@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentType, ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { Info, Printer } from "lucide-react";
 import { CTRL_BTN, PANEL_SHELL } from "./classes";
 import { cn } from "./cn";
@@ -220,8 +220,29 @@ export function HelpPrintSeat() {
   );
 }
 
+/**
+ * The height of the panel's scrolling area, as it changes: the space the
+ * contents card fills (the shell's main, under the top bar, whatever height
+ * the bar takes on this page).
+ */
+function useScrollRoom() {
+  const ref = useRef<HTMLElement>(null);
+  const [room, setRoom] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const scroller = ref.current?.closest<HTMLElement>("#main-content");
+    if (!scroller) return;
+    const measure = () => setRoom(Math.floor(scroller.getBoundingClientRect().height));
+    measure();
+    const watch = new ResizeObserver(measure);
+    watch.observe(scroller);
+    return () => watch.disconnect();
+  }, []);
+  return { ref, room };
+}
+
 export function HelpGuide({ sections, intro }: { sections: HelpSection[]; intro?: string }) {
   const { nav, can, t } = usePanel();
+  const { ref: contentsRef, room } = useScrollRoom();
   const rooms = nav.flatMap((group) => group.items);
 
   // Each section as this person sees it: a room's name and icon, and only
@@ -244,19 +265,30 @@ export function HelpGuide({ sections, intro }: { sections: HelpSection[]; intro?
     // beside it, their top on the first section's top; each part puts its
     // picture beside its steps once the card is wide enough to hold both.
     <div className="flex w-full items-start gap-6 pb-10 print:block print:pb-0">
-      <nav aria-label={t("Contents")} className="sticky top-0 hidden w-60 shrink-0 lg:block print:hidden">
-        <div className={cn(PANEL_SHELL, "flex flex-col gap-0.5 p-2")}>
-          <p className="px-3 pb-1.5 pt-2 text-[12px] font-semibold text-ink/50">{t("Contents")}</p>
-          {shown.map((section) => (
-            <a
-              key={section.id}
-              href={`#${section.id}`}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-ink/70 transition-colors duration-150 hover:bg-ink/[0.04] hover:text-ink"
-            >
-              {section.Icon ? <section.Icon size={16} strokeWidth={1.9} aria-hidden /> : null}
-              <span className="truncate">{t(section.title)}</span>
-            </a>
-          ))}
+      {/* The contents card stands the full height of the screen and stays as
+          the guide scrolls (Damine, 4 Oct 2026: "full height ... and centered
+          vertically"): the same gap above and below it as the page's own, its
+          word at the head and the rooms in the middle, like the rail's menu.
+          The page's 20 px gap at both ends is the shell's content padding. */}
+      <nav ref={contentsRef} aria-label={t("Contents")} className="sticky top-5 hidden w-60 shrink-0 lg:block print:hidden">
+        <div style={room ? { height: room - 40 } : undefined} className={cn(PANEL_SHELL, "flex flex-col p-2")}>
+          <p className="shrink-0 px-3 pb-1.5 pt-2 text-[12px] font-semibold text-ink/50">{t("Contents")}</p>
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+            <div className="my-auto flex flex-col gap-0.5">
+              {shown.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className="flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-ink/70 transition-colors duration-150 hover:bg-ink/[0.04] hover:text-ink"
+                >
+                  {section.Icon ? <section.Icon size={16} strokeWidth={1.9} aria-hidden /> : null}
+                  <span className="truncate">{t(section.title)}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+          {/* The head's twin, unseen, so the rooms sit in the card's true middle. */}
+          <p aria-hidden className="invisible shrink-0 px-3 pb-1.5 pt-2 text-[12px] font-semibold">{t("Contents")}</p>
         </div>
       </nav>
 
