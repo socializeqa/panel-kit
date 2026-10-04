@@ -14,6 +14,13 @@ Stages you can see, from X Capital's candidates (Damine: "i dont see phases"):
 - `StageWalk`: where one record stands on its path, as points on a line (done, here, ahead), the way out apart at the end. With `onPick` each point moves the record; the app decides what a pick means. In a narrow seat (a phone) only the current stage keeps its name under its point.
 - `Section` takes `plain`: a calm card for a long record read top to bottom, a small grey title with its hint and action across from it, no glyph and no band (Damine's pick of three for X Capital's candidate file).
 - `DrawerTabs` takes `under`: the rooms on their own line under the title, centred, each a word with a mark under the open one.
+From the hiring audit (4 Oct 2026):
+
+- **The whole row opens the record.** A row link stretched over its positioned parent, and the first cell is pinned for sideways scrolling, so only that one cell opened anything (pressing a name did nothing). `ClickRow` now takes the pointer anywhere on the row; the first cell keeps its link for the keyboard; the row's own buttons and links, a text selection and a modifier press are left alone. Every panel gets this with the version.
+- `CheckList`: a list to tick for an act on many records, All and None on top, the kit's own ticks (a screen reader hears checkboxes).
+- Icon buttons and the drawer's seats show the kit's brand ring for the keyboard, never the browser's black box after a press.
+- A drawer's title wraps to two lines in a narrow drawer instead of cutting the name to a few letters.
+
 - `RecordForm` takes `top`: a long record in a drawer starts at the top instead of sitting in the middle (X Capital's candidate file opened on an empty band).
 
 ## 0.1.4 — 3 Oct 2026

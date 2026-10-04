@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
 import { iconBtnClass, PANEL_SHELL } from "./classes";
+import { ClickRow } from "./click-row";
 import { cn } from "./cn";
 import { EmptyState } from "./empty-state";
 import { Tx } from "./panel-provider";
@@ -245,54 +246,61 @@ export function DataTable<T>({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, ri) => (
-              // relative: hosts the first cell's stretched link, so the whole
-              // row opens the record. Other interactive cells sit above it.
-              <tr
-                key={ri}
-                className={cn(
-                  // The rail's grammar for "this one": a soft brand wash and a
-                  // 2px edge on the leading side (--kit-dir finds it in Arabic).
-                  "group/row relative border-t border-ink/[0.06] transition-colors first:border-t-0 hover:bg-brand/[0.035] [&>td:first-child]:shadow-[inset_2px_0_0_0_transparent] hover:[&>td:first-child]:shadow-[inset_calc(2px*var(--kit-dir))_0_0_0_var(--brand-deep)]",
-                  rowClassName?.(row),
-                )}
-              >
-                {columns.map((c, ci) => (
-                  <td
-                    key={ci}
-                    className={cn(
-                      "px-3 py-1.5 align-middle text-ink/80",
-                      // An opaque body behind the pinned Actions, so scrolled
-                      // cells don't bleed through. Quiet until the row is under
-                      // the pointer — the eye reads the data, not the icons.
-                      c.header === "Actions" &&
-                        "sticky end-0 z-10 border-s border-ink/[0.07] bg-surface opacity-55 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100",
-                      ci === 0 && "sticky start-0 z-[5] bg-surface",
-                      dropClass(c),
-                      c.className,
-                    )}
-                  >
-                    {c.header === "Actions" ? (
-                      c.cell(row)
-                    ) : (
-                      <div className="truncate">
-                        {ci === 0 && rowHref ? (
-                          <Link
-                            href={rowHref(row)}
-                            scroll={false}
-                            className="font-medium text-ink transition-colors hover:text-brand-deep after:absolute after:inset-0 after:content-['']"
-                          >
-                            {tx(c.cell(row))}
-                          </Link>
-                        ) : (
-                          tx(c.cell(row))
-                        )}
-                      </div>
-                    )}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {rows.map((row, ri) => {
+              // The whole row opens the record (ClickRow, for a pointer); the
+              // first cell's link is the keyboard's. Other controls in the row
+              // keep their own presses.
+              const rowClass = cn(
+                // The rail's grammar for "this one": a soft brand wash and a
+                // 2px edge on the leading side (--kit-dir finds it in Arabic).
+                "group/row border-t border-ink/[0.06] transition-colors first:border-t-0 hover:bg-brand/[0.035] [&>td:first-child]:shadow-[inset_2px_0_0_0_transparent] hover:[&>td:first-child]:shadow-[inset_calc(2px*var(--kit-dir))_0_0_0_var(--brand-deep)]",
+                rowHref && "cursor-pointer",
+                rowClassName?.(row),
+              );
+              const cells = columns.map((c, ci) => (
+                <td
+                  key={ci}
+                  className={cn(
+                    "px-3 py-1.5 align-middle text-ink/80",
+                    // An opaque body behind the pinned Actions, so scrolled
+                    // cells don't bleed through. Quiet until the row is under
+                    // the pointer — the eye reads the data, not the icons.
+                    c.header === "Actions" &&
+                      "sticky end-0 z-10 border-s border-ink/[0.07] bg-surface opacity-55 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100",
+                    ci === 0 && "sticky start-0 z-[5] bg-surface",
+                    dropClass(c),
+                    c.className,
+                  )}
+                >
+                  {c.header === "Actions" ? (
+                    c.cell(row)
+                  ) : (
+                    <div className="truncate">
+                      {ci === 0 && rowHref ? (
+                        <Link
+                          href={rowHref(row)}
+                          scroll={false}
+                          className="font-medium text-ink transition-colors hover:text-brand-deep"
+                        >
+                          {tx(c.cell(row))}
+                        </Link>
+                      ) : (
+                        tx(c.cell(row))
+                      )}
+                    </div>
+                  )}
+                </td>
+              ));
+              return rowHref ? (
+                <ClickRow key={ri} href={rowHref(row)} className={rowClass}>
+                  {cells}
+                </ClickRow>
+              ) : (
+                <tr key={ri} className={rowClass}>
+                  {cells}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

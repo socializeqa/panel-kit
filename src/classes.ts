@@ -113,6 +113,8 @@ export type IconBtnTone = "default" | "ink" | "danger";
 export function iconBtnClass(size: IconBtnSize = 7, tone: IconBtnTone = "default"): string {
   return cn(
     "grid place-items-center disabled:opacity-40 [&_svg]:shrink-0 [&_svg]:[stroke-width:2]",
+    // The kit's ring for the keyboard, never the browser's black box after a press.
+    "outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/35",
     PRESS,
     // The button sizes its glyph: 14 / 15 / 17 for the three seats.
     size === 7
@@ -134,7 +136,7 @@ export function iconBtnClass(size: IconBtnSize = 7, tone: IconBtnTone = "default
 // row of seats and inputs reads as one strip; `seat` is what a cluster fuses on.
 export const CTRL_BTN = cn(
   fieldBox("md"),
-  "seat relative flex h-9 w-9 shrink-0 items-center justify-center gap-1.5 px-0 py-0 text-[13px] font-medium text-ink/60 hover:relative hover:z-[1] hover:border-ink/30 hover:text-ink [&_svg]:size-[17px] [&_svg]:shrink-0 [&_svg]:[stroke-width:2]",
+  "seat relative flex h-9 w-9 shrink-0 items-center justify-center gap-1.5 px-0 py-0 text-[13px] font-medium text-ink/60 outline-none hover:relative hover:z-[1] hover:border-ink/30 hover:text-ink focus-visible:z-[2] focus-visible:ring-2 focus-visible:ring-brand-deep/35 [&_svg]:size-[17px] [&_svg]:shrink-0 [&_svg]:[stroke-width:2]",
   PRESS,
 );
 // Icon-only seats keep their word for screen readers and the tooltip.

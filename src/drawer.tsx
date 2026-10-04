@@ -337,7 +337,8 @@ export function Drawer({
                   ) : null}
                   <div className={cn("flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1", kicker && "mt-1")}>
                     <Dialog.Title asChild>
-                      <h2 className="truncate text-[20px] font-semibold leading-tight tracking-[-0.015em] text-ink">
+                      {/* A narrow drawer (a phone) wraps the name onto two lines rather than cut it to a few letters. */}
+                      <h2 className="truncate text-[20px] font-semibold leading-tight tracking-[-0.015em] text-ink @max-[34rem]:line-clamp-2 @max-[34rem]:whitespace-normal">
                         {t(header.title)}
                       </h2>
                     </Dialog.Title>
