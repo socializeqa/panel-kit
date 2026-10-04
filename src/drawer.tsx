@@ -30,6 +30,8 @@ export interface DrawerHeaderData {
   context?: React.ReactNode;
   /** The record's rooms as a fused strip beside the title. */
   tabs?: React.ReactNode;
+  /** The rooms on their own line under the title, centred (DrawerTabs `under`). */
+  tabsUnder?: boolean;
 }
 const DrawerHeaderContext = createContext<((data: DrawerHeaderData | null) => void) | null>(null);
 export function useDrawerHeaderSetter() {
@@ -346,7 +348,7 @@ export function Drawer({
               </div>
               {/* The rooms strip sits centred between the title and the seats
                   (Damine, 23 Aug 2026: "must be centered"). */}
-              {header.tabs ? (
+              {header.tabs && !header.tabsUnder ? (
                 <div className="order-last basis-full @[1080px]:order-none @[1080px]:flex @[1080px]:flex-1 @[1080px]:basis-0 @[1080px]:justify-center">
                   {header.tabs}
                 </div>
@@ -366,6 +368,9 @@ export function Drawer({
             {/* What the record belongs to — its own full-width row under the
                 title row, so it never fights the rooms strip for space. */}
             {header.context ? <div className="mt-3">{tx(header.context)}</div> : null}
+            {/* Rooms under the title: centred on their own line, their marks
+                resting on the header's rule. */}
+            {header.tabs && header.tabsUnder ? <div className="-mb-4 mt-3.5 flex justify-center">{header.tabs}</div> : null}
           </header>
           <div className="relative flex min-h-0 flex-1 flex-col">
             {/* Edge fades: the body slides under a soft gradient at the top

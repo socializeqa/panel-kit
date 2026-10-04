@@ -26,6 +26,12 @@ type DrawerTabsProps = Omit<DrawerHeaderData, "tabs"> & {
   initial?: string;
   /** Show the pencil seat; the form room reads useRecordEditing(). */
   editable?: boolean;
+  /**
+   * The rooms on their own line under the title, centred, each a word with a
+   * mark under the one open (X Capital's candidate file, 4 Oct 2026). Without
+   * it they are the fused strip beside the title.
+   */
+  under?: boolean;
 };
 
 export function DrawerTabs(props: DrawerTabsProps) {
@@ -40,7 +46,7 @@ export function DrawerTabs(props: DrawerTabsProps) {
   );
 }
 
-function Tabs({ title, badge, actions, sub, context, tabs, initial, editable = false }: DrawerTabsProps) {
+function Tabs({ title, badge, actions, sub, context, tabs, initial, editable = false, under = false }: DrawerTabsProps) {
   const t = usePanelT();
   const [active, setActive] = useState(initial ?? tabs[0]?.key ?? "");
   const { editing, setEditing } = useRecordEditing();
@@ -50,7 +56,33 @@ function Tabs({ title, badge, actions, sub, context, tabs, initial, editable = f
 
   // A tab is chosen by a click or by the arrow keys the tablist brings;
   // nothing slides — switching rooms is frequent, so it is instant.
-  const strip = (
+  const strip = under ? (
+    <div role="tablist" aria-label={t("Sections")} className="flex gap-7">
+      {tabs.map((tab) => {
+        const on = tab.key === active;
+        return (
+          <button
+            key={tab.key}
+            type="button"
+            role="tab"
+            aria-selected={on}
+            onClick={() => setActive(tab.key)}
+            className={cn(
+              "relative inline-flex h-10 items-center gap-2 text-[13px] font-medium transition-colors duration-150",
+              on ? "text-ink" : "text-ink/55 hover:text-ink",
+            )}
+          >
+            {tab.icon}
+            {t(tab.label)}
+            {tab.count !== undefined ? (
+              <span className="rounded-full bg-ink/[0.06] px-1.5 py-px text-[11px] font-semibold tabular-nums text-quiet">{tab.count}</span>
+            ) : null}
+            {on ? <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-ink" /> : null}
+          </button>
+        );
+      })}
+    </div>
+  ) : (
     <div role="tablist" aria-label={t("Sections")} className="flex">
       {tabs.map((tab, i) => {
         const on = tab.key === active;
@@ -105,12 +137,13 @@ function Tabs({ title, badge, actions, sub, context, tabs, initial, editable = f
       sub,
       context,
       tabs: strip,
+      tabsUnder: under,
     });
     return () => publish(null);
     // The strip re-renders with `active`, the seat with `editing`; those are
     // what change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publish, title, badge, actions, sub, context, active, tabs, editing, editable]);
+  }, [publish, title, badge, actions, sub, context, active, tabs, editing, editable, under]);
 
   const current = tabs.find((tab) => tab.key === active) ?? tabs[0];
   return (

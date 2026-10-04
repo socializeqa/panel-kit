@@ -23,9 +23,11 @@ export function Section({
   defaultOpen = true,
   bodyClassName,
   tone = "default",
+  plain = false,
   children,
 }: {
-  icon: React.ReactNode;
+  /** The title's glyph; a plain card has none. */
+  icon?: React.ReactNode;
   title: string;
   subtitle?: string;
   action?: React.ReactNode;
@@ -44,10 +46,41 @@ export function Section({
   defaultOpen?: boolean;
   // Override the body's padding and gap (a card whose body is a list).
   bodyClassName?: string;
+  /**
+   * A calm card for a long record read top to bottom (X Capital's candidate
+   * file, Damine's pick of three, 4 Oct 2026): no glyph and no band, a small
+   * grey title with its hint and action across from it, the body right under.
+   * Eight banded cards in a row read as noise; these read as one page.
+   */
+  plain?: boolean;
   children: React.ReactNode;
 }) {
   const t = usePanelT();
   const [open, setOpen] = useState(defaultOpen);
+  if (plain) {
+    return (
+      <section
+        className={cn(
+          PANEL_SHELL,
+          "group/section overflow-hidden transition-[border-color,box-shadow] duration-150 focus-within:border-brand-deep/70 focus-within:shadow-kit-focus",
+          grow && "flex min-h-0 flex-1 flex-col",
+          className,
+        )}
+      >
+        <header className="flex min-h-8 shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 pt-4 sm:px-6 sm:pt-5">
+          <h3 className="text-[12px] font-semibold text-ink/60">{t(title)}</h3>
+          {subtitle || action ? (
+            <div className="flex min-w-0 max-w-full items-center gap-3">
+              {subtitle ? <p className="truncate text-[11px] text-quiet">{t(subtitle)}</p> : null}
+              {action}
+            </div>
+          ) : null}
+        </header>
+        <div className={cn("flex flex-col", bodyClassName ?? "gap-4 px-5 pb-5 pt-3.5 sm:px-6 sm:pb-6", grow && "min-h-0 flex-1 overflow-y-auto")}>{children}</div>
+        {footer ? <div className="shrink-0 border-t border-ink/[0.06] bg-ink/[0.015] px-4 py-3 sm:px-5">{footer}</div> : null}
+      </section>
+    );
+  }
   const shown = !collapsible || open;
   const customer = tone === "customer";
   const head = (
