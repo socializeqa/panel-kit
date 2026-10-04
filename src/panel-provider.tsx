@@ -84,6 +84,10 @@ export interface PanelConfig {
   signOut?: () => void | Promise<void>;
   /** Seats after the list tools in the top bar: a global search, the bell. */
   tools?: ReactNode;
+  /** The panel's own guide (a page drawn with HelpGuide). Every room's top bar
+   *  then has a "?" that opens the room's part of it, and the rail's foot a
+   *  way in. */
+  help?: string;
   /** The line at the very foot of the rail. `null` hides it. */
   credit?: ReactNode;
   /** The phone picker's countries, and how a flag is drawn beside one. */
@@ -126,6 +130,7 @@ export interface ResolvedPanel {
   user?: { name: string | null; role?: string; href?: string };
   signOut?: () => void | Promise<void>;
   tools: ReactNode;
+  help?: string;
   credit: ReactNode | undefined;
   countries?: readonly Country[];
   defaultCountry?: string;
@@ -154,6 +159,7 @@ function resolve(config: PanelConfig): ResolvedPanel {
     user: config.user,
     signOut: config.signOut,
     tools: config.tools ?? null,
+    help: config.help,
     credit: config.credit,
     countries: config.countries,
     defaultCountry: config.defaultCountry,
@@ -173,17 +179,17 @@ export function PanelProvider({ children, ...config }: PanelConfig & { children:
   // The app's wrapper usually rebuilds the config object on every render;
   // reading it field by field keeps the context steady unless one changed.
   const {
-    nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, credit,
+    nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
     countries, defaultCountry, flag, lights, paging, timeZone, statuses,
   } = config;
   const value = useMemo(
     () =>
       resolve({
-        nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, credit,
+        nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
         countries, defaultCountry, flag, lights, paging, timeZone, statuses,
       }),
     [
-      nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, credit,
+      nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
       countries, defaultCountry, flag, lights, paging, timeZone, statuses,
     ],
   );

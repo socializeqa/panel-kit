@@ -2,10 +2,11 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { LogOut, Menu, X } from "lucide-react";
+import { CircleHelp, LogOut, Menu, X } from "lucide-react";
 import { BackDoor } from "./back-door";
-import { BACKDROP, iconBtnClass } from "./classes";
+import { BACKDROP, CTRL_BTN, iconBtnClass } from "./classes";
 import { cn } from "./cn";
+import { helpAnchor } from "./help-guide";
 import { LightsToggle } from "./lights-toggle";
 import { ActiveFilterChips, ListControls } from "./list-controls";
 import { ListOptionsProvider } from "./list-options-context";
@@ -33,7 +34,7 @@ function initials(name: string): string {
 
 function Rail({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePanelPathname();
-  const { nav, host, can, t, logo, logoAlign, railTop, user, signOut, lights, credit } = usePanel();
+  const { nav, host, can, t, logo, logoAlign, railTop, user, signOut, lights, help, credit } = usePanel();
 
   // A room that names a capability shows only to someone who has it; a group
   // left with no rooms goes too.
@@ -183,7 +184,7 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
           </div>
         </nav>
 
-        {user || signOut || lights ? (
+        {user || signOut || lights || help ? (
           <div className="mt-2 flex items-center gap-2.5 border-t border-on-rail/10 px-2 pt-2.5">
             {user?.href ? (
               <Link
@@ -197,6 +198,17 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
               <span className="flex min-w-0 flex-1 items-center gap-2.5">{who}</span>
             )}
             {lights ? <LightsToggle dark={lights.dark} onChange={lights.onChange} className="h-8 w-14" /> : null}
+            {help ? (
+              <Link
+                href={help}
+                onClick={onNavigate}
+                aria-label={t("Help")}
+                title={t("Help")}
+                className={cn(iconBtnClass(8), "shrink-0 text-on-rail/55 hover:bg-on-rail/[0.06] hover:text-on-rail")}
+              >
+                <CircleHelp className="size-4" strokeWidth={1.9} />
+              </Link>
+            ) : null}
             {signOut ? (
               <button
                 type="button"
@@ -230,7 +242,7 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function Shell({ children }: { children: React.ReactNode }) {
-  const { nav, host, t, barLogo, tools } = usePanel();
+  const { nav, host, t, barLogo, tools, help } = usePanel();
   const [open, setOpen] = useState(false);
   const [published, setHeader] = useState<PageHeaderData | null>(null);
   const pathname = usePanelPathname();
@@ -244,6 +256,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
   // A steady context value, so a page's PageMeta effect doesn't re-fire on
   // every header change.
   const ctxValue = useMemo(() => ({ setHeader }), []);
+  // The room's own part of the panel's guide, on every page but the guide.
+  const helpHref = help && pathname !== help ? (room ? `${help}#${helpAnchor(room.href)}` : help) : null;
 
   // Close the phone's rail on Escape, and lock the page behind it so nothing
   // underneath moves while it is open.
@@ -267,17 +281,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <NumberWheelGuard />
         <NavMemory />
         <RowsCalibrator />
-        <div className="kit min-h-dvh bg-ground lg:grid lg:grid-cols-[248px_1fr]">
-          <aside className="hidden lg:sticky lg:top-0 lg:block lg:h-dvh">
+        {/* On paper only the page itself prints: no rail, no top bar, and
+            the content runs on instead of scrolling inside the frame. */}
+        <div className="kit min-h-dvh bg-ground lg:grid lg:grid-cols-[248px_1fr] print:block print:bg-surface">
+          <aside className="hidden lg:sticky lg:top-0 lg:block lg:h-dvh print:hidden">
             <Rail />
           </aside>
 
-          <div className="flex h-dvh min-w-0 flex-col">
+          <div className="flex h-dvh min-w-0 flex-col print:block print:h-auto">
             {/* The top bar: the page's title on the start, the shared tools on
                 the end; on every page. A near-solid ground instead of a
                 backdrop blur: re-blurring a sticky bar over scrolling content
                 every frame froze tablets (Elite Touch). */}
-            <header className="group/header sticky top-0 z-30 flex min-h-[60px] items-center gap-3 border-b border-ink/10 bg-ground/95 px-4 py-2.5 sm:px-6 lg:px-8">
+            <header className="group/header sticky top-0 z-30 flex min-h-[60px] items-center gap-3 border-b border-ink/10 bg-ground/95 px-4 py-2.5 sm:px-6 lg:px-8 print:hidden">
               <button
                 type="button"
                 onClick={() => setOpen(true)}
@@ -343,6 +359,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
                   <ListControls />
                 </Suspense>
                 {tools}
+                {helpHref ? (
+                  <Link href={helpHref} aria-label={t("Help for this page")} title={t("Help for this page")} className={CTRL_BTN}>
+                    <CircleHelp aria-hidden="true" />
+                  </Link>
+                ) : null}
               </div>
             </header>
 
@@ -352,11 +373,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 positioned descendants (every sr-only span) resolve against the
                 viewport, escape this container's clipping, and hand the
                 document phantom scroll. */}
-            <main id="main-content" className="relative flex min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <main id="main-content" className="relative flex min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden print:block print:overflow-visible">
               <Suspense fallback={null}>
                 <ActiveFilterChips />
               </Suspense>
-              <div className="flex min-h-0 flex-1 flex-col px-5 py-4 sm:px-8 sm:py-5">{children}</div>
+              <div className="flex min-h-0 flex-1 flex-col px-5 py-4 sm:px-8 sm:py-5 print:block print:p-0">{children}</div>
             </main>
           </div>
 

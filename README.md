@@ -286,6 +286,7 @@ person's own account (X Capital: their password).
 | **Records** | `drawer`, `drawer-header`, `drawer-tabs`, `record`, `record-fields` (Section), `record-form`, `record-editing`, `record-route`, `stage-walk`, `unsaved-guard`, `delete-button`, `save-button`, `use-action-success`, `foot-log` |
 | **Fields** | `fields`, `select-menu`, `other-select`, `choice-pills`, `segmented`, `switch`, `number-stepper`, `date-field`, `time-field`, `phone-field`, `password-input`, `note-box`, `grab-resize`, `caret-safe`, `joined-row`, `media-drop-zone`, `photo-field`, `star-rating` |
 | **Feedback** | `modal` (ConfirmDialog, PromptDialog, PickDialog), `toast`, `hint`, `empty-state`, `panel-loader`, `load-error` |
+| **Guide** | `help-guide` (HelpGuide, HelpPrintSeat): the panel's own "how to use", a section per room, each person seeing only what their role can do; `PanelProvider` `help` puts a "?" on every room's top bar |
 | **Figures** | `stat-tile`, `stat-strip`, `figure`, `meter`, `status-badge`, `icon-tile`, `icon-btn`, `seat-strip` |
 | **Helpers** | `classes`, `cn`, `brand`, `format`, `tx`, `action-result`, `use-dismiss`, `staff-door` |
 

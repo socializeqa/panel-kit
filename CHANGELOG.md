@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.6 — 4 Oct 2026
+
+The panel's own guide, from X Capital (Damine: a "how to use" in the panel, "so we know how it works"):
+
+- `HelpGuide`: a help page drawn from plain data the app writes: sections, each with parts (steps, points, a picture of the panel, a tip). A section tied to a room (`room: "/hiring"`) takes the room's name and icon from the rail and shows only to someone who can open that room; a part with a `cap` shows only to someone who holds it, so each person reads only what their role can do. Contents down the side on a wide screen, as a row of words on a narrow one.
+- `PanelProvider` takes `help` (the guide's path): every room's top bar gets a "?" seat that opens that room's part of the guide (`#hiring` for `/hiring`, `helpAnchor`), and the rail's foot a way in.
+- `HelpPrintSeat`, and the shell prints clean: on paper there is no rail and no top bar, and the page runs on instead of scrolling in its frame. The guide prints a section a page, so "save as PDF" is the guide a new hire is sent.
+
 ## 0.1.5 — 3 Oct 2026
 
 Staff doors, from X Capital (Damine: sign in "by phone or email", a starting password changed at the first sign-in, and a forgot-password that works by email):

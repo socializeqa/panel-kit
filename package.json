@@ -1,6 +1,6 @@
 {
   "name": "@socialize/panel-kit",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "The admin panel kit every Socialize Team panel shares: the shell, the drawers, the lists, the fields and the house rules, shipped as TypeScript source.",
   "license": "MIT",
   "type": "module",
@@ -42,6 +42,7 @@
     "./grain": "./src/grain.tsx",
     "./header-control": "./src/header-control.tsx",
     "./header-fold": "./src/header-fold.tsx",
+    "./help-guide": "./src/help-guide.tsx",
     "./hint": "./src/hint.tsx",
     "./icon-btn": "./src/icon-btn.tsx",
     "./icon-tile": "./src/icon-tile.tsx",
