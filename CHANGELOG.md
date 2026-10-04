@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7 — 4 Oct 2026
+
+- `ForgotForm` takes `mobileOnly`: the line after a reset request for staff who sign in with a mobile only and get no link, so each panel can say who really sets their password. The default is the line it always said ("Ask your manager…"); at X Capital only an owner can, so its door says so.
+
 ## 0.1.6 — 4 Oct 2026
 
 The panel's own guide, from X Capital (Damine: a "how to use" in the panel, "so we know how it works"):

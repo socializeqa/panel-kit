@@ -83,7 +83,16 @@ export function SignInForm({
 export type ForgotState = { sent: true } | { sent: false; error: string } | null;
 
 /** One box for the email or mobile; then the same answer whoever asked. */
-export function ForgotForm({ action, backHref = "/login" }: { action: DoorAction<ForgotState>; backHref?: string }) {
+export function ForgotForm({
+  action,
+  backHref = "/login",
+  mobileOnly = "Signing in with your mobile only? Ask your manager to set a new password for you.",
+}: {
+  action: DoorAction<ForgotState>;
+  backHref?: string;
+  /** The line for staff with no email, who get no link: who sets their password in this panel. */
+  mobileOnly?: string;
+}) {
   const t = usePanelT();
   const [state, formAction, pending] = useActionState(action, null);
 
@@ -94,7 +103,7 @@ export function ForgotForm({ action, backHref = "/login" }: { action: DoorAction
           {t("If that login has an email on file, a link to choose a new password is on its way. It works once, within the hour.")}
         </p>
         <p className="text-balance text-[12px] leading-relaxed text-ink/55">
-          {t("Signing in with your mobile only? Ask your manager to set a new password for you.")}
+          {t(mobileOnly)}
         </p>
         <DoorLink href={backHref}>Back to sign in</DoorLink>
       </div>
