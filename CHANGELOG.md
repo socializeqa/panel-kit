@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.8 — 4 Oct 2026
+
+- The panel's guide is named in words: with `help` set, the rail's foot has a **How to use** row above the person's name, lit like a room while the guide is open. The "?" glyph alone at the foot went unseen (X Capital). The top bar's "?" now reads "How to use this page".
+
 ## 0.1.7 — 4 Oct 2026
 
 - `ForgotForm` takes `mobileOnly`: the line after a reset request for staff who sign in with a mobile only and get no link, so each panel can say who really sets their password. The default is the line it always said ("Ask your manager…"); at X Capital only an owner can, so its door says so.

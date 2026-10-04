@@ -184,7 +184,28 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
           </div>
         </nav>
 
-        {user || signOut || lights || help ? (
+        {/* The panel's own guide, named in words where everyone looks for it
+            (X Capital, 4 Oct 2026: a "?" glyph alone at the foot went unseen),
+            lit like a room while it is open. */}
+        {help ? (
+          <Link
+            href={help}
+            onClick={onNavigate}
+            aria-current={pathname === help ? "page" : undefined}
+            className={cn(
+              "group mt-2 flex items-center gap-3 rounded-[6px] px-3 py-2 text-[13px] font-medium transition-colors duration-150",
+              pathname === help ? "bg-on-rail/[0.08] text-on-rail" : "text-on-rail/60 hover:bg-on-rail/[0.06] hover:text-on-rail",
+            )}
+          >
+            <CircleHelp
+              className={cn("size-[17px] shrink-0 transition-colors", pathname === help ? "text-rail-accent" : "text-on-rail/40 group-hover:text-on-rail/75")}
+              strokeWidth={1.9}
+            />
+            <span className="flex-1 truncate">{t("How to use")}</span>
+          </Link>
+        ) : null}
+
+        {user || signOut || lights ? (
           <div className="mt-2 flex items-center gap-2.5 border-t border-on-rail/10 px-2 pt-2.5">
             {user?.href ? (
               <Link
@@ -198,17 +219,6 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
               <span className="flex min-w-0 flex-1 items-center gap-2.5">{who}</span>
             )}
             {lights ? <LightsToggle dark={lights.dark} onChange={lights.onChange} className="h-8 w-14" /> : null}
-            {help ? (
-              <Link
-                href={help}
-                onClick={onNavigate}
-                aria-label={t("Help")}
-                title={t("Help")}
-                className={cn(iconBtnClass(8), "shrink-0 text-on-rail/55 hover:bg-on-rail/[0.06] hover:text-on-rail")}
-              >
-                <CircleHelp className="size-4" strokeWidth={1.9} />
-              </Link>
-            ) : null}
             {signOut ? (
               <button
                 type="button"
@@ -360,7 +370,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 </Suspense>
                 {tools}
                 {helpHref ? (
-                  <Link href={helpHref} aria-label={t("Help for this page")} title={t("Help for this page")} className={CTRL_BTN}>
+                  <Link href={helpHref} aria-label={t("How to use this page")} title={t("How to use this page")} className={CTRL_BTN}>
                     <CircleHelp aria-hidden="true" />
                   </Link>
                 ) : null}
