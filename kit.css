@@ -372,54 +372,377 @@
   }
 }
 
-/* ── A door with a scene (DoorPage) ────────────────────────────
-   The client's picture fills the screen under a warm veil, darker at the
-   top and the foot; the form sits on frosted glass cut at two corners, the
-   way the client's own cards are cut. On the glass the fields are single
-   lines and the way in is a light bar, so the door reads as the client's
-   world, not a form on a page. The same in either theme: it all sits on a
-   photograph. The field rules are plain (unlayered) so they win over the
-   fields' own utilities, and reach only inside the glass. */
+/* ── The door (DoorPage, door-forms) ───────────────────────────
+   Apple's glass (Damine, 7 Oct 2026: "it must be like iPhone iOS"): with a
+   scene, the form floats on one card of glass with round corners, the light
+   catching its rim and a sheen down its face, over the client's picture. The
+   fields stand in one rounded block, each label inside its own row; "Keep me
+   signed in" is an iOS switch; the way in is a pill. Without a scene the same
+   shapes sit on the panel's own ground (door-plain). The card takes the
+   client's tint through --door-glass; every colour below reads from the
+   door's own variables, so one set of rules dresses both. */
 @utility door-veil {
-  background: linear-gradient(180deg, rgb(8 7 6 / 0.55), rgb(8 7 6 / 0.25) 40%, rgb(8 7 6 / 0.7));
+  background: linear-gradient(180deg, rgb(8 7 6 / 0.5), rgb(8 7 6 / 0.2) 40%, rgb(8 7 6 / 0.65));
 }
-@utility door-glass {
-  background: rgb(22 19 16 / 0.42);
-  border: 1px solid rgb(255 255 255 / 0.16);
-  clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px);
+
+.kit .door-card {
+  --door-ink: #fff;
+  --door-quiet: rgb(255 255 255 / 0.58);
+  --door-field: rgb(255 255 255 / 0.07);
+  --door-field-focus: rgb(255 255 255 / 0.11);
+  --door-line: rgb(255 255 255 / 0.11);
+  --door-track: color-mix(in oklab, var(--door-ink) 8%, transparent);
+  --door-thumb: color-mix(in oklab, var(--door-ink) 16%, transparent);
+  --door-switch-off: color-mix(in oklab, var(--door-ink) 18%, transparent);
+  --door-sheen: rgb(255 255 255 / 0.07);
+  --door-cta: #fff;
+  /* The client's own colour, given whole (DoorScene.accent): the dark theme
+     lightens the brand tones, and a lightened maroon is pink. */
+  --door-cta-ink: var(--door-accent, #141414);
+  --door-switch-on: rgb(255 255 255 / 0.92);
+  --door-knob-on: var(--door-accent, #141414);
+  position: relative;
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, var(--door-sheen), transparent 42%),
+    var(--door-glass, rgb(24 20 17 / 0.42));
+  backdrop-filter: blur(40px) saturate(170%);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    0 40px 90px -30px rgb(10 0 4 / 0.55);
+  animation: door-arrive 650ms cubic-bezier(0.23, 1, 0.32, 1) both;
 }
-.kit .door-glass :is(input[type="email"], input[type="text"], input[type="password"]) {
-  height: 44px;
-  border: 0;
-  border-bottom: 1px solid rgb(255 255 255 / 0.3);
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  padding-inline-start: 2px;
-  color: #fff;
-  font-size: 15px;
-  transition: border-color 150ms ease;
+
+/* The rim: a hairline that catches the light at the top left and fades round
+   the card, drawn on a mask so only the edge shows. */
+.kit .door-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(150deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.1) 35%, rgb(255 255 255 / 0.04) 65%, rgb(255 255 255 / 0.22));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
 }
-.kit .door-glass :is(input[type="email"], input[type="text"], input[type="password"]):focus {
-  border-bottom-color: #fff;
-  outline: none;
-  box-shadow: none;
+
+/* The glass arrives as a material: it sharpens and settles as it fades in. */
+@keyframes door-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+    filter: blur(8px);
+  }
 }
-.kit .door-glass input::placeholder {
-  color: rgb(255 255 255 / 0.35);
+
+.kit .door-plain {
+  --door-ink: var(--ink);
+  --door-quiet: var(--quiet);
+  --door-field: var(--surface);
+  --door-field-focus: var(--surface);
+  --door-line: color-mix(in oklab, var(--ink) 11%, transparent);
+  --door-track: color-mix(in oklab, var(--ink) 6%, transparent);
+  --door-thumb: var(--surface);
+  --door-switch-off: color-mix(in oklab, var(--ink) 16%, transparent);
+  --door-cta: var(--brand);
+  --door-cta-ink: var(--brand-ink);
+  --door-switch-on: var(--brand);
+  --door-knob-on: #fff;
 }
-.kit .door-glass input[type="checkbox"] {
-  accent-color: #f4f1ec;
+
+/* The fields, grouped: one rounded block, a hairline between rows that stops
+   short of the edges. Each row is exactly as tall as the Password / Email link
+   control above it (Damine, 7 Oct 2026: "same height"), so the field's name
+   is its placeholder and its label is for screen readers. */
+.kit .door-group {
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--door-field);
+  border: 1px solid var(--door-line);
 }
-.kit .door-glass button[type="submit"] {
+
+.kit .door-row {
+  position: relative;
+  display: block;
   height: 48px;
+  cursor: text;
+  transition: background-color 150ms ease;
+}
+
+.kit .door-row + .door-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline: 16px;
+  height: 1px;
+  background: var(--door-line);
+}
+
+.kit .door-row:focus-within {
+  background: var(--door-field-focus);
+}
+
+.kit .door-row-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.kit .door-row input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  padding: 0 16px;
   border: 0;
-  border-radius: 0;
-  background: #f4f1ec;
-  color: #0e0e0e;
+  background: transparent;
+  color: var(--door-ink);
+  font-size: 16px;
+  outline: none;
+}
+
+.kit .door-row input::placeholder {
+  color: color-mix(in oklab, var(--door-ink) 45%, transparent);
+}
+
+.kit .door-row:has(.door-eye) input {
+  padding-inline-end: 52px;
+}
+
+.kit .door-eye {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 4px;
+  display: grid;
+  width: 44px;
+  place-items: center;
+  color: var(--door-quiet);
+  transition: color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .kit .door-eye:hover {
+    color: var(--door-ink);
+  }
+}
+
+/* "Keep me signed in": an iOS switch over a real checkbox, so the form posts
+   it like any other field. The knob slides on transform alone. */
+.kit .door-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  color: var(--door-ink);
+}
+
+.kit .door-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.kit .door-switch-track {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--door-switch-off);
+  transition: background-color 150ms ease;
+}
+
+.kit .door-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  inset-inline-start: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.22);
+  transition:
+    transform 220ms cubic-bezier(0.32, 0.72, 0, 1),
+    background-color 150ms ease;
+}
+
+.kit .door-switch input:checked + .door-switch-track {
+  background: var(--door-switch-on);
+}
+
+.kit .door-switch input:checked + .door-switch-track::after {
+  transform: translateX(calc(18px * var(--kit-dir, 1)));
+  background: var(--door-knob-on);
+}
+
+.kit .door-switch input:focus-visible + .door-switch-track {
+  outline: 2px solid var(--door-ink);
+  outline-offset: 2px;
+}
+
+/* The way in: a pill as tall as the fields and the slider, pressed in under the finger. */
+.kit .door-cta {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--door-cta);
+  color: var(--door-cta-ink);
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  letter-spacing: -0.005em;
+  transition:
+    transform 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 150ms ease;
+}
+
+.kit .door-cta:active {
+  transform: scale(0.97);
+}
+
+.kit .door-cta:disabled {
+  opacity: 0.6;
+}
+
+.kit .door-cta:focus-visible {
+  outline: 2px solid var(--door-ink);
+  outline-offset: 3px;
+}
+
+/* Password or Email link: two words and a pill that slides between them. */
+.kit .door-segments {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 48px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--door-track);
+}
+
+.kit .door-segments-thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  inset-inline-start: 4px;
+  width: calc(50% - 4px);
+  border-radius: 10px;
+  background: var(--door-thumb);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
+  transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.kit .door-segments[data-at="1"] .door-segments-thumb {
+  transform: translateX(calc(100% * var(--kit-dir, 1)));
+}
+
+.kit .door-segments button {
+  position: relative;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--door-quiet);
+  transition: color 150ms ease;
+}
+
+.kit .door-segments button[aria-pressed="true"] {
+  color: var(--door-ink);
+}
+
+.kit .door-segments button:focus-visible {
+  outline: 2px solid var(--door-ink);
+  outline-offset: -2px;
+}
+
+/* A form swapped in by the segments settles into place. */
+.kit .door-swap {
+  animation: door-swap 220ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes door-swap {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.kit .door-link {
+  font-size: 13px;
+  color: var(--door-quiet);
+  transition: color 150ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .kit .door-link:hover {
+    color: var(--door-ink);
+  }
+}
+
+.kit .door-link:focus-visible {
+  outline: 2px solid var(--door-ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* A refusal or a notice: a soft red pill under the fields, said once. */
+.kit .door-note {
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #ffd9d6;
+  background: rgb(255 69 58 / 0.14);
+  border: 1px solid rgb(255 69 58 / 0.24);
+}
+
+.kit .door-plain .door-note {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-color: color-mix(in oklab, var(--danger) 25%, transparent);
+}
+
+.kit .door-sent {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--door-ink);
+  background: color-mix(in oklab, var(--door-ink) 12%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit .door-card {
+    animation: kit-fade-in 300ms ease both;
+  }
+  .kit .door-swap {
+    animation: kit-fade-in 160ms ease both;
+  }
+  .kit .door-segments-thumb,
+  .kit .door-switch-track::after {
+    transition-property: background-color;
+  }
+}
+
+/* Asked for less see-through: the glass turns near solid. */
+@media (prefers-reduced-transparency: reduce) {
+  .kit .door-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgb(28 22 20 / 0.96);
+  }
 }
 
 /* ── Reduced motion ─────────────────────────────────────────────

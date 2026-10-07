@@ -10,18 +10,26 @@ export type DoorScene = {
   mark: React.ReactNode;
   /** A short line for the foot of the screen, across from "Powered by" (the client's address). */
   caption?: React.ReactNode;
+  /** The darkening veil over the picture: for a photograph, on by default; a drawn ground (a gradient) leaves it off. */
+  veil?: boolean;
+  /** The glass's own tint, as a CSS colour with its alpha (a client's dark brand colour); a warm smoky dark by default. */
+  glass?: string;
+  /** The client's colour, whole: the text on the pill and the knob of the switch. Near black by default. */
+  accent?: string;
 };
 
 // The frame every page outside the panel wears — signing in, setting a
 // password: the panel's mark, a heading, one quiet line, then the form, and at
 // the very foot a small "Powered by" with Socialize's mark, the same at every
-// client's door. A panel can give its door a scene (X Capital's, 3 Oct 2026,
-// Damine's pick of three): its picture fills the screen under a veil, and the
-// mark, heading and form sit on frosted glass cut at two corners, the fields
-// single lines and the way in a light bar (kit.css, door-glass); the
-// client's line and "Powered by" share the foot. The logo is the app's, the
-// frame is everyone's. It carries `kit` itself, since a door sits outside the
-// Shell, and a scene is dark whatever the theme: it sits on a photograph.
+// client's door. A panel can give its door a scene: its picture (or a drawn
+// ground) fills the screen, and the mark, heading and form sit on one floating
+// card of glass, Apple's way (Damine, 7 Oct 2026: "it must be like iPhone iOS"):
+// round corners, the light catching its rim, the fields grouped in one rounded
+// block with their labels inside, an iOS switch, a pill button (kit.css,
+// door-card). The glass takes the client's tint. The client's line and
+// "Powered by" share the foot. The logo is the app's, the frame is everyone's.
+// It carries `kit` itself, since a door sits outside the Shell, and a scene is
+// dark whatever the theme: it sits on a picture.
 export function DoorPage({
   logo,
   title,
@@ -76,7 +84,7 @@ export function DoorPage({
 
   if (!scene) {
     return (
-      <main className="kit flex min-h-dvh flex-col bg-ground px-5 pt-12 pb-6">
+      <main className="kit door-plain flex min-h-dvh flex-col bg-ground px-5 pt-12 pb-6">
         <div className="grid flex-1 place-items-center">{form}</div>
         <div className="mt-10 flex justify-center">{poweredBy}</div>
       </main>
@@ -87,22 +95,25 @@ export function DoorPage({
     <main className="kit dark relative isolate flex min-h-dvh flex-col overflow-hidden text-white">
       <div aria-hidden className="absolute inset-0 -z-10">
         {scene.picture}
-        <div className="door-veil absolute inset-0" />
+        {scene.veil === false ? null : <div className="door-veil absolute inset-0" />}
       </div>
       <div className="grid flex-1 place-items-center px-4 py-10">
-        <div className="door-glass w-full max-w-[430px] px-7 pt-10 pb-8 backdrop-blur-[22px] backdrop-saturate-[1.2] sm:px-11 sm:pt-11 sm:pb-9">
+        <div
+          className="door-card w-full max-w-[420px] px-6 pt-9 pb-7 sm:px-9 sm:pt-10 sm:pb-8"
+          style={{ ...(scene.glass && { "--door-glass": scene.glass }), ...(scene.accent && { "--door-accent": scene.accent }) } as React.CSSProperties}
+        >
           <div className="flex flex-col items-center text-center">
             {scene.mark}
             <h1
-              className={cn("mt-8 text-[27px] tracking-[0.01em]", headingFont ? "font-normal" : "font-semibold")}
+              className={cn("mt-7 text-[28px] leading-tight", headingFont ? "font-normal" : "font-semibold tracking-[-0.02em]")}
               style={headingFont ? { fontFamily: headingFont } : undefined}
             >
               {tx(title)}
             </h1>
-            {lead ? <p className="mt-2 text-[13px] leading-relaxed text-white/60">{tx(lead)}</p> : null}
+            {lead ? <p className="mt-2 text-balance text-[14px] leading-relaxed text-white/65">{tx(lead)}</p> : null}
           </div>
-          <div className="mt-8">{children}</div>
-          {foot ? <div className="mt-7 text-center text-[12px] text-white/55">{foot}</div> : null}
+          <div className="mt-7">{children}</div>
+          {foot ? <div className="mt-6 text-center text-[12px] text-white/50">{foot}</div> : null}
         </div>
       </div>
       <div className="flex items-center justify-between gap-4 px-5 pb-6 text-[12px] text-white/55 sm:px-10 sm:pb-7">
