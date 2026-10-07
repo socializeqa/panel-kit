@@ -131,6 +131,7 @@ export function Drawer({
   padded = true,
   fill = false,
   closeHref,
+  size = "record",
 }: {
   title?: string;
   // Where closing lands when there is no intercepted route to pop — a create
@@ -149,6 +150,10 @@ export function Drawer({
   // true: the content area is a non-scrolling flex column, for content that
   // sizes itself to the drawer.
   fill?: boolean;
+  /** "record" (the default) is wide enough for a record's sections side by
+   *  side; "form" is a single form's width, a meeting or a quick entry, so its
+   *  fields don't stretch across a desk screen. */
+  size?: "record" | "form";
 }) {
   const router = useRouter();
   const pathname = usePanelPathname();
@@ -308,7 +313,8 @@ export function Drawer({
           className={cn(
             // Opens on the iOS drawer curve and closes on it too — Elite Touch
             // closed on an ease-in, which waits at the start of the move.
-            "kit fixed inset-y-0 end-0 flex w-full max-w-[1160px] flex-col bg-ground shadow-2xl outline-none data-[state=open]:animate-drawer-in data-[state=closed]:animate-drawer-out",
+            "kit fixed inset-y-0 end-0 flex w-full flex-col bg-ground shadow-2xl outline-none data-[state=open]:animate-drawer-in data-[state=closed]:animate-drawer-out",
+            size === "form" ? "max-w-[640px]" : "max-w-[1160px]",
             z,
           )}
         >
