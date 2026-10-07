@@ -103,6 +103,9 @@ export interface PanelConfig {
   paging?: "server" | "browser";
   /** The zone "today" is read in. Every team panel works in Doha. */
   timeZone?: string;
+  /** The day a calendar's week starts on: 6 Saturday (the default), 0 Sunday,
+   *  1 Monday. An office whose week starts on Sunday says so once, here. */
+  weekStartsOn?: 0 | 1 | 6;
   /** A room's own status words and the tone each wears. */
   statuses?: Record<string, StatusTone>;
 }
@@ -138,6 +141,7 @@ export interface ResolvedPanel {
   lights?: { dark: boolean; onChange: (dark: boolean) => void };
   paging: "server" | "browser";
   timeZone: string;
+  weekStartsOn: 0 | 1 | 6;
   statuses: Record<string, StatusTone>;
 }
 
@@ -167,6 +171,7 @@ function resolve(config: PanelConfig): ResolvedPanel {
     lights: config.lights,
     paging: config.paging ?? "server",
     timeZone: config.timeZone ?? "Asia/Qatar",
+    weekStartsOn: config.weekStartsOn ?? 6,
     statuses: config.statuses ?? {},
   };
 }
@@ -180,17 +185,17 @@ export function PanelProvider({ children, ...config }: PanelConfig & { children:
   // reading it field by field keeps the context steady unless one changed.
   const {
     nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
-    countries, defaultCountry, flag, lights, paging, timeZone, statuses,
+    countries, defaultCountry, flag, lights, paging, timeZone, weekStartsOn, statuses,
   } = config;
   const value = useMemo(
     () =>
       resolve({
         nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
-        countries, defaultCountry, flag, lights, paging, timeZone, statuses,
+        countries, defaultCountry, flag, lights, paging, timeZone, weekStartsOn, statuses,
       }),
     [
       nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
-      countries, defaultCountry, flag, lights, paging, timeZone, statuses,
+      countries, defaultCountry, flag, lights, paging, timeZone, weekStartsOn, statuses,
     ],
   );
   return <PanelContext.Provider value={value}>{children}</PanelContext.Provider>;

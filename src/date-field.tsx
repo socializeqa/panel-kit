@@ -256,6 +256,7 @@ export function CalendarPanel({
   closed,
   large = false,
   marked,
+  clearable = true,
 }: {
   selected: Date | undefined;
   onSelect: (iso: string) => void;
@@ -268,8 +269,11 @@ export function CalendarPanel({
   /** Days that belong to a plan (ISO) — filled; a tap toggles them. For a
    *  schedule editor where the calendar IS the plan. */
   marked?: Set<string>;
+  /** false = no Clear: the calendar is a way to move to a day, not a field
+   *  that may stay empty (a calendar room's small month). */
+  clearable?: boolean;
 }) {
-  const { t, timeZone } = usePanel();
+  const { t, timeZone, weekStartsOn } = usePanel();
   const today = todayIso(timeZone);
   const minDate = min ? isoToDate(min) : undefined;
   const maxDate = max ? isoToDate(max) : undefined;
@@ -392,7 +396,7 @@ export function CalendarPanel({
               "[&>button]:after:absolute [&>button]:after:bottom-1 [&>button]:after:size-1 [&>button]:after:rounded-full [&>button]:after:bg-warn [&>button]:after:content-['']",
             marked: cn(PICKED, "[&>button]:after:bg-brand-ink/80"),
           }}
-          weekStartsOn={6}
+          weekStartsOn={weekStartsOn}
           showOutsideDays
           fixedWeeks
           classNames={{
@@ -437,7 +441,7 @@ export function CalendarPanel({
           >
             {t("Today")}
           </PillButton>
-          {selected ? <PillButton onClick={() => onSelect("")}>{t("Clear")}</PillButton> : null}
+          {selected && clearable ? <PillButton onClick={() => onSelect("")}>{t("Clear")}</PillButton> : null}
         </div>
       </div>
     </>
