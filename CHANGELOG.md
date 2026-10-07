@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.11 — 7 Oct 2026
+
+One door for every panel (Damine: "a premium login page ... with phone or username or mobile number, remember me, forget password and magic link ... unified for all our customers"):
+
+- `door-server` (new): the server half of the door, once for everyone. `door(deps)` returns `signIn`, `forgot`, `magicLink` and `land`; a panel hands in its own lookup, sign-in server, link tokens, mail, "keep me signed in" cookie and wrong-tries counter, and wraps the actions in its own "use server" file. A wrong login and a wrong password get the same answer; links go only to a real inbox, and the answer is the same "sent" whoever asked; a link lands as a path, never an address. This is X Capital's door (its login actions, `staff-login.ts`, the confirm route) moved into the kit.
+- Usernames: `readLogin(raw, dial, localLength, usernames)` reads a username (a letter, then letters, digits, dots, dashes or underscores, 3 to 32) when the panel opts in; a panel that doesn't reads words as nothing, as before. `USERNAME`, `loginWords()` (the box's label and the door's answers by what the panel takes) and `waitWords()`.
+- `MagicLinkForm` (new): one box, "Email me a sign-in link", then the same answer whoever asked. `SignInForm` takes `magicHref` (a quiet "Email me a sign-in link instead" under the button), `label`, and `notice` (the line after a spent link brought someone back); `ForgotForm` takes `label`. `ForgotState` is now `LinkState`, from `staff-door`.
+
 ## 0.1.10 — 4 Oct 2026
 
 - `HelpGuide` sets every part on one grid (Damine, of 0.1.9 on his 3072 px desk: "not professionally aligned and weird"): the part's title across the top, then two columns, five to seven, that start on the same line, and whatever stands in the second column starts on the same edge part after part. A picture stands there beside the words; a list's wide picture (wider than twice its height) goes under them across the part, and back beside them once the card is desk-wide (100rem). With no picture, what to know stands beside the steps, and a long list with nothing beside it is split in two halves, one per column, still counting. A picture never shows larger than it was taken, so the panel's type in it stays the panel's size. Apps should cut their pictures to what they show; a whole window of white is what made the old pages look empty.

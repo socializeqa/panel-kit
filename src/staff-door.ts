@@ -6,10 +6,20 @@ import { digits } from "@socialize/team-kit/phone";
 // first sign-in). No "use client": the forms and the server actions read the
 // same rules, so the door never says yes where the server says no.
 
-/** Who is signing in: an email, or a mobile as its digits with the country code. */
-export type Login = { kind: "email"; email: string } | { kind: "phone"; phone: string };
+/**
+ * Who is signing in: an email, a mobile as its digits with the country code, or
+ * (in a panel that gives its staff usernames) a username in small letters.
+ */
+export type Login = { kind: "email"; email: string } | { kind: "phone"; phone: string } | { kind: "username"; username: string };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * A username: a letter first, then letters, digits, dots, dashes or
+ * underscores, 3 to 32 in all, kept in small letters. The database keeps the
+ * same rule (Inception Elite's admin_users.username, 7 Oct 2026).
+ */
+export const USERNAME = /^[a-z][a-z0-9._-]{2,31}$/;
 
 /**
  * A mobile the way a panel keeps it: digits with the country code, nothing
@@ -24,13 +34,42 @@ export function staffPhone(raw: string, dial = "974", localLength = 8): string |
   return /^\d{8,15}$/.test(full) ? full : null;
 }
 
-/** What was typed in the door's one box, read as an email or a mobile. */
-export function readLogin(raw: string, dial = "974", localLength = 8): Login | null {
+/**
+ * What was typed in the door's one box, read as an email, a mobile or, when the
+ * panel takes them, a username. A panel that takes no usernames reads words as
+ * nothing, as before 7 Oct 2026, so its door never looks one up.
+ */
+export function readLogin(raw: string, dial = "974", localLength = 8, usernames = false): Login | null {
   const typed = raw.trim();
   if (typed.includes("@")) return EMAIL.test(typed) ? { kind: "email", email: typed.toLowerCase() } : null;
-  if (/\p{L}/u.test(typed)) return null;
+  if (/\p{L}/u.test(typed)) {
+    const username = typed.toLowerCase();
+    return usernames && USERNAME.test(username) ? { kind: "username", username } : null;
+  }
   const phone = staffPhone(typed, dial, localLength);
   return phone ? { kind: "phone", phone } : null;
+}
+
+/** The words a door uses for its one box, by what the panel takes. */
+export function loginWords(usernames = false) {
+  return usernames
+    ? {
+        label: "Email, username or mobile",
+        missing: "Type your email, your username or your mobile number.",
+        noMatch: "Those sign-in details and password don't match.",
+      }
+    : {
+        label: "Email or mobile",
+        missing: "Type your email, or your mobile number.",
+        noMatch: "That email or mobile and password don't match.",
+      };
+}
+
+/** How long a closed door stays closed, said plainly: "in 45 seconds", "in 15 minutes". */
+export function waitWords(seconds: number): string {
+  if (seconds < 60) return `in ${Math.max(1, Math.round(seconds))} seconds`;
+  const minutes = Math.ceil(seconds / 60);
+  return minutes === 1 ? "in a minute" : `in ${minutes} minutes`;
 }
 
 /**
@@ -45,6 +84,12 @@ export function phoneLoginEmail(phone: string, domain: string): string {
 export function isPhoneLoginEmail(email: string, domain: string): boolean {
   return email.toLowerCase().endsWith(`@${domain.toLowerCase()}`);
 }
+
+/**
+ * What asking for a link (a reset or a sign-in link) comes back as. It never
+ * says whether the login exists: the same "sent" whoever asked.
+ */
+export type LinkState = { sent: true } | { sent: false; error: string } | null;
 
 /** The rule, said once, for the hint under a new password. */
 export const PASSWORD_RULE = "At least 10 characters, with a capital, a small letter and a number.";

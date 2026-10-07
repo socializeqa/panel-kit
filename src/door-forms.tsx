@@ -5,12 +5,14 @@ import { useActionState } from "react";
 import { Button, FormError, Input, Lbl } from "./fields";
 import { PasswordInput } from "./password-input";
 import { usePanelT } from "./panel-provider";
-import { PASSWORD_DOOR, PASSWORD_RULE, type PasswordDoor } from "./staff-door";
+import { PASSWORD_DOOR, PASSWORD_RULE, type LinkState, type PasswordDoor } from "./staff-door";
 
-// The forms that go inside a DoorPage: signing in with an email or a mobile,
-// asking for a reset link, and choosing a new password. The look and the words
-// are everyone's; each panel hands in its own server actions, which keep the
-// rules in staff-door.ts. X Capital's doors, 3 Oct 2026.
+// The forms that go inside a DoorPage: signing in with an email, a mobile or a
+// username, asking for a reset link or a sign-in link, and choosing a new
+// password. The look and the words are everyone's; each panel hands in its own
+// server actions (door-server.ts builds them), which keep the rules in
+// staff-door.ts. X Capital's doors, 3 Oct 2026; the username and the sign-in
+// link, 7 Oct 2026, for every panel.
 
 /** A door's server action: the state it was in, the form, the state it is in now. */
 type DoorAction<S> = (state: S, formData: FormData) => Promise<S>;
@@ -26,22 +28,35 @@ function DoorLink({ href, children }: { href: string; children: string }) {
   );
 }
 
-/** Email or mobile, and the password. The action answers with a sentence when it refuses. */
+/**
+ * The login (email or mobile, or username where the panel gives them) and the
+ * password. The action answers with a sentence when it refuses. With
+ * `magicHref` the door also offers a sign-in link by email, for whoever would
+ * rather not type a password.
+ */
 export function SignInForm({
   action,
   forgotHref = "/forgot-password",
+  magicHref,
+  label = "Email or mobile",
   placeholder = "you@company.com or 5512 3456",
+  notice,
 }: {
   action: DoorAction<string | null>;
   forgotHref?: string;
+  magicHref?: string;
+  label?: string;
   placeholder?: string;
+  /** A line to show before anyone has typed: a link that no longer works brought them back. */
+  notice?: string | null;
 }) {
   const t = usePanelT();
   const [error, formAction, pending] = useActionState(action, null);
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      {notice && !error ? <FormError error={notice} /> : null}
       <label className="flex flex-col gap-1.5">
-        <Lbl>Email or mobile</Lbl>
+        <Lbl>{label}</Lbl>
         <Input
           name="login"
           type="text"
@@ -75,21 +90,29 @@ export function SignInForm({
       <Button type="submit" disabled={pending} className="mt-1 h-11 w-full">
         {pending ? t("Signing in…") : t("Sign in")}
       </Button>
+
+      {magicHref ? (
+        <p className="text-center">
+          <DoorLink href={magicHref}>Email me a sign-in link instead</DoorLink>
+        </p>
+      ) : null}
     </form>
   );
 }
 
 /** What a reset request comes back as. It never says whether the login exists. */
-export type ForgotState = { sent: true } | { sent: false; error: string } | null;
+export type ForgotState = LinkState;
 
 /** One box for the email or mobile; then the same answer whoever asked. */
 export function ForgotForm({
   action,
   backHref = "/login",
+  label = "Email or mobile",
   mobileOnly = "Signing in with your mobile only? Ask your manager to set a new password for you.",
 }: {
   action: DoorAction<ForgotState>;
   backHref?: string;
+  label?: string;
   /** The line for staff with no email, who get no link: who sets their password in this panel. */
   mobileOnly?: string;
 }) {
@@ -112,26 +135,78 @@ export function ForgotForm({
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1.5">
-        <Lbl>Email or mobile</Lbl>
-        <Input
-          name="login"
-          type="text"
-          inputMode="email"
-          autoComplete="username"
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          required
-          autoFocus
-        />
-      </label>
+      <LoginBox label={label} />
       <FormError error={state && !state.sent ? state.error : null} />
       <Button type="submit" disabled={pending} className="mt-1 h-11 w-full">
         {pending ? t("Sending…") : t("Send me a link")}
       </Button>
       <p className="text-center">
         <DoorLink href={backHref}>Back to sign in</DoorLink>
+      </p>
+    </form>
+  );
+}
+
+/** The one box for who is asking, as the reset and sign-in-link forms ask it. */
+function LoginBox({ label }: { label: string }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <Lbl>{label}</Lbl>
+      <Input
+        name="login"
+        type="text"
+        inputMode="email"
+        autoComplete="username"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        required
+        autoFocus
+      />
+    </label>
+  );
+}
+
+/**
+ * A sign-in link by email: one box, then the same answer whoever asked. The
+ * link signs the person straight in, once, within the hour.
+ */
+export function MagicLinkForm({
+  action,
+  backHref = "/login",
+  label = "Email or mobile",
+  mobileOnly = "Signing in with your mobile only? Use your password, or ask your manager for help.",
+}: {
+  action: DoorAction<LinkState>;
+  backHref?: string;
+  label?: string;
+  /** The line for staff with no email, who get no link. */
+  mobileOnly?: string;
+}) {
+  const t = usePanelT();
+  const [state, formAction, pending] = useActionState(action, null);
+
+  if (state?.sent) {
+    return (
+      <div className="flex flex-col items-center gap-4 text-center">
+        <p className="text-balance text-[14px] leading-relaxed text-ink/85">
+          {t("If that login has an email on file, a sign-in link is on its way. It works once, within the hour.")}
+        </p>
+        <p className="text-balance text-[12px] leading-relaxed text-ink/55">{t(mobileOnly)}</p>
+        <DoorLink href={backHref}>Back to sign in</DoorLink>
+      </div>
+    );
+  }
+
+  return (
+    <form action={formAction} className="flex flex-col gap-4">
+      <LoginBox label={label} />
+      <FormError error={state && !state.sent ? state.error : null} />
+      <Button type="submit" disabled={pending} className="mt-1 h-11 w-full">
+        {pending ? t("Sending…") : t("Email me a sign-in link")}
+      </Button>
+      <p className="text-center">
+        <DoorLink href={backHref}>Sign in with a password instead</DoorLink>
       </p>
     </form>
   );
