@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.13 — 8 Oct 2026
+
+- A drawer takes focus itself as it opens, instead of Radix putting it on the first control (mostly the close button). Chrome draws a focus given on opening as a keyboard focus even after a click, so 0.1.12's keyboard-only frame still showed on every mouse open. Focus stays inside the drawer (Tab and Esc work as before), and a field that asks for focus (`autoFocus`) keeps it.
+
 ## 0.1.12 — 8 Oct 2026
 
 - A header seat (a list control, a record's ⋯, the drawer's close) frames itself for the keyboard only. A drawer focuses its close button as it opens, so every mouse user saw a maroon frame on it; fields still frame on any focus.

@@ -284,6 +284,16 @@ export function Drawer({
         />
         <Dialog.Content
           aria-describedby={undefined}
+          // Radix focuses the first control as a drawer opens, mostly its close
+          // button, and Chrome draws that focus as a keyboard one even after a
+          // click: every mouse user saw the close button framed. The drawer
+          // takes focus itself instead (still inside the trap, so Tab and Esc
+          // work as before); a field that asked for focus (autoFocus) keeps it.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            const content = event.target as HTMLElement;
+            if (!content.contains(document.activeElement)) content.focus({ preventScroll: true });
+          }}
           onAnimationEnd={() => {
             // The slide-in has settled: the scroll area has its final size,
             // so the edge fades can be measured against it.
