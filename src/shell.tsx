@@ -267,7 +267,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   // every header change.
   const ctxValue = useMemo(() => ({ setHeader }), []);
   // The room's own part of the panel's guide, on every page but the guide.
-  const helpHref = help && pathname !== help ? (room ? `${help}#${helpAnchor(room.href)}` : help) : null;
+  const helpHref = help && pathname !== help ? (room ? `${help}#${helpAnchor(room.href, room.label)}` : help) : null;
 
   // Close the phone's rail on Escape, and lock the page behind it so nothing
   // underneath moves while it is open.

@@ -41,7 +41,7 @@ export type HelpPart = {
 };
 
 export type HelpSection = {
-  /** The anchor. A room's section is its path without the slash. */
+  /** The anchor. A room's section is its path without the slash; the home room ("/") goes by its name, "today". */
   id: string;
   /** A room's own name when left out. */
   title?: string;
@@ -204,9 +204,12 @@ function HelpArticle({ part }: { part: HelpPart }) {
   );
 }
 
-/** A room's anchor in the guide: "/hiring" and "/hiring/42" are "hiring". */
-export function helpAnchor(roomHref: string): string {
-  return roomHref.split("/").filter(Boolean)[0] ?? "";
+/**
+ * A room's anchor in the guide: "/hiring" and "/hiring/42" are "hiring". The
+ * home room's path has no word, so it goes by its name: "Today" is "today".
+ */
+export function helpAnchor(roomHref: string, label = ""): string {
+  return roomHref.split("/").filter(Boolean)[0] ?? label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 /** Save or print the guide; the page prints without the panel around it. */

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { loginWords, readLogin, waitWords, type LinkState, type Login } from "./staff-door";
 
 // The server half of every panel's door (Damine, 7 Oct 2026: "a premium login
@@ -81,7 +82,9 @@ export function door(deps: DoorDeps) {
 
   /**
    * A link by email: a reset or a sign-in link. A login with no inbox gets no
-   * mail, and the answer is the same "sent" for everyone.
+   * mail, and the answer is the same "sent" for everyone. It is answered
+   * first and looked up after (Next's `after`), so the time the answer takes
+   * can't tell a login that exists from one that doesn't.
    */
   async function sendLink(kind: DoorLink, form: FormData): Promise<LinkState> {
     const login = read(form);
@@ -89,10 +92,17 @@ export function door(deps: DoorDeps) {
     const verdict = await take(`${kind}:${login.kind}:${key(login)}`);
     if (!verdict.allowed) return { sent: false, error: `Too many requests. Try again ${waitWords(verdict.waitSeconds)}.` };
 
-    const person = await deps.find(login);
-    if (person?.mailable) {
+    const mailIt = async () => {
+      const person = await deps.find(login);
+      if (!person?.mailable) return;
       const token = await deps.token(kind, person.email);
       if (token) await deps.mail(person, kind, linkUrl(kind, token));
+    };
+    try {
+      after(mailIt);
+    } catch {
+      // Outside a request (a script, a test) there is no answer to give first.
+      await mailIt();
     }
     return { sent: true };
   }

@@ -8,6 +8,16 @@ vi.mock("next/navigation", () => ({
   },
 }));
 
+// after() runs a job once the answer has gone. Outside a request it throws,
+// and the door then mails at once; a test that holds it sees the order.
+const deferred = vi.hoisted(() => ({ hold: false, jobs: [] as (() => unknown)[] }));
+vi.mock("next/server", () => ({
+  after: (job: () => unknown) => {
+    if (!deferred.hold) throw new Error("after() was called outside a request");
+    deferred.jobs.push(job);
+  },
+}));
+
 const { door } = await import("../src/door-server");
 const { readLogin, loginWords, waitWords } = await import("../src/staff-door");
 
@@ -139,6 +149,19 @@ describe("links by email", () => {
     const { gate, mails } = panel();
     expect(await gate.magicLink(null, form({ login: "sara" }))).toEqual({ sent: true });
     expect(mails).toEqual([{ to: SARA.email, kind: "magiclink", url: "https://admin.example.qa/link?token_hash=tok-magiclink-16&type=magiclink" }]);
+  });
+
+  it("answers before it looks anyone up, so the time it takes says nothing", async () => {
+    const { gate, mails } = panel();
+    deferred.hold = true;
+    try {
+      expect(await gate.forgot(null, form({ login: "sara" }))).toEqual({ sent: true });
+      expect(mails).toEqual([]);
+      await Promise.all(deferred.jobs.splice(0).map((job) => job()));
+      expect(mails.map((m) => m.kind)).toEqual(["recovery"]);
+    } finally {
+      deferred.hold = false;
+    }
   });
 
   it("answers the same whoever asked, and mails no one who has no inbox", async () => {

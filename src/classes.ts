@@ -134,9 +134,11 @@ export function iconBtnClass(size: IconBtnSize = 7, tone: IconBtnTone = "default
 // The 36px header seat — the one button language of every header strip (list
 // controls, a record's ⋯, the drawer's close). It wears the field box so a
 // row of seats and inputs reads as one strip; `seat` is what a cluster fuses on.
+// A field frames itself on any focus; a seat only on the keyboard's, because
+// a drawer focuses its close button as it opens and a mouse user saw the frame.
 export const CTRL_BTN = cn(
   fieldBox("md"),
-  "seat relative flex h-9 w-9 shrink-0 items-center justify-center gap-1.5 px-0 py-0 text-[13px] font-medium text-ink/60 outline-none hover:relative hover:z-[1] hover:border-ink/30 hover:text-ink focus-visible:z-[2] focus-visible:ring-2 focus-visible:ring-brand-deep/35 [&_svg]:size-[17px] [&_svg]:shrink-0 [&_svg]:[stroke-width:2]",
+  "seat relative flex h-9 w-9 shrink-0 items-center justify-center gap-1.5 px-0 py-0 text-[13px] font-medium text-ink/60 outline-none hover:relative hover:z-[1] hover:border-ink/30 hover:text-ink focus:border-ink/15 focus:ring-0 focus-visible:z-[2] focus-visible:border-brand-deep focus-visible:ring-2 focus-visible:ring-brand-deep/35 [&_svg]:size-[17px] [&_svg]:shrink-0 [&_svg]:[stroke-width:2]",
   PRESS,
 );
 // Icon-only seats keep their word for screen readers and the tooltip.

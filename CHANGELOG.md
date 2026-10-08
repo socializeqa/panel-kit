@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.12 — 8 Oct 2026
+
+- A header seat (a list control, a record's ⋯, the drawer's close) frames itself for the keyboard only. A drawer focuses its close button as it opens, so every mouse user saw a maroon frame on it; fields still frame on any focus.
+- The home room's "?" lands on its own part of the guide: `helpAnchor(href, label)` gives the home room ("/") its name ("Today" is `today`), where it gave nothing and the guide opened at its top.
+- The door's links by email are answered first and looked up after (Next's `after`): the time a reset or sign-in link request takes no longer tells a login that exists from one that doesn't. Outside a request it mails at once, as before.
+
 ## 0.1.11 — 7 Oct 2026
 
 One door for every panel (Damine: "a premium login page ... with phone or username or mobile number, remember me, forget password and magic link ... unified for all our customers"):
