@@ -103,29 +103,42 @@ export function LetterComposer({
   const { t, timeZone } = usePanel();
   const router = useRouter();
   const toast = useToast();
-  // Read once, on the first draw. The letters room mounts when it is opened,
-  // in the browser, so the kept draft is there to read.
+  // Read once, on the first draw: a draft kept in the tab wins. Until the
+  // person writes or picks something, the letter follows the candidate's
+  // stage (a move to Invited opens on the invitation) and nothing is kept, so
+  // an untouched default never outlives the stage it was made for.
   const [draft, setDraft] = useState<LetterDraft>(() => {
     const was = typeof window === "undefined" ? null : kept(draftKey, words);
     if (was) return was;
     const letter = letterForFile(words, stage);
     return { letter, details: startDetails(fields, letter) };
   });
+  const [touched, setTouched] = useState(() => typeof window !== "undefined" && kept(draftKey, words) !== null);
+  const [followed, setFollowed] = useState(stage);
+  if (followed !== stage) {
+    setFollowed(stage);
+    if (!touched) {
+      const next = letterForFile(words, stage);
+      setDraft({ letter: next, details: startDetails(fields, next) });
+    }
+  }
   const { letter, details } = draft;
   const [preview, setPreview] = useState<{ subject: string; html: string } | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [pending, start] = useTransition();
-  useEffect(() => keep(draftKey, draft), [draftKey, draft]);
+  useEffect(() => keep(draftKey, touched ? draft : null), [draftKey, draft, touched]);
 
   const { missing, sendable } = letterGate(words, letter, details, { canSend, mailReady });
   const letterName = t(words.letters.find((l) => l.value === letter)?.label ?? letter);
 
   // Any change and the preview goes: it never shows a version that would not be sent.
   const write = (key: string, value: string) => {
+    setTouched(true);
     setDraft((d) => ({ ...d, details: { ...d.details, [key]: value } }));
     setPreview(null);
   };
   const pick = (next: string) => {
+    setTouched(true);
     setDraft({ letter: next, details: startDetails(fields, next) });
     setPreview(null);
   };
@@ -152,6 +165,7 @@ export function LetterComposer({
       }
       toast(t("{letter} sent to {name}", { letter: letterName, name }));
       keep(draftKey, null);
+      setTouched(false);
       setDraft({ letter, details: startDetails(fields, letter) });
       setPreview(null);
       router.refresh();
