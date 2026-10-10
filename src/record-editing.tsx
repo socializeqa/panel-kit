@@ -24,6 +24,8 @@ interface RecordEditing {
   /** What the view bar calls the record — Elite Touch's office says "file";
    *  a room names its own ("booking"). */
   noun: string;
+  /** Whether this person may change the record at all: without it the view bar only says so. */
+  canEdit: boolean;
 }
 const RecordEditingContext = createContext<RecordEditing>({
   editing: true,
@@ -32,6 +34,7 @@ const RecordEditingContext = createContext<RecordEditing>({
   nudge: () => {},
   settle: () => {},
   noun: "file",
+  canEdit: true,
 });
 export function useRecordEditing() {
   return useContext(RecordEditingContext);
@@ -41,10 +44,13 @@ export function useRecordEditing() {
 export function RecordEditingProvider({
   initial = false,
   noun = "file",
+  canEdit = true,
   children,
 }: {
   initial?: boolean;
   noun?: string;
+  /** False for a role that may only look: the record stays read, with no way to switch to editing. */
+  canEdit?: boolean;
   children: ReactNode;
 }) {
   const [editing, setEditing] = useState(initial);
@@ -58,6 +64,7 @@ export function RecordEditingProvider({
         nudge: () => setNudged(true),
         settle: () => setNudged(false),
         noun,
+        canEdit,
       }}
     >
       {children}
@@ -117,7 +124,7 @@ export function LockedFields({
 // past content LockedFields doesn't wrap. Renders nothing in edit mode.
 export function ViewBar() {
   const t = usePanelT();
-  const { editing, setEditing, nudged, settle, noun } = useRecordEditing();
+  const { editing, setEditing, nudged, settle, noun, canEdit } = useRecordEditing();
   if (editing) return null;
   return (
     // display:contents so the bar keeps its sticky footing; the wrapper only
@@ -125,13 +132,19 @@ export function ViewBar() {
     <div className="contents" onAnimationEnd={settle}>
       <FormBar
         noteIcon={Lock}
-        note={t("You're viewing this {noun} — switch to edit to change anything.", { noun: t(noun) })}
+        note={
+          canEdit
+            ? t("You're viewing this {noun}. Switch to edit to change anything.", { noun: t(noun) })
+            : t("You're viewing this {noun}. Your role can't change it.", { noun: t(noun) })
+        }
         className={nudged ? "animate-bar-nudge" : undefined}
       >
-        <Button type="button" size="lg" onClick={() => setEditing(true)}>
-          <Pencil size={14} strokeWidth={2} aria-hidden="true" />
-          {t("Switch to edit")}
-        </Button>
+        {canEdit ? (
+          <Button type="button" size="lg" onClick={() => setEditing(true)}>
+            <Pencil size={14} strokeWidth={2} aria-hidden="true" />
+            {t("Switch to edit")}
+          </Button>
+        ) : null}
       </FormBar>
     </div>
   );

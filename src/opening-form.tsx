@@ -147,6 +147,8 @@ type OpeningFormProps<R extends OpeningSaveResult> = {
   publicUrl?: (slug: string) => string;
   /** Delete, when this person may and the opening may go (nobody applied to it, say). */
   remove?: { action: (formData: FormData) => void | Promise<void | ActionResult> };
+  /** False for a role that may only look at openings: no pencil, no way to edit. */
+  canEdit?: boolean;
 };
 
 // An opening, new or on file, for a drawer, on the kit's one save model: what
@@ -157,7 +159,7 @@ type OpeningFormProps<R extends OpeningSaveResult> = {
 // unlocks it.
 export function OpeningForm<R extends OpeningSaveResult>(props: OpeningFormProps<R>) {
   return (
-    <RecordEditingProvider initial={!props.opening} noun="opening">
+    <RecordEditingProvider initial={!props.opening} noun="opening" canEdit={props.canEdit ?? true}>
       <OpeningFields {...props} />
     </RecordEditingProvider>
   );
@@ -181,6 +183,7 @@ function OpeningFields<R extends OpeningSaveResult>({
   englishMark,
   publicUrl,
   remove,
+  canEdit = true,
 }: OpeningFormProps<R>) {
   const t = usePanelT();
   const router = useRouter();
@@ -278,7 +281,7 @@ function OpeningFields<R extends OpeningSaveResult>({
             : "A role for the careers page"
         }
         badge={opening ? <OpeningChip status={opening.status} label={statusLabel(opening.status)} live={live} /> : undefined}
-        editable={Boolean(opening)}
+        editable={Boolean(opening) && canEdit}
         actions={
           opening && remove ? (
             <DeleteButton
