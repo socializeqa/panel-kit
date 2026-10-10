@@ -7,7 +7,7 @@ import { usePanel } from "./panel-provider";
 import { usePanelPathname } from "./use-panel-pathname";
 
 // Measures how many natural-height rows the visible fill-mode table can show
-// without scrolling (the scroll body's own height ÷ a real row's height) and
+// (or, on a phone, how many of its cards) without scrolling (the scroll body's own height ÷ a real row's height) and
 // remembers it in a cookie every list reads for its page size. Runs after
 // paint and on resize; tells the list once when the answer changes, then
 // settles — the measure is the same for a given viewport, so it can't
@@ -26,9 +26,38 @@ export function RowsCalibrator() {
     // True once a table was measured on this page — the observer stops then,
     // so a drawer opening over the list can't trigger a re-measure.
     let measured = false;
+    // A phone shows cards, not the table: count how many whole cards fit the
+    // card list's own height (the median card, with the gap between them).
+    const fitCards = (): number | null => {
+      const list = Array.from(document.querySelectorAll<HTMLElement>("[data-card-body]")).find((el) => el.clientHeight > 0);
+      const ul = list?.querySelector<HTMLElement>(":scope > ul");
+      if (!list || !ul) return null;
+      const heights = Array.from(ul.children)
+        .map((li) => li.getBoundingClientRect().height)
+        .filter((h) => h > 0)
+        .sort((a, b) => a - b);
+      const cardH = heights[Math.floor(heights.length / 2)] ?? 0;
+      if (cardH < 20) return null;
+      const box = getComputedStyle(list);
+      const gap = parseFloat(getComputedStyle(ul).rowGap) || 0;
+      const room = list.clientHeight - (parseFloat(box.paddingTop) || 0) - (parseFloat(box.paddingBottom) || 0);
+      return Math.min(60, Math.max(1, Math.floor((room + gap) / (cardH + gap))));
+    };
+    const remember = (ideal: number) => {
+      if (rowsFromCookie(document.cookie) !== ideal) {
+        document.cookie = `${ROWS_COOKIE}=${ideal}; path=/; max-age=31536000; samesite=lax`;
+        window.dispatchEvent(new Event(ROWS_EVENT));
+        if (paging === "server") router.refresh();
+      }
+    };
     const calibrate = (): boolean => {
       const body = Array.from(document.querySelectorAll<HTMLElement>("[data-table-body]")).find((el) => el.clientHeight > 0);
-      if (!body) return false;
+      if (!body) {
+        const cards = fitCards();
+        if (cards === null) return false;
+        remember(cards);
+        return true;
+      }
       // The median row height, not the first row's: rows aren't uniform, so
       // sampling one either overestimates how many fit or overflows the card.
       //
@@ -53,12 +82,7 @@ export function RowsCalibrator() {
       // clientHeight IS the space the table has — the flex chain has already
       // taken out the top bar, the page header and the pager.
       const headH = body.querySelector("thead")?.getBoundingClientRect().height ?? 0;
-      const ideal = Math.min(60, Math.max(8, Math.floor((body.clientHeight - headH) / rowH)));
-      if (rowsFromCookie(document.cookie) !== ideal) {
-        document.cookie = `${ROWS_COOKIE}=${ideal}; path=/; max-age=31536000; samesite=lax`;
-        window.dispatchEvent(new Event(ROWS_EVENT));
-        if (paging === "server") router.refresh();
-      }
+      remember(Math.min(60, Math.max(8, Math.floor((body.clientHeight - headH) / rowH))));
       return true;
     };
     // A list often loads behind a loader, so the table is not in the page

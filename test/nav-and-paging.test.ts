@@ -61,8 +61,9 @@ describe("rowsFromCookie — the measured rows, clamped", () => {
   it("reads the count among other cookies", () => {
     expect(rowsFromCookie("a=1; admin-rows=14; b=2")).toBe(14);
   });
-  it("clamps a mangled value to 8–60", () => {
-    expect(rowsFromCookie("admin-rows=2")).toBe(8);
+  it("clamps a mangled value to 1–60 (a short phone may fit one or two cards)", () => {
+    expect(rowsFromCookie("admin-rows=0")).toBe(1);
+    expect(rowsFromCookie("admin-rows=2")).toBe(2);
     expect(rowsFromCookie("admin-rows=900")).toBe(60);
     expect(rowsFromValue("23")).toBe(23);
   });

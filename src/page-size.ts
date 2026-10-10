@@ -10,10 +10,10 @@ export const ROWS_COOKIE = "admin-rows";
 // browser (useAdaptiveRows).
 export const ROWS_EVENT = "kit:rows";
 
-/** The measured rows from a cookie's value, clamped to 8–60; undefined before the first measure. */
+/** The measured rows from a cookie's value, clamped to 1–60 (a short phone may fit only one or two cards); undefined before the first measure. */
 export function rowsFromValue(value: string | null | undefined): number | undefined {
   const v = Number(value ?? NaN);
-  return Number.isFinite(v) && value !== "" ? Math.min(60, Math.max(8, Math.floor(v))) : undefined;
+  return Number.isFinite(v) && value !== "" ? Math.min(60, Math.max(1, Math.floor(v))) : undefined;
 }
 
 /** The same, read out of a whole `document.cookie` string. */

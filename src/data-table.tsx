@@ -113,7 +113,12 @@ export function DataTable<T>({
         fill && "h-full min-h-0",
       )}
     >
-      <div className={cn("overflow-y-auto @[640px]:hidden", phoneLayout === "cards" && "p-2.5", fill && "min-h-0 flex-1")}>
+      <div
+        className={cn("overflow-y-auto @[640px]:hidden", phoneLayout === "cards" && "p-2.5", fill && "min-h-0 flex-1")}
+        // A fill-mode list on a phone advertises its cards too, so the
+        // RowsCalibrator pages exactly the cards that fit this screen.
+        {...(fill ? { "data-card-body": "" } : {})}
+      >
         {phoneLayout === "rows" ? (
           <ul className="divide-y divide-ink/[0.06]">
             {rows.map((row, ri) => (
