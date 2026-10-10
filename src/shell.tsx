@@ -7,6 +7,8 @@ import { BackDoor } from "./back-door";
 import { BACKDROP, CTRL_BTN, iconBtnClass } from "./classes";
 import { cn } from "./cn";
 import { helpAnchor } from "./help-guide";
+import { initials } from "./initials";
+import { InstallTip } from "./install-tip";
 import { LightsToggle } from "./lights-toggle";
 import { ActiveFilterChips, ListControls } from "./list-controls";
 import { ListOptionsProvider } from "./list-options-context";
@@ -16,6 +18,7 @@ import { NewRecordButton } from "./new-record-button";
 import { NumberWheelGuard } from "./number-wheel-guard";
 import { PageHeaderContext, type PageHeaderData } from "./page-header-context";
 import { usePanel } from "./panel-provider";
+import { barRooms, PhoneBar } from "./phone-bar";
 import { RowsCalibrator } from "./rows-calibrator";
 import { CountPill } from "./status-badge";
 import { usePanelPathname } from "./use-panel-pathname";
@@ -25,12 +28,6 @@ import { usePanelPathname } from "./use-panel-pathname";
 // rooms, the logo, who is signed in, the header's own tools (a global search,
 // the bell), a slot under the logo (Señorritas' branch switch) and, for a
 // panel that opts in, the lights.
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  // Initials are capitals by nature; everything the panel says stays sentence case.
-  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
-}
 
 function Rail({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePanelPathname();
@@ -252,7 +249,9 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function Shell({ children }: { children: React.ReactNode }) {
-  const { nav, host, t, barLogo, tools, help } = usePanel();
+  const { nav, host, t, barLogo, tools, help, tabs, can } = usePanel();
+  // A phone with a bottom bar opens the rail from its More, not the top bar.
+  const hasBar = barRooms(nav, tabs, can).length > 0;
   const [open, setOpen] = useState(false);
   const [published, setHeader] = useState<PageHeaderData | null>(null);
   const pathname = usePanelPathname();
@@ -298,17 +297,17 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <Rail />
           </aside>
 
-          <div className="flex h-dvh min-w-0 flex-col print:block print:h-auto">
+          <div className={cn("flex h-dvh min-w-0 flex-col print:block print:h-auto", !hasBar && "pb-[env(safe-area-inset-bottom)]")}>
             {/* The top bar: the page's title on the start, the shared tools on
                 the end; on every page. A near-solid ground instead of a
                 backdrop blur: re-blurring a sticky bar over scrolling content
                 every frame froze tablets (Elite Touch). */}
-            <header className="group/header sticky top-0 z-30 flex min-h-[60px] flex-wrap items-center gap-x-3 gap-y-2 border-b border-ink/10 bg-ground/95 px-4 py-2.5 sm:px-6 lg:px-8 print:hidden">
+            <header className="group/header sticky top-0 z-30 flex min-h-[60px] flex-wrap items-center gap-x-3 gap-y-2 border-b border-ink/10 bg-ground/95 px-4 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] sm:px-6 lg:px-8 print:hidden">
               <button
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-label={t("Open menu")}
-                className={cn(iconBtnClass(9, "ink"), "shrink-0 lg:hidden")}
+                className={cn(iconBtnClass(9, "ink"), "shrink-0 lg:hidden", hasBar && "hidden")}
               >
                 <Menu className="size-5" />
               </button>
@@ -389,8 +388,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <Suspense fallback={null}>
                 <ActiveFilterChips />
               </Suspense>
-              <div className="flex min-h-0 flex-1 flex-col px-5 py-4 sm:px-8 sm:py-5 print:block print:p-0">{children}</div>
+              <div className="flex min-h-0 flex-1 flex-col px-5 py-4 sm:px-8 sm:py-5 print:block print:p-0">
+                {pathname === host.home ? <InstallTip /> : null}
+                {children}
+              </div>
             </main>
+            {hasBar ? <PhoneBar onMore={() => setOpen(true)} /> : null}
           </div>
 
           {/* The phone's rail: it slides in from the start edge; it goes at
@@ -403,7 +406,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 onClick={() => setOpen(false)}
                 className={cn(BACKDROP, "absolute animate-scrim-in")}
               />
-              <div className="absolute inset-y-0 start-0 w-[272px] max-w-[80%] shadow-2xl animate-rail-in">
+              <div className="absolute inset-y-0 start-0 w-[272px] max-w-[80%] bg-rail pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] shadow-2xl animate-rail-in">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}

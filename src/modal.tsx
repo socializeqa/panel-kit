@@ -5,13 +5,15 @@
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AlertTriangle, CheckCircle2, Loader2, ShieldAlert, Trash2, XCircle, type LucideIcon } from "lucide-react";
-import { DIALOG_CONTENT, DIALOG_FRAME, DIALOG_OVERLAY, PANEL_SHELL } from "./classes";
+import { BACKDROP, DIALOG_CONTENT, DIALOG_FRAME, DIALOG_OVERLAY, PANEL_SHELL } from "./classes";
 import { cn } from "./cn";
 import { Button, Input, Lbl } from "./fields";
+import { commits, rubberband } from "./gesture";
 import type { HintTone } from "./hint";
 import { NoteBox } from "./note-box";
 import { usePanelT } from "./panel-provider";
 import { Eyebrow, FormBar } from "./record";
+import { useDrag } from "./use-drag";
 
 // The panel's ONE gate before a consequential tap — Delete, Cancel, Revise,
 // Approve & sign all wear it; only the words change (Damine, 24 Aug 2026: one
@@ -391,5 +393,80 @@ function PromptBody({
         </Button>
       </div>
     </form>
+  );
+}
+
+/**
+ * A phone sheet: it rises from the bottom edge under a grab bar and drops
+ * with a swipe down (a flick, or past a third of its height), a tap on the
+ * scrim, or Escape. For a short list of choices on a phone — the bottom
+ * bar's quick actions; a record still opens in a Drawer.
+ */
+export function Sheet({
+  open,
+  onOpenChange,
+  title,
+  children,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  children: React.ReactNode;
+}) {
+  const t = usePanelT();
+  const [panel, setPanel] = useState<HTMLDivElement | null>(null);
+  const [scrim, setScrim] = useState<HTMLDivElement | null>(null);
+  // Follows the thumb down 1:1, only rubber-bands up; a short drag settles
+  // back. A dropped sheet carries on from where the thumb left it (the
+  // slide-out keyframe has no `from`).
+  useDrag(panel, {
+    axis: "y",
+    enabled: open,
+    onMove: (delta) => {
+      if (!panel) return;
+      const height = panel.offsetHeight;
+      const y = delta >= 0 ? delta : -rubberband(-delta, height);
+      panel.style.transition = "none";
+      panel.style.transform = `translateY(${y}px)`;
+      if (scrim) {
+        scrim.style.transition = "none";
+        scrim.style.opacity = String(1 - Math.min(1, Math.max(0, y) / height));
+      }
+    },
+    onEnd: (delta, velocity) => {
+      if (!panel) return;
+      if (commits(delta, velocity, panel.offsetHeight)) return onOpenChange(false);
+      panel.style.transition = "transform 200ms var(--ease-drawer)";
+      panel.style.transform = "";
+      if (scrim) {
+        scrim.style.transition = "opacity 200ms ease";
+        scrim.style.opacity = "";
+      }
+    },
+  });
+  return (
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay
+          ref={setScrim}
+          className={cn("kit z-50", BACKDROP, "data-[state=open]:animate-scrim-in data-[state=closed]:animate-scrim-out")}
+        />
+        <Dialog.Content
+          ref={setPanel}
+          aria-describedby={undefined}
+          // Focus lands on the sheet, not its first choice: a tap opened it,
+          // and a framed first row reads as already picked.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            (event.target as HTMLElement).focus({ preventScroll: true });
+          }}
+          className="kit fixed inset-x-0 bottom-0 z-50 mx-auto max-w-[520px] rounded-t-[22px] bg-surface pb-[max(env(safe-area-inset-bottom),12px)] shadow-2xl outline-none data-[state=open]:animate-sheet-in data-[state=closed]:animate-sheet-out"
+        >
+          <div aria-hidden="true" className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-ink/15" />
+          <Dialog.Title className="px-5 pb-2 pt-3 text-[15px] font-semibold tracking-[-0.01em] text-ink">{t(title)}</Dialog.Title>
+          {children}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

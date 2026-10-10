@@ -9,9 +9,7 @@ import {
   FolderOpen,
   Hourglass,
   Languages,
-  Mail,
   MailOpen,
-  MessageCircle,
   Phone,
   ScanText,
   Send,
@@ -21,8 +19,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { ActionResult } from "./action-result";
-import { buttonClass, ROOM_COLUMN } from "./classes";
+import { ROOM_COLUMN } from "./classes";
 import { cn } from "./cn";
+import { ContactDoors } from "./contact-doors";
 import { DeleteButton } from "./delete-button";
 import { useDrawerDirty } from "./drawer";
 import { DrawerTabs, type DrawerTab } from "./drawer-tabs";
@@ -187,7 +186,6 @@ export function CandidateFile({
   const [switching, startSwitch] = useTransition();
   const stage = stageOf(words, c.stage).value;
   const { steps, exit } = walkOf(words);
-  const whatsapp = (c.whatsapp || c.phone).replace(/\D/g, "");
   const portfolio = papers?.portfolio ?? null;
   const [possible, strong] = cutoffsOf(words);
 
@@ -235,18 +233,6 @@ export function CandidateFile({
       router.refresh();
     });
   };
-
-  const door = (href: string, label: string, Icon: LucideIcon) => (
-    <a
-      key={label}
-      href={href}
-      target={href.startsWith("http") ? "_blank" : undefined}
-      rel="noreferrer"
-      className={cn(buttonClass({ variant: "ghost", size: "md" }), "w-full justify-center")}
-    >
-      <Icon size={15} strokeWidth={2} aria-hidden="true" /> {t(label)}
-    </a>
-  );
 
   const languageSeat = language?.options.length ? (
     // Many languages are wider than a phone: there the switch slides sideways.
@@ -318,11 +304,7 @@ export function CandidateFile({
             </Fact>
           ) : null}
         </dl>
-        <div className="grid grid-cols-3 gap-2 border-t border-ink/[0.07] pt-4">
-          {door(`mailto:${c.email}`, "Email", Mail)}
-          {door(`tel:${c.phone.replace(/\s/g, "")}`, "Call", Phone)}
-          {door(`https://wa.me/${whatsapp}`, "WhatsApp", MessageCircle)}
-        </div>
+        <ContactDoors email={c.email} phone={c.phone} whatsapp={c.whatsapp} className="border-t border-ink/[0.07] pt-4" />
       </Section>
 
       <Section plain title="The AI reader" subtitle={c.fitScore === null ? "It has not read this one" : "Read from the CV and the answers"}>

@@ -203,7 +203,7 @@ function HeaderSearch({ hint }: { hint: string }) {
               }}
               placeholder={t(hint)}
               aria-label={t("Search this list")}
-              className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-ink outline-none placeholder:text-ink/35 [&::-webkit-search-cancel-button]:appearance-none"
+              className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-ink outline-none sm:text-[13px] placeholder:text-ink/35 [&::-webkit-search-cancel-button]:appearance-none"
             />
             {value ? (
               <button

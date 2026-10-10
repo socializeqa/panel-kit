@@ -90,6 +90,9 @@
   --animate-drawer-out: kit-drawer-out 200ms var(--ease-drawer);
   /* The phone's rail, from the start edge. */
   --animate-rail-in: kit-rail-in 240ms var(--ease-drawer);
+  /* A phone sheet, from the bottom edge; it drops faster than it rises. */
+  --animate-sheet-in: kit-sheet-in 280ms var(--ease-drawer);
+  --animate-sheet-out: kit-sheet-out 200ms var(--ease-drawer);
   --animate-scrim-in: kit-fade-in 200ms ease;
   --animate-scrim-out: kit-fade-out 200ms ease;
   --animate-fade-in: kit-fade-in 160ms var(--ease-out);
@@ -131,12 +134,24 @@
       transform: none;
     }
   }
+  /* No `from`: a close starts wherever the drawer is, so one a thumb has
+     already dragged halfway carries on from there instead of jumping back. */
   @keyframes kit-drawer-out {
-    from {
-      transform: none;
-    }
     to {
       transform: translateX(calc(var(--kit-dir) * 100%));
+    }
+  }
+  @keyframes kit-sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes kit-sheet-out {
+    to {
+      transform: translateY(100%);
     }
   }
   @keyframes kit-rail-in {
@@ -155,10 +170,8 @@
       opacity: 1;
     }
   }
+  /* From wherever it is, like the drawer: a scrim a swipe has half faded. */
   @keyframes kit-fade-out {
-    from {
-      opacity: 1;
-    }
     to {
       opacity: 0;
     }
@@ -757,6 +770,8 @@
     --animate-drawer-in: kit-fade-in 200ms var(--ease-out);
     --animate-drawer-out: kit-fade-out 160ms var(--ease-out);
     --animate-rail-in: kit-fade-in 200ms var(--ease-out);
+    --animate-sheet-in: kit-fade-in 200ms var(--ease-out);
+    --animate-sheet-out: kit-fade-out 160ms var(--ease-out);
     --animate-bar-rise: kit-fade-in 200ms var(--ease-out);
     --animate-bar-nudge: kit-pulse 260ms var(--ease-out);
   }

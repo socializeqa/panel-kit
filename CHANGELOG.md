@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.16 — 11 Oct 2026
+
+The panel on a phone, like an app (Inception first). Every piece is one shared copy, and the arithmetic behind it is plain functions with tests.
+
+- `PhoneBar` (new), from PanelProvider `tabs` and `quick`: below lg the shell ends in a bottom bar — the rooms a thumb reaches most (by their path in `nav`, each keeping its icon, name, capability and count), a round + in the middle that opens a sheet of quick actions (each behind its capability), and More, which opens the rail. With a bar the top bar's menu button steps aside. The bar is the column's last row, so a list's calibrator measures the room really left.
+- `Sheet` (new, in `modal`): a phone sheet that rises from the bottom under a grab bar and drops with a swipe down, a tap on the scrim or Escape.
+- The `Drawer` closes with a swipe toward its own edge on a touch screen: 1:1 under the thumb, a flick or a third of the way lets it go, the other way only rubber-bands, a short drag settles back, unsaved work still asks first. `kit-drawer-out` and `kit-fade-out` lost their `from`, so a close starts wherever a swipe left the drawer and its scrim.
+- `useSwipeTurn` (new): swipe sideways to turn a page (a calendar's day); the old page leaves the way it was pushed and the new one comes in from the other side once its `page` key changes. Reduced motion keeps the fade and drops the travel.
+- `useDrag` (new): the one thumb drag under all three. Touch events, not pointer events: a drawer's form scrolls in boxes of its own, and a scroll box hands a sideways pointer drag to the browser before the drawer hears it. A drag never starts on a field, a slider, `[data-no-swipe]` or anything that scrolls along its axis.
+- `gesture` (new, pure): `lockAxis`, `rubberband`, `velocityOf`, `commits` (a flick past 0.11 px/ms, or past a share of the way), `SLOP`, `FLICK`.
+- `InstallTip` (new), from PanelProvider `install`: once, on the home page of a phone not running the panel from its home screen, how to put it there in that phone's steps (Safari's Share on an iPhone, where alerts need it; the browser's own offer on Android). Gone for good once closed or done. `device` (new, pure): `installWay`, `appleTouch`, and `standalone()` for browser code.
+- `PillTabs` (new): a room's views on a soft track with a white pill that slides to the open one; every tab as wide as the widest. A row wider than the screen scrolls, fades on the side that has more, and keeps the open tab in view. Links or buttons; a count, or an alert badge.
+- `ContactDoors` (new): Call, WhatsApp, Email in the house order, as equal buttons that open the phone's apps, with the real WhatsApp glyph (`brand-glyphs`, new). `contact` (new, pure): `contactLinks` on team-kit's phone helpers, and `internationalDigits` — a number typed without its country is read in Qatar, never as whatever country its first digits spell. `CandidateFile` uses it in place of its own three links.
+- `FileButton` (new): the real button for the hidden file box every upload sits behind; `camera` opens a phone's back camera straight away.
+- `initials` (new, pure): a word that doesn't start with a letter is skipped — the rail's foot read "D(" for "Dev (verification)".
+- Every typing box is 16px on a phone (sm and up keep 14 and 13): an iPhone zooms the page into a smaller field the moment it is tapped. The search bar, the phone, date, time and number boxes too.
+- `TAP` (new, in `classes`): an invisible margin round a small control on a touch screen, so a 28px arrow answers a 48px thumb; on the pager arrows, a section's fold, the switch. The guide's chips are 40px tall on a phone.
+- The shell, the drawer, the sheet and the phone rail pad an iPhone's status bar and home bar (`env(safe-area-inset-*)`, live once the app's viewport says `viewportFit: "cover"`).
+
 ## 0.1.15 — 10 Oct 2026
 
 - A list's phone cards are compact: the name with its line, then each detail as its label and value on one line, side by side and wrapping only when the line is full; no divider, tighter padding, a 14px name. A screen holds about twice the records (Damine: "cards for mobile are too big"). Every list gets it.

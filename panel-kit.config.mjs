@@ -15,9 +15,10 @@ export default {
     "field-box": ["src/classes.ts"],
     "raw-table": ["src/data-table.tsx"],
     "hand-drawer": ["src/drawer.tsx", "src/modal.tsx"],
-    // The five places a full brand fill is allowed: the buttons and the solid
-    // tile (classes.ts), the switch, the picked day and month, the + seat.
-    "brand-slab": ["src/classes.ts", "src/switch.tsx", "src/date-field.tsx", "src/new-record-button.tsx"],
+    // The six places a full brand fill is allowed: the buttons and the solid
+    // tile (classes.ts), the switch, the picked day and month, the + seat, and
+    // the phone bar's round +.
+    "brand-slab": ["src/classes.ts", "src/switch.tsx", "src/date-field.tsx", "src/new-record-button.tsx", "src/phone-bar.tsx"],
   },
   exempt: [
     { match: "src/brand.ts", rules: ["typed-colour"], why: "the house lime and the two inks the brand maths reads against" },

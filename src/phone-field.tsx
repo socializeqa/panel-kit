@@ -120,7 +120,7 @@ function CountryMenu({
             placeholder={showCode ? t("Country or code…") : t("Search countries…")}
             aria-label={t("Search countries")}
             data-dirty-exempt
-            className="w-full bg-transparent py-2.5 text-[13px] text-ink outline-none placeholder:text-ink/35"
+            className="w-full bg-transparent py-2.5 text-[16px] text-ink outline-none placeholder:text-ink/35 sm:text-[13px]"
           />
         </div>
         <div className="max-h-72 overflow-y-auto p-1">
@@ -310,7 +310,7 @@ export function PhoneInput({
         value={national}
         onChange={(e) => setNational(e.target.value)}
         placeholder={t(placeholder)}
-        className="w-full bg-transparent px-3 py-2 text-[14px] text-ink outline-none placeholder:text-ink/35"
+        className="w-full bg-transparent px-3 py-2 text-[16px] text-ink outline-none placeholder:text-ink/35 sm:text-[14px]"
       />
       {endSlot}
       <input type="hidden" name={name} value={combined} />

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import type { Country } from "@socialize/team-kit/phone";
+import type { LucideIcon } from "lucide-react";
 import type { ListConfig } from "./list-config";
 import type { NavGroup } from "./nav";
 
@@ -38,6 +39,15 @@ export interface CreateEntry {
   cap?: string;
   /** Held back for now — a booking needs a branch chosen first. */
   hidden?: boolean;
+}
+
+/** One of the phone bar's quick actions, behind its +. */
+export interface QuickAction {
+  label: string;
+  href: string;
+  Icon: LucideIcon;
+  /** The capability a person needs to see it. */
+  cap?: string;
 }
 
 /** Where the panel lives on its host. */
@@ -101,6 +111,19 @@ export interface PanelConfig {
    *  measures a new screenful (Elite Touch); "browser" tells the list through
    *  useAdaptiveRows instead (Señorritas). */
   paging?: "server" | "browser";
+  /** The phone's bottom bar: the rooms a thumb reaches most, by their path
+   *  in `nav` (each keeps its icon, name and capability), with More after
+   *  them to open the whole rail. Four is the most a phone holds beside the
+   *  +. Without it a phone keeps the menu button alone. */
+  tabs?: string[];
+  /** The bottom bar's +, in the middle of the bar: a sheet of the things a
+   *  phone starts most, from any room. Each shows only to someone with its
+   *  capability; with none left there is no +. */
+  quick?: QuickAction[];
+  /** The panel's name as a home-screen app ("Inception"). With it, a phone
+   *  that isn't running the panel from its home screen is told once, on the
+   *  home page, how to put it there — on an iPhone, alerts need it. */
+  install?: { name: string };
   /** The zone "today" is read in. Every team panel works in Doha. */
   timeZone?: string;
   /** The day a calendar's week starts on: 6 Saturday (the default), 0 Sunday,
@@ -140,6 +163,9 @@ export interface ResolvedPanel {
   flag?: (iso: string) => ReactNode;
   lights?: { dark: boolean; onChange: (dark: boolean) => void };
   paging: "server" | "browser";
+  tabs: string[];
+  quick: QuickAction[];
+  install?: { name: string };
   timeZone: string;
   weekStartsOn: 0 | 1 | 6;
   statuses: Record<string, StatusTone>;
@@ -170,6 +196,9 @@ function resolve(config: PanelConfig): ResolvedPanel {
     flag: config.flag,
     lights: config.lights,
     paging: config.paging ?? "server",
+    tabs: config.tabs ?? [],
+    quick: config.quick ?? [],
+    install: config.install,
     timeZone: config.timeZone ?? "Asia/Qatar",
     weekStartsOn: config.weekStartsOn ?? 6,
     statuses: config.statuses ?? {},
@@ -185,17 +214,17 @@ export function PanelProvider({ children, ...config }: PanelConfig & { children:
   // reading it field by field keeps the context steady unless one changed.
   const {
     nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
-    countries, defaultCountry, flag, lights, paging, timeZone, weekStartsOn, statuses,
+    countries, defaultCountry, flag, lights, paging, tabs, quick, install, timeZone, weekStartsOn, statuses,
   } = config;
   const value = useMemo(
     () =>
       resolve({
         nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
-        countries, defaultCountry, flag, lights, paging, timeZone, weekStartsOn, statuses,
+        countries, defaultCountry, flag, lights, paging, tabs, quick, install, timeZone, weekStartsOn, statuses,
       }),
     [
       nav, host, lists, create, can, t, logo, logoAlign, barLogo, railTop, user, signOut, tools, help, credit,
-      countries, defaultCountry, flag, lights, paging, timeZone, weekStartsOn, statuses,
+      countries, defaultCountry, flag, lights, paging, tabs, quick, install, timeZone, weekStartsOn, statuses,
     ],
   );
   return <PanelContext.Provider value={value}>{children}</PanelContext.Provider>;

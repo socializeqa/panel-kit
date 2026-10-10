@@ -183,7 +183,7 @@ export function DateField({
             }}
             className={cn(
               "min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-ink/35",
-              size === "compact" ? "px-2.5 py-0 text-[13px]" : "px-3 py-2 text-[14px]",
+              size === "compact" ? "px-2.5 py-0 text-[16px] sm:text-[13px]" : "px-3 py-2 text-[16px] sm:text-[14px]",
             )}
           />
           {selected && !disabled ? (

@@ -327,16 +327,40 @@ import { WORDS, LETTER_FIELDS } from "@/lib/hiring-words";
 
 The fixture's `/hiring` page has every piece wired with words of its own.
 
+### 13. On a phone
+
+A panel becomes a phone app with three settings on PanelProvider, and the
+viewport reaching the phone's edges:
+
+```tsx
+<PanelProvider
+  tabs={["/", "/tasks", "/calendar", "/hiring"]}   // paths in `nav`; four at most
+  quick={[{ label: "New task", href: "/tasks?new=1", Icon: ListPlus, cap: "add_tasks" }, …]}
+  install={{ name: "Inception" }}                   // the home-screen tip, once
+  …
+>
+// app/layout.tsx
+export const viewport: Viewport = { themeColor: "…", viewportFit: "cover" };
+```
+
+- The bar, the + sheet and More come with `tabs`; `quick` fills the sheet.
+- Every `Drawer` closes with a swipe on a touch screen; `useSwipeTurn(el,
+  { page, onTurn })` turns a calendar's days; `useDrag` is the drag under
+  both, for a gesture of the app's own.
+- `PillTabs` for a room's views, `ContactDoors` for a person's phone and
+  email, `FileButton camera` for a photo from the phone.
+
 ## What's in it
 
 | | |
 |---|---|
+| **Phone** | `phone-bar`, `install-tip`, `use-drag`, `use-swipe-turn`, `gesture`, `device`, `contact`, `contact-doors`, `brand-glyphs`, `file-button`, `pill-tabs`, `initials` |
 | **Shell** | `shell`, `panel-provider`, `nav`, `page-header-context` (PageMeta), `back-door`, `nav-memory`, `collapse-button`, `new-record-button`, `header-control`, `header-fold`, `lights-toggle`, `use-panel-pathname`, `number-wheel-guard`, `rows-calibrator`, `refresh-if-stale`, `door-page`, `door-forms`, `grain` |
 | **Lists** | `data-table`, `stage-tabs`, `list-config`, `list-controls` (search, filter, sort, the chips), `filter-drawer`, `list-options-context`, `page-size`, `page-size-server`, `link-row`, `row-actions`, `row-menu`, `decision-bar` |
 | **Records** | `drawer`, `drawer-header`, `drawer-tabs`, `record`, `record-fields` (Section), `record-form`, `record-editing`, `record-route`, `stage-walk`, `unsaved-guard`, `delete-button`, `save-button`, `use-action-success`, `foot-log`, `event-trail`, `pdf-link` |
 | **Hiring** | `hiring-words`, `stage-chip`, `fit-chip`, `stage-mover`, `candidate-file`, `letter-composer`, `sent-letters`, `hiring-tools`, `candidate-columns`, `opening-form`, `opening-chip`, `opening-columns` |
 | **Fields** | `fields`, `select-menu`, `other-select`, `choice-pills`, `segmented`, `switch`, `number-stepper`, `date-field`, `time-field`, `phone-field`, `password-input`, `note-box`, `grab-resize`, `caret-safe`, `joined-row`, `media-drop-zone`, `photo-field`, `star-rating` |
-| **Feedback** | `modal` (ConfirmDialog, PromptDialog, PickDialog), `toast`, `hint`, `empty-state`, `panel-loader`, `load-error` |
+| **Feedback** | `modal` (ConfirmDialog, PromptDialog, PickDialog, Sheet), `toast`, `hint`, `empty-state`, `panel-loader`, `load-error` |
 | **Guide** | `help-guide` (HelpGuide, HelpPrintSeat): the panel's own "how to use", a section per room, each person seeing only what their role can do; `PanelProvider` `help` puts a "?" on every room's top bar |
 | **Figures** | `stat-tile`, `stat-strip`, `figure`, `meter`, `status-badge`, `icon-tile`, `icon-btn`, `seat-strip` |
 | **Helpers** | `classes`, `cn`, `brand`, `format`, `tx`, `action-result`, `use-dismiss`, `staff-door` |

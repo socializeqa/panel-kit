@@ -98,7 +98,7 @@ export function NumberStepper({
           }}
           onBlur={() => setDraft(null)}
           placeholder={t(placeholder)}
-          className="w-10 border-0 bg-transparent text-center text-[14px] font-semibold tabular-nums text-ink outline-none"
+          className="w-10 border-0 bg-transparent text-center text-[16px] font-semibold sm:text-[14px] tabular-nums text-ink outline-none"
         />
         <span className="text-[12px] font-medium text-quiet">{unit}</span>
       </div>

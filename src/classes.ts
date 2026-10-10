@@ -16,11 +16,14 @@ import { cn } from "./cn";
 // audit found 16 competing field styles; this is the one they converged on.
 // "md" is the shared Input/Select size, "sm" a drawer's inline cell,
 // "compact" and "xs" the dense picker rows.
+// Every size types at 16px on a phone: an iPhone zooms the whole page into a
+// field whose text is smaller, the moment it is tapped. From sm up the box
+// keeps its desk size.
 const FIELD_SIZES = {
-  md: "px-3 py-2 text-[14px]",
-  sm: "px-3 py-2 text-[13px]",
-  compact: "px-2.5 py-2 text-[13px]",
-  xs: "px-2.5 py-1.5 text-[13px]",
+  md: "px-3 py-2 text-[16px] sm:text-[14px]",
+  sm: "px-3 py-2 text-[16px] sm:text-[13px]",
+  compact: "px-2.5 py-2 text-[16px] sm:text-[13px]",
+  xs: "px-2.5 py-1.5 text-[16px] sm:text-[13px]",
 } as const;
 export type FieldSize = keyof typeof FIELD_SIZES;
 
@@ -116,6 +119,12 @@ export const ROOM_COLUMN = "flex min-h-full flex-1 flex-col gap-4 px-5 pt-6 pb-8
 // acts, ink for neutral chrome, danger for destructive ones.
 export type IconBtnSize = 7 | 8 | 9;
 export type IconBtnTone = "default" | "ink" | "danger";
+
+// A thumb-sized hit area around a small control: an invisible margin past
+// its edge, on a touch screen only, so a 28px arrow answers a 48px thumb and
+// the desk looks exactly as before. Apple asks for 44px.
+export const TAP =
+  "relative pointer-coarse:after:absolute pointer-coarse:after:-inset-2.5 pointer-coarse:after:content-['']";
 
 export function iconBtnClass(size: IconBtnSize = 7, tone: IconBtnTone = "default"): string {
   return cn(

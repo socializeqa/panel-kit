@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { iconBtnClass, PANEL_SHELL } from "./classes";
+import { iconBtnClass, PANEL_SHELL, TAP } from "./classes";
 import { cn } from "./cn";
 import { IconTile } from "./icon-tile";
 import { usePanelT } from "./panel-provider";
@@ -144,7 +144,7 @@ export function Section({
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? t("Collapse section") : t("Expand section")}
-            className={cn(iconBtnClass(7, "ink"), "-m-1")}
+            className={cn(iconBtnClass(7, "ink"), "-m-1", TAP)}
           >
             <ChevronDown
               size={16}

@@ -301,7 +301,7 @@ export function HelpGuide({ sections, intro }: { sections: HelpSection[]; intro?
             <a
               key={section.id}
               href={`#${section.id}`}
-              className="rounded-full border border-ink/10 bg-surface px-3 py-1 text-[12px] text-ink/70 transition-colors duration-150 hover:border-ink/25 hover:text-ink"
+              className="rounded-full border border-ink/10 bg-surface px-3.5 py-2.5 text-[13px] leading-none text-ink/70 transition-colors duration-150 hover:border-ink/25 hover:text-ink sm:px-3 sm:py-1 sm:text-[12px] sm:leading-normal"
             >
               {t(section.title)}
             </a>

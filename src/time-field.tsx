@@ -132,7 +132,7 @@ export function TimeField({
               }
               if (e.key === "ArrowDown" && !open) setOpen(true);
             }}
-            className="min-w-0 flex-1 bg-transparent px-3 py-2 text-[14px] text-ink outline-none placeholder:text-ink/35"
+            className="min-w-0 flex-1 bg-transparent px-3 py-2 text-[16px] text-ink outline-none placeholder:text-ink/35 sm:text-[14px]"
           />
           {hhmm && !disabled ? (
             <button

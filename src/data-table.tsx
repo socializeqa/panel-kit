@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
-import { iconBtnClass, PANEL_SHELL } from "./classes";
+import { iconBtnClass, PANEL_SHELL, TAP } from "./classes";
 import { ClickRow } from "./click-row";
 import { cn } from "./cn";
 import { EmptyState } from "./empty-state";
@@ -358,7 +358,7 @@ function PagerButton({ href, disabled, label, children }: { href: string; disabl
     );
   }
   return (
-    <Link href={href} scroll={false} className={iconBtnClass(7, "ink")}>
+    <Link href={href} scroll={false} className={cn(iconBtnClass(7, "ink"), TAP)}>
       {children}
       {name}
     </Link>

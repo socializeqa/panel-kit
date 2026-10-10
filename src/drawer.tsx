@@ -7,12 +7,14 @@ import { Undo2, X } from "lucide-react";
 import { BACKDROP, CTRL_BTN } from "./classes";
 import { cn } from "./cn";
 import { IconTile } from "./icon-tile";
+import { commits, rubberband } from "./gesture";
 import { ConfirmDialog } from "./modal";
 import { roomFor } from "./nav";
 import { usePanel } from "./panel-provider";
 import { RecordEditingProvider } from "./record-editing";
 import { tx } from "./tx";
 import { useUnsavedGuard } from "./unsaved-guard";
+import { useDrag } from "./use-drag";
 import { usePanelPathname } from "./use-panel-pathname";
 
 // What the drawer's header band shows. A record publishes this through
@@ -258,6 +260,51 @@ export function Drawer({
     closeRef.current = close;
   });
 
+  // On a phone the drawer leaves the way it came: a thumb drags it toward its
+  // own edge, 1:1, and a flick or a drag past a third of the way lets it go;
+  // the slide-out keyframe carries on from wherever the thumb left it (it has
+  // no `from`). Dragged the other way it only rubber-bands. A short drag
+  // settles back. Unsaved work still asks first, with the drawer back in place.
+  const [panel, setPanel] = useState<HTMLDivElement | null>(null);
+  const [scrim, setScrim] = useState<HTMLDivElement | null>(null);
+  const drag = (x: number, width: number) => {
+    if (!panel) return;
+    panel.style.transition = "none";
+    panel.style.transform = `translateX(${x}px)`;
+    if (scrim) {
+      scrim.style.transition = "none";
+      scrim.style.opacity = String(1 - Math.min(1, Math.abs(x) / width));
+    }
+  };
+  const settleBack = () => {
+    if (!panel) return;
+    panel.style.transition = "transform 200ms var(--ease-drawer)";
+    panel.style.transform = "";
+    if (scrim) {
+      scrim.style.transition = "opacity 200ms ease";
+      scrim.style.opacity = "";
+    }
+  };
+  // The drawer's own edge: the right in English, the left in Arabic.
+  const edge = () => (panel && getComputedStyle(panel).direction === "rtl" ? -1 : 1);
+  useDrag(panel, {
+    axis: "x",
+    enabled: open,
+    onMove: (delta) => {
+      if (!panel) return;
+      const width = panel.offsetWidth;
+      const along = delta * edge();
+      drag((along >= 0 ? along : -rubberband(-along, width)) * edge(), width);
+    },
+    onEnd: (delta, velocity) => {
+      if (!panel || !commits(delta * edge(), velocity * edge(), panel.offsetWidth)) return settleBack();
+      if (dirty) {
+        settleBack();
+        setPending(() => close);
+      } else close();
+    },
+  });
+
   // A route change while a CONTROLLED drawer is open means a record link in it
   // navigated — and a record route opens as an intercepted drawer at z-50,
   // underneath an elevated one. Without this the click looks like it did
@@ -280,9 +327,11 @@ export function Drawer({
     >
       <Dialog.Portal>
         <Dialog.Overlay
+          ref={setScrim}
           className={cn("kit", BACKDROP, "data-[state=open]:animate-scrim-in data-[state=closed]:animate-scrim-out", z)}
         />
         <Dialog.Content
+          ref={setPanel}
           aria-describedby={undefined}
           // Radix focuses the first control as a drawer opens, mostly its close
           // button, and Chrome draws that focus as a keyboard one even after a
@@ -323,7 +372,7 @@ export function Drawer({
           className={cn(
             // Opens on the iOS drawer curve and closes on it too — Elite Touch
             // closed on an ease-in, which waits at the start of the move.
-            "kit fixed inset-y-0 end-0 flex w-full flex-col bg-ground shadow-2xl outline-none data-[state=open]:animate-drawer-in data-[state=closed]:animate-drawer-out",
+            "kit fixed inset-y-0 end-0 flex w-full flex-col bg-ground pb-[env(safe-area-inset-bottom)] shadow-2xl outline-none data-[state=open]:animate-drawer-in data-[state=closed]:animate-drawer-out",
             size === "form" ? "max-w-[640px]" : "max-w-[1160px]",
             z,
           )}
@@ -332,7 +381,7 @@ export function Drawer({
               kicker, the title with its status, the subline, then the
               record's seats and close. A real row, so nothing floats over
               the body. */}
-          <header className="@container relative shrink-0 border-b border-ink/[0.08] bg-surface px-5 pb-4 pt-3.5 sm:px-7">
+          <header className="@container relative shrink-0 border-b border-ink/[0.08] bg-surface px-5 pb-4 pt-[calc(0.875rem+env(safe-area-inset-top))] sm:px-7">
             <span
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-brand-deep via-brand-deep/40 to-transparent rtl:bg-gradient-to-l"

@@ -1,5 +1,6 @@
 "use client";
 
+import { TAP } from "./classes";
 import { cn } from "./cn";
 import { useMarkDrawerDirty } from "./drawer";
 import { usePanelT } from "./panel-provider";
@@ -46,7 +47,8 @@ export function Switch({
         onChange(!checked);
       }}
       className={cn(
-        "group relative inline-flex shrink-0 items-center rounded-full border border-ink/15 bg-ink/10 transition-colors aria-checked:border-brand-deep aria-checked:bg-brand disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/40",
+        TAP,
+        "group inline-flex shrink-0 items-center rounded-full border border-ink/15 bg-ink/10 transition-colors aria-checked:border-brand-deep aria-checked:bg-brand disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/40",
         track,
         className,
       )}
