@@ -5,7 +5,7 @@
 - A list's phone cards are compact: the name with its line, then each detail as its label and value on one line, side by side and wrapping only when the line is full; no divider, tighter padding, a 14px name. A screen holds about twice the records (Damine: "cards for mobile are too big"). Every list gets it.
 - The top bar keeps the title whole: when the title and the tools don't fit one line (a phone, a room with many tools), the tools step down to a line of their own at the end. "Candidates" had read "C…" at 400px.
 - `HiringTools`: the spreadsheet and let-go seats are framed seats of the top bar's strip, like search and filter beside them (they were bare icons).
-- A list on a phone pages exactly the cards that fit the screen: the RowsCalibrator counts the phone cards (`data-card-body`) when the table is hidden, and the measured rows may now go as low as 1, so a short phone gets the one or two cards it holds. A phone kept the desk's 29 rows and scrolled far past the screen.
+- A list on a phone pages exactly the cards that fit the screen: the RowsCalibrator counts the phone cards (`data-card-body`) when the table is hidden, and the measured rows may now go as low as 1, so a short phone gets the one or two cards it holds. A phone kept the desk's 29 rows and scrolled far past the screen. The calibrator now watches the list's box and measures once it settles (and again when it resizes, replacing the window resize listener), so a room's buttons arriving in the top bar a beat later and wrapping it onto a second line no longer leave the last card cut off.
 - `candidateColumns` leaves Papers off the phone card: a candidate's card reads applied, role, fit and stage, the same shape as every other list's.
 
 ## 0.1.14 — 10 Oct 2026
