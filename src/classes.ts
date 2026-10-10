@@ -103,6 +103,13 @@ export const POPOVER_SHELL = cn(
   "kit z-[80] shadow-kit-menu outline-none origin-[var(--radix-popover-content-transform-origin,var(--radix-select-content-transform-origin))] data-[state=open]:animate-menu-in data-[state=closed]:animate-menu-out",
 );
 
+// A record's room in a drawer, read top to bottom (a candidate's file, their
+// letters): cards in one column at the drawer's inset. `min-h-full` lets a
+// short room fill the drawer, and it also takes away the column's floor, so a
+// long room squeezed every card (each clips what overflows it) to fit the
+// screen instead of scrolling. The cards keep their height: shrink-0.
+export const ROOM_COLUMN = "flex min-h-full flex-1 flex-col gap-4 px-5 pt-6 pb-8 sm:px-7 [&>*]:shrink-0";
+
 // ── The header's seats ────────────────────────────────────────────────────
 // The quiet icon-only action, in three sizes: 7 (a file row's acts), 8 (the
 // list row-actions standard), 9 (drawer chrome). Brand hover for ordinary

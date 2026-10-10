@@ -277,13 +277,64 @@ kit's; the server actions are the app's, and they read the same rules from
 Give `user.href` to the provider and the name at the rail's foot opens the
 person's own account (X Capital: their password).
 
+### 12. The hiring rooms
+
+A panel's candidates and openings are kit pieces too. The kit knows no stage,
+letter or score of its own: the app hands its hiring words in as one
+`HiringWords` object (`hiring-words`), the stages in walk order with their
+labels, short names, tones and step words, the letters and the letter each
+stage opens, `letterNeeds` and `fitWord`. Every write is a callback that
+returns an `ActionResult` (a server action fits), so the kit imports no
+database and no action.
+
+```tsx
+// app/(panel)/hiring/candidate.tsx — the app's own client module, because the
+// words carry functions and a server page can't hand those to the browser.
+"use client";
+import { CandidateFile } from "@socialize/panel-kit/candidate-file";
+import { LetterComposer } from "@socialize/panel-kit/letter-composer";
+import { WORDS, LETTER_FIELDS } from "@/lib/hiring-words";
+
+<CandidateFile
+  words={WORDS}
+  candidate={c}
+  facts={[{ label: "Nationality", value: <Flag … /> }]}
+  papers={{ cv: `/hiring/${c.id}/cv` }}
+  onMove={(to, why) => moveCandidate(c.id, to, why)}
+  onRate={(n) => rateCandidate(c.id, n)}
+  onAddNote={(body) => addNote(c.id, body)}
+  letters={<LetterComposer words={WORDS} fields={LETTER_FIELDS} draftKey={`letter:${c.id}`} … />}
+  …
+/>
+```
+
+- `StageChip`, `FitChip`, `OpeningChip`: the chips, server-safe.
+- `StageMover`: the walk and the way on (next step, back, skip a trial, hire,
+  let go, reopen); a hire, a let-go and a reopen ask first.
+- `CandidateFile`: one calm column (where they stand, the facts with the
+  doors to reach them, the reader's score, their answers, the office's read),
+  then the letters and the story as rooms of their own.
+- `LetterComposer` and `SentLetters`: write a letter, preview it, send it
+  behind a question; the draft is kept in the tab and never dirties the drawer.
+  `standardLetterFields({ office })` gives the six usual letters their fields.
+- `HiringTools`: the list's spreadsheet seat and the bulk let-go.
+- `OpeningForm`: an opening in a drawer, in English and Arabic, with extra
+  languages from `locales` and an optional draft of them (`onDraft`).
+- `candidateColumns`, `openingColumns`: a list's common columns for
+  `DataTable`, with the app's own beside them; server-safe.
+- `EventTrail` (any record's story) and `PdfLink` / `PdfHeaderActions` /
+  `HeaderLink` (papers that always open fresh) are general, not hiring's.
+
+The fixture's `/hiring` page has every piece wired with words of its own.
+
 ## What's in it
 
 | | |
 |---|---|
 | **Shell** | `shell`, `panel-provider`, `nav`, `page-header-context` (PageMeta), `back-door`, `nav-memory`, `collapse-button`, `new-record-button`, `header-control`, `header-fold`, `lights-toggle`, `use-panel-pathname`, `number-wheel-guard`, `rows-calibrator`, `refresh-if-stale`, `door-page`, `door-forms`, `grain` |
 | **Lists** | `data-table`, `stage-tabs`, `list-config`, `list-controls` (search, filter, sort, the chips), `filter-drawer`, `list-options-context`, `page-size`, `page-size-server`, `link-row`, `row-actions`, `row-menu`, `decision-bar` |
-| **Records** | `drawer`, `drawer-header`, `drawer-tabs`, `record`, `record-fields` (Section), `record-form`, `record-editing`, `record-route`, `stage-walk`, `unsaved-guard`, `delete-button`, `save-button`, `use-action-success`, `foot-log` |
+| **Records** | `drawer`, `drawer-header`, `drawer-tabs`, `record`, `record-fields` (Section), `record-form`, `record-editing`, `record-route`, `stage-walk`, `unsaved-guard`, `delete-button`, `save-button`, `use-action-success`, `foot-log`, `event-trail`, `pdf-link` |
+| **Hiring** | `hiring-words`, `stage-chip`, `fit-chip`, `stage-mover`, `candidate-file`, `letter-composer`, `sent-letters`, `hiring-tools`, `candidate-columns`, `opening-form`, `opening-chip`, `opening-columns` |
 | **Fields** | `fields`, `select-menu`, `other-select`, `choice-pills`, `segmented`, `switch`, `number-stepper`, `date-field`, `time-field`, `phone-field`, `password-input`, `note-box`, `grab-resize`, `caret-safe`, `joined-row`, `media-drop-zone`, `photo-field`, `star-rating` |
 | **Feedback** | `modal` (ConfirmDialog, PromptDialog, PickDialog), `toast`, `hint`, `empty-state`, `panel-loader`, `load-error` |
 | **Guide** | `help-guide` (HelpGuide, HelpPrintSeat): the panel's own "how to use", a section per room, each person seeing only what their role can do; `PanelProvider` `help` puts a "?" on every room's top bar |

@@ -154,3 +154,9 @@ These hold for every file below and are not repeated per row.
   needed it yet.
 - **HQ's extras** (totals, grouped rows, settled mode) — ported when HQ moves,
   last, as the plan says.
+
+## Taken in later
+
+- **`event-trail` and `pdf-link`** came in at 0.1.14 with the hiring rooms
+  (see the CHANGELOG): the trail's glyphs are now a prop, so it is no longer
+  one app's.

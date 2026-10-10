@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.14 — 10 Oct 2026
+
+The hiring rooms, lifted from the first panel that built them, so every panel that hires shares one copy. The kit owns none of the words: the app hands them in, and every write is the app's callback.
+
+- `hiring-words` (new): the `HiringWords` an app hands in (the stages in walk order with their labels, short names, tones, step words and the stage a trial can be skipped over; the letters and the letter each stage opens; `letterNeeds`; `fitWord`, with an optional `fitTone` and `fitCutoffs`; a `hireNote` for the hire question), and the rules the rooms share, held by tests: `offeredMoves` (what a file offers at its stage), `walkPick` (what a press on the walk means), `letterGate` (the send stays shut until a letter has what it needs and the mail is set up), `readDraft`, `startDetails`, `standardLetterFields({ office, placeholders })` and `questionCount`. Server-safe.
+- `StageChip`, `FitChip`, `OpeningChip` (new): the chips, the same in a row and a drawer, server-safe.
+- `StageMover` (new): the walk with the next step as its one door; back a step, skip a trial, hire early and let go behind the menu; a settled file reopens. A hire, a let-go (with a reason) and a reopen ask first. `onMove(to, reason?)`.
+- `CandidateFile` (new): one candidate in one calm column: where they stand, the facts (Email and Phone, then the panel's own `facts`, then the CV and portfolio) with Email, Call and WhatsApp in equal thirds, the reader's score with its two cut-offs, their answers, the rating and the notes; the letters and the story as rooms under the header; delete behind the header's ⋯ when the app allows it. `onRate`, `onAddNote`, `language.onChange`.
+- `LetterComposer` and `SentLetters` (new): pick the letter (the stage's comes first), fill only what it carries (the calendar and the clock for an interview), preview it as it arrives, send it behind a question. The draft is kept in the tab under the app's `draftKey` and never marks the drawer dirty. The sent list shows each letter's fate in the app's words.
+- `HiringTools` (new): the list's spreadsheet seat (`exportHref`) and letting many go at once, with a reason and an optional regret letter. `onLetGo(ids, reason, sendLetter)`.
+- `OpeningForm` (new): an opening in a drawer on the one save model: the role (and the panel's own fields in `extra`), the page's words, Arabic (`arabic={false}` for a site without it), the salary in the panel's `currency`, up to `maxQuestions` screening questions with their Arabic lines, the status, and the extra languages from `locales` with an optional `onDraft`. Cancel now also drops a draft of the languages.
+- `candidateColumns`, `openingColumns` (new): a list's common columns for `DataTable`, the app's own beside them, server-safe; icon seats are named in words the panel translates.
+- `EventTrail` (new): any record's story in the FootLog grammar; the glyphs per kind are a prop.
+- `PdfLink`, `PdfHeaderActions`, `HeaderLink` (new): papers that always open fresh, and their seats in a drawer header. A press with a modifier key is left to the browser.
+- `ROOM_COLUMN` in `classes`: a record's room read top to bottom. Its cards never shrink: with `min-h-full` alone a long file squeezed every card to the screen's height (each clips what overflows it) instead of scrolling. A panel with its own copy of these rooms has the same squeeze on a short screen.
+- The fixture has a `/hiring` page with every piece wired.
+
 ## 0.1.13 — 8 Oct 2026
 
 - A drawer takes focus itself as it opens, instead of Radix putting it on the first control (mostly the close button). Chrome draws a focus given on opening as a keyboard focus even after a click, so 0.1.12's keyboard-only frame still showed on every mouse open. Focus stays inside the drawer (Tab and Esc work as before), and a field that asks for focus (`autoFocus`) keeps it.

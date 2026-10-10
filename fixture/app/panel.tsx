@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheck, LayoutDashboard, Users } from "lucide-react";
+import { Briefcase, CalendarCheck, LayoutDashboard, Users } from "lucide-react";
 import type { ListConfig } from "@socialize/panel-kit/list-config";
 import type { NavGroup } from "@socialize/panel-kit/nav";
 import { PanelProvider, type CreateEntry } from "@socialize/panel-kit/panel-provider";
@@ -18,6 +18,7 @@ const NAV: NavGroup[] = [
     items: [
       { href: "/bookings", label: "Bookings", Icon: CalendarCheck, count: 3 },
       { href: "/team", label: "Team", Icon: Users, cap: "manage_team" },
+      { href: "/hiring", label: "Hiring", Icon: Briefcase },
     ],
   },
 ];
