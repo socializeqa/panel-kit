@@ -303,7 +303,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 the end; on every page. A near-solid ground instead of a
                 backdrop blur: re-blurring a sticky bar over scrolling content
                 every frame froze tablets (Elite Touch). */}
-            <header className="group/header sticky top-0 z-30 flex min-h-[60px] items-center gap-3 border-b border-ink/10 bg-ground/95 px-4 py-2.5 sm:px-6 lg:px-8 print:hidden">
+            <header className="group/header sticky top-0 z-30 flex min-h-[60px] flex-wrap items-center gap-x-3 gap-y-2 border-b border-ink/10 bg-ground/95 px-4 py-2.5 sm:px-6 lg:px-8 print:hidden">
               <button
                 type="button"
                 onClick={() => setOpen(true)}
@@ -355,14 +355,16 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 <span className="lg:hidden">{barLogo}</span>
               ) : null}
 
-              <div className="flex-1" />
-
               {/* One fused strip of 36px seats, by priority: the page's own
                   action, then New, then search, filter and sort, then the
                   app's tools. The wrappers render as `contents`, so every seat
                   is an item of this strip; its corners round the ends and a
-                  -1px overlap fuses the borders. */}
-              <div className="flex shrink-0 items-center overflow-hidden rounded-control ps-px [&_.seat]:-ms-px [&_.seat]:rounded-none">
+                  -1px overlap fuses the borders. When the title and the strip
+                  don't fit one line (a phone, a room with many tools), the
+                  strip steps down to a line of its own at the end and the
+                  title stays whole ("Candidates" read "C…" at 400px, Damine,
+                  10 Oct 2026). */}
+              <div className="ms-auto flex shrink-0 items-center overflow-hidden rounded-control ps-px [&_.seat]:-ms-px [&_.seat]:rounded-none">
                 {published?.action ?? null}
                 <Suspense fallback={null}>
                   <NewRecordButton />

@@ -77,6 +77,8 @@ export function candidateColumns<T>({
     {
       header: "Papers",
       priority: "medium",
+      // The phone card keeps to applied, role, fit and stage, like every list's card; the papers open in the file.
+      card: false,
       className: "2xl:w-[9%]",
       cell: (row) => {
         const c = read(row);

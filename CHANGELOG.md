@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.15 — 10 Oct 2026
+
+- A list's phone cards are compact: the name with its line, then each detail as its label and value on one line, side by side and wrapping only when the line is full; no divider, tighter padding, a 14px name. A screen holds about twice the records (Damine: "cards for mobile are too big"). Every list gets it.
+- The top bar keeps the title whole: when the title and the tools don't fit one line (a phone, a room with many tools), the tools step down to a line of their own at the end. "Candidates" had read "C…" at 400px.
+- `HiringTools`: the spreadsheet and let-go seats are framed seats of the top bar's strip, like search and filter beside them (they were bare icons).
+- `candidateColumns` leaves Papers off the phone card: a candidate's card reads applied, role, fit and stage, the same shape as every other list's.
+
 ## 0.1.14 — 10 Oct 2026
 
 The hiring rooms, lifted from the first panel that built them, so every panel that hires shares one copy. The kit owns none of the words: the app hands them in, and every write is the app's callback.

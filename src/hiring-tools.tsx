@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Download, UserRoundX } from "lucide-react";
 import type { ActionResult } from "./action-result";
 import { CheckList } from "./check-list";
-import { iconBtnClass } from "./classes";
+import { CTRL_BTN } from "./classes";
 import { hiredOf, rejectedOf, stageOf, type HiringWords } from "./hiring-words";
 import { ConfirmDialog } from "./modal";
 import { usePanelT } from "./panel-provider";
@@ -74,9 +74,10 @@ export function HiringTools({
 
   const exportLabel = t("Download the list as a spreadsheet");
   return (
-    <div className="flex items-center">
+    // `contents`: its two seats join the top bar's fused strip, framed like search and filter beside them.
+    <div className="contents">
       {exportHref ? (
-        <a href={exportHref} download aria-label={exportLabel} title={exportLabel} className={iconBtnClass(9, "ink")}>
+        <a href={exportHref} download aria-label={exportLabel} title={exportLabel} className={CTRL_BTN}>
           <Download size={16} strokeWidth={2} aria-hidden="true" />
         </a>
       ) : null}
@@ -87,7 +88,7 @@ export function HiringTools({
           disabled={!open.length}
           aria-label={t("Let go in bulk")}
           title={t("Let go the people this list shows")}
-          className={iconBtnClass(9, "ink")}
+          className={CTRL_BTN}
         >
           <UserRoundX size={16} strokeWidth={2} aria-hidden="true" />
         </button>

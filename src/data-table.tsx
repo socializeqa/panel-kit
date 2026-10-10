@@ -167,32 +167,32 @@ export function DataTable<T>({
                   // `truncate` is lifted here: the line wraps instead of being
                   // cut (Damine, 26 Aug 2026: "no squeezes").
                   PANEL_SHELL,
-                  "border-ink/[0.08] p-4",
+                  // Compact on a phone: three records to a screen was too few (Damine, 10 Oct 2026: "cards for mobile are too big").
+                  "border-ink/[0.08] px-3.5 py-2.5",
                   "[&_.truncate]:overflow-visible [&_.truncate]:whitespace-normal",
                   rowClassName?.(row),
                 )}
               >
-                <div className="flex items-start justify-between gap-3 border-b border-ink/[0.06] pb-2.5">
+                <div className="flex items-start justify-between gap-3">
                   {rowHref ? (
                     <Link
                       href={rowHref(row)}
                       scroll={false}
-                      className="min-w-0 flex-1 text-[15px] font-semibold text-ink transition-colors hover:text-brand-deep"
+                      className="min-w-0 flex-1 text-[14px] font-semibold text-ink transition-colors hover:text-brand-deep"
                     >
                       {tx(titleColumn.cell(row))}
                     </Link>
                   ) : (
-                    <span className="min-w-0 flex-1 text-[15px] font-semibold text-ink">{tx(titleColumn.cell(row))}</span>
+                    <span className="min-w-0 flex-1 text-[14px] font-semibold text-ink">{tx(titleColumn.cell(row))}</span>
                   )}
                   {actionsColumn && <div className="-mt-1 shrink-0">{actionsColumn.cell(row)}</div>}
                 </div>
                 {cardColumns.length > 0 && (
-                  <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-3 @[420px]:grid-cols-2 @[680px]:grid-cols-3">
+                  // Each detail is its label and value on one line, side by side, wrapping only when the line is full.
+                  <dl className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1.5">
                     {cardColumns.map((col, ci) => (
-                      <div key={ci} className="flex min-w-0 flex-col gap-1">
-                        <dt>
-                          <Eyebrow>{col.header}</Eyebrow>
-                        </dt>
+                      <div key={ci} className="flex min-w-0 max-w-full items-center gap-1.5">
+                        <dt className="shrink-0 text-[12px] text-quiet">{tx(col.header)}</dt>
                         <dd className="min-w-0 break-words text-[13px] leading-snug text-ink/80">{tx(col.cell(row))}</dd>
                       </div>
                     ))}
