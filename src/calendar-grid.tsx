@@ -149,7 +149,9 @@ export function TimeGrid({
       if (!item || !isTimed(item)) return;
       if (!cur.moved) return onOpen(item);
       const move = moveOf(columns, cur.col, dropOf(cur), clock);
-      if (move.start !== item.start || move.end !== item.end || move.toPerson) onMove(item, move);
+      // By the moment, not the text: a database writes "+00:00" where the clock writes "Z".
+      const same = Date.parse(move.start) === Date.parse(item.start) && Date.parse(move.end) === Date.parse(item.end);
+      if (!same || move.toPerson) onMove(item, move);
     };
     // A touch that turns into a scroll is the browser's, not a drag.
     const cancel = () => setDrag(null);

@@ -30,6 +30,7 @@ import { CALENDAR_WORDS, dateWords, type CalendarWords } from "./calendar-words"
 
 const BRAND = "var(--brand)";
 const NOTHING = () => {};
+const NO_KINDS: { kind: string; label: string }[] = [];
 
 export interface CalendarProps {
   items: CalendarItem[];
@@ -84,7 +85,7 @@ export function Calendar({
   query = "",
   href: hrefProp,
   basePath = "/calendar",
-  kinds: kindNames = [],
+  kinds: kindNames = NO_KINDS,
   kindIcon,
   onOpen = NOTHING,
   onSlot,
