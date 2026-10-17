@@ -19,12 +19,14 @@ const FROM_SOURCE = [
   ["\\:animate-" + "drawer-in", "animate-" + "drawer-in", "the drawer's arrival (src/drawer.tsx)"],
   [".rounded-" + "panel{", "rounded-" + "panel", "the card shell (src/classes.ts)"],
   ["minmax(" + "220px", "minmax(" + "220px", "the figures strip (src/stat-strip.tsx)"],
+  ["1fr) " + "284px", "_" + "284px", "the calendar's side (src/calendar.tsx)"],
 ];
 // kit.css arrives through @import, not @source; these prove the import.
 const FROM_IMPORT = [
   ["@keyframes kit-menu-in", "a menu's keyframes (kit.css)"],
   ["--ease-drawer:", "the drawer's curve (kit.css)"],
   ["--brand-soft:", "the brand's wash (kit.css)"],
+  [".cal-meeting-foot", "an item's foot on the time grid (calendar.css)"],
 ];
 
 function filesUnder(dir, test, out = []) {
@@ -60,6 +62,35 @@ for (const [marker, name, from] of FROM_SOURCE) {
   }
 }
 for (const [marker, from] of FROM_IMPORT) expect(marker, from);
+
+// The calendar's rules sit in Tailwind's components layer, so a utility on the
+// same element wins (lg:hidden on a .cal-round). Unlayered they would beat
+// every utility, and nothing would say so but a button that never hides.
+function layerAround(text, marker) {
+  const at = text.indexOf(marker);
+  if (at < 0) return null;
+  const open = [];
+  let head = 0;
+  for (let i = 0; i < at; i += 1) {
+    if (text[i] === "{") {
+      open.push(text.slice(head, i).trim());
+      head = i + 1;
+    } else if (text[i] === "}") {
+      open.pop();
+      head = i + 1;
+    } else if (text[i] === ";") {
+      head = i + 1;
+    }
+  }
+  return open.find((prelude) => prelude.startsWith("@layer")) ?? "no layer";
+}
+const layer = layerAround(css, ".cal-round");
+if (layer === "@layer components") {
+  console.log("css-proof: the calendar sits in @layer components — calendar.css");
+} else {
+  console.error(`css-proof: the calendar sits in ${layer ?? "nothing (missing)"}, not @layer components — calendar.css`);
+  missing += 1;
+}
 
 console.log(`css-proof: read ${cssFiles.length} stylesheet${cssFiles.length === 1 ? "" : "s"}, ${css.length} characters`);
 if (cssFiles.length === 0 || missing) {

@@ -350,6 +350,121 @@ export const viewport: Viewport = { themeColor: "…", viewportFit: "cover" };
 - `PillTabs` for a room's views, `ContactDoors` for a person's phone and
   email, `FileButton camera` for a photo from the phone.
 
+### 14. The calendar
+
+One calendar for every panel: day, week, month, year, the people side by
+side and a list on a desk; the week as a strip over the day's cards, the
+month as dots and the list on a phone. It shows the app's items of any kind
+(meetings, tasks, posts, time off), warns about clashes, drives that don't fit
+and anything booked while someone is away, and lets an item be dragged to
+another time, stretched by its foot, drawn on an empty stretch, or (in the
+people view, with `handOver`) dragged to another person. The kit imports no
+database and no server action: the app hands in the items and saves.
+
+**What the app adds:** the stylesheet after kit.css, and nothing else beyond
+the kit's usual setup (the peers, `transpilePackages`, the `@source` line,
+`kit` on `<html>` or the Shell, a `ToastProvider` round the Shell, since a
+move and a booking answer in a toast):
+
+```css
+@import "tailwindcss";
+@import "@socialize/panel-kit/kit.css";
+@import "@socialize/panel-kit/calendar.css";
+@source "../node_modules/@socialize/panel-kit/src";
+```
+
+calendar.css sits in Tailwind's `components` layer, so a utility on the same
+element wins (`lg:hidden` hides a `.cal-round`). An app's own unlayered rules
+win over it too: a room that reuses `.cal-card` or `.cal-avatar` can adjust
+them. Each item's colour is `--c`; the lines are `--cal-line` and
+`--cal-line-soft`, set on `.cal`, the calendar's root.
+
+**The page** (a server component) reads the address and loads what the view
+shows:
+
+```tsx
+import { officeMinutes, officeToday, officeMoment } from "@socialize/panel-kit/calendar-time";
+import { readCalendarAddress, viewWindow } from "@socialize/panel-kit/calendar-views";
+
+const today = officeToday(CLOCK);
+const { view, date, q } = readCalendarAddress(await searchParams, today);
+const [from, to] = viewWindow(view, date, CLOCK);           // the days to load
+const rows = q ? await search(q) : await load(officeMoment(from, 0, CLOCK), officeMoment(to, 0, CLOCK));
+return <CalendarRoom view={view} date={date} q={q} today={today} nowMinutes={officeMinutes(CLOCK)} rows={rows} … />;
+```
+
+**The room** (the app's client module) maps its rows to `CalendarItem`s and
+wires the callbacks:
+
+```tsx
+"use client";
+import { Calendar } from "@socialize/panel-kit/calendar";
+import { MeetingDrawer, type MeetingOpen } from "@socialize/panel-kit/meeting-drawer";
+import { PhoneFeedButton, PhoneFeedDrawer, usePhoneFeed } from "@socialize/panel-kit/phone-feed";
+
+const phone = usePhoneFeed(phoneCalendar);                  // (fresh) => { ok, url } | { ok: false, error }
+<Calendar
+  items={rows.map(toItem)}                                  // CalendarItem[]
+  people={people}                                           // { id, name, colour?, subtitle? }[]
+  view={view} date={date} query={q} today={today} nowMinutes={nowMinutes}
+  basePath="/calendar"                                      // or href={(view, date, q) => …}
+  kinds={[{ kind: "meeting", label: "Meetings" }, { kind: "leave", label: "Time off" }]}
+  kindIcon={(kind) => ICONS[kind]}                          // a lucide icon, or nothing
+  permissions={{ canAdd, canEdit }}
+  onOpen={(item) => …}                                      // open the app's drawer for it
+  onSlot={(slot) => setDrawer({ kind: "new", ...slot })}    // { day, from, to?, person? }
+  onMove={(item, move) => moveIt(item.id, move)}            // { start, end, fromPerson?, toPerson? } → ActionResult
+  words={{ search: "Search meetings" }}                     // only the words that change
+  clock={CLOCK}
+  foot={<PhoneFeedButton onClick={phone.show} />}
+>
+  <MeetingDrawer open={drawer} onClose={…} people={people} items={items} me={me}
+    adapter={{ save, changeSeries, remove }} canEdit={canEdit} canRemove={canRemove}
+    about={{ label: "Client", options: clients }} onDone={(message) => { close(); toast(message); router.refresh(); }} />
+  <PhoneFeedDrawer phone={phone} />
+</Calendar>
+```
+
+- **An item** is timed (`start`, `end`, ISO moments) or `allDay` (`day`,
+  `endDay`). It carries `kind`, `title`, `people`, and may carry its own
+  `colour` (else its first person's, else the brand), `subtitle`,
+  `location`, `travelMinutes`, `status`, `seriesId`, `repeat`. `editable:
+  false` opens on a press but never drags; `away: true` is time off: it
+  hatches, hatches its person's column in the people view, and warns about
+  anything of theirs inside it.
+- **A move** shows at once; a result that isn't ok puts it back and says why
+  in a toast, and a message on success replaces the calendar's own ("Moved to
+  Thu 15 Oct, 10:00"). The page then refreshes.
+- **The words** are English and go through PanelProvider's `t` as they are
+  drawn (`calendar-words`: `CALENDAR_WORDS`, `MEETING_WORDS`, `FEED_WORDS`).
+  Hand in only the ones that change.
+- **The clock** (`calendar-time`) is the office's, Doha's by default: +03:00
+  all year, the week from Sunday, Friday and Saturday off. `ClockSettings`
+  takes `offsetMinutes`, or `timeZone` for a clock that moves for summer,
+  `weekStartsOn` and `weekend`. Inside `<Calendar>` the week starts where
+  PanelProvider's `weekStartsOn` says, so the small month agrees; give the
+  same settings to the page's `viewWindow`.
+- **The booking drawer** holds the form (what, the day and hours, a repeat
+  until a day, the people, where, the drive, the company, a guest, confirmed
+  or not, the purpose) and checks for clashes as it is filled. It saves
+  through `adapter.save(draft)`, a series' later meetings through
+  `adapter.changeSeries(draft)` and removes through `adapter.remove(id,
+  scope)`; leave one out and the drawer doesn't offer it. `fields` turns
+  parts off.
+- **The phone feed**: `calendarFile({ name, prodId, uidDomain, tzName,
+  linkFor, events, people, now })` writes the iCalendar file the app serves
+  at the link `usePhoneFeed` asks for.
+- **Pure helpers** for the server and the tests: `calendar-layout`
+  (`placeDay`, `placeAllDay`, `warnings`, `dropAt`, `moveOf`),
+  `calendar-repeat` (`seriesDays`, `repeatLabel`, working days from the
+  weekend), `calendar-views` (`readCalendarAddress`, `viewSpan`,
+  `viewWindow`, `calendarHref`) and `due` (`dueGroup`, `dueText`, `lateDays`,
+  `DUE_GROUP_NAMES`), the task list's groups: late, today, tomorrow, this
+  week, later, no date.
+
+The fixture's `/calendar` page has every piece wired, with four kinds, a
+clash, a drive that doesn't fit and someone booked while away.
+
 ## What's in it
 
 | | |
@@ -358,6 +473,7 @@ export const viewport: Viewport = { themeColor: "…", viewportFit: "cover" };
 | **Shell** | `shell`, `panel-provider`, `nav`, `page-header-context` (PageMeta), `back-door`, `nav-memory`, `collapse-button`, `new-record-button`, `header-control`, `header-fold`, `lights-toggle`, `use-panel-pathname`, `number-wheel-guard`, `rows-calibrator`, `refresh-if-stale`, `door-page`, `door-forms`, `grain` |
 | **Lists** | `data-table`, `stage-tabs`, `list-config`, `list-controls` (search, filter, sort, the chips), `filter-drawer`, `list-options-context`, `page-size`, `page-size-server`, `link-row`, `row-actions`, `row-menu`, `decision-bar` |
 | **Records** | `drawer`, `drawer-header`, `drawer-tabs`, `record`, `record-fields` (Section), `record-form`, `record-editing`, `record-route`, `stage-walk`, `unsaved-guard`, `delete-button`, `save-button`, `use-action-success`, `foot-log`, `event-trail`, `pdf-link` |
+| **Calendar** | `calendar` (the room), `calendar-grid`, `calendar-month`, `calendar-list`, `calendar-side`, `calendar-context`, `meeting-drawer`, `phone-feed`, and pure: `calendar-time`, `calendar-layout`, `calendar-repeat`, `calendar-views`, `calendar-words`, `calendar-ics`, `due`; the look in `calendar.css` |
 | **Hiring** | `hiring-words`, `stage-chip`, `fit-chip`, `stage-mover`, `candidate-file`, `letter-composer`, `sent-letters`, `hiring-tools`, `candidate-columns`, `opening-form`, `opening-chip`, `opening-columns` |
 | **Fields** | `fields`, `select-menu`, `other-select`, `choice-pills`, `segmented`, `switch`, `number-stepper`, `date-field`, `time-field`, `phone-field`, `password-input`, `note-box`, `grab-resize`, `caret-safe`, `joined-row`, `media-drop-zone`, `photo-field`, `star-rating` |
 | **Feedback** | `modal` (ConfirmDialog, PromptDialog, PickDialog, Sheet), `toast`, `hint`, `empty-state`, `panel-loader`, `load-error` |

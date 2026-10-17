@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.17 — 17 Oct 2026
+
+One calendar for every panel, lifted from the first panel that built one and made to show items of any kind. The kit owns the views, the gestures, the warnings and the booking form; the app owns the items and every write.
+
+- `Calendar` (new): day, week, month, year, the people side by side and a list on a desk; on a phone the week as a strip over the day's cards (a swipe turns the day), the month as dots, and the list. The toolbar's views are `PillTabs`; the side holds the search, a small month, the people with how many items each has in view, the kinds ("What shows") when there are two or more, and the app's own seat (`foot`, the phone link). A line over the grid names what clashes in view (`strip`, on by default). Items are `CalendarItem`s of any `kind`, each in its own colour, its person's, or the brand.
+- An all-day lane over the time grid: an all-day item is a bar across its days, stacked in as few rows as keep them apart; in the people view a bar sits in its own people's columns.
+- Time off (`away`): hatched wherever it is drawn, a person's column hatched behind their day in the people view, and a warning on anything of theirs booked inside it.
+- Drag to move by quarter hours, pull the foot to change the end, draw on an empty stretch to book. An item with `editable: false` opens on a press and never drags. In the people view with `handOver`, a drop in another person's column reports `fromPerson` and `toPerson`. The move shows at once and goes back, with the reason, if the app says no.
+- `MeetingDrawer` (new): the booking form (what, the day and hours, a repeat until a day, the people, where, the drive, the company, a guest, confirmed or not, the purpose), a live check for clashes, drives that don't fit and people away, a series' "only this one" or "this and the ones after", and a read view for someone who may only look. It saves through an adapter (`save`, `changeSeries`, `remove`); the fields and the words are the app's to change.
+- `PhoneFeedButton`, `PhoneFeedDrawer` and `usePhoneFeed` (new): a person's calendar on their phone, one tap for an iPhone or a Mac, one for Google Calendar, or a link to copy, and a new link when the old one got out. `calendarFile` (in `calendar-ics`) writes the RFC 5545 file, with the app's own PRODID, UID domain and links; all-day items go out as dates.
+- Pure, for the server, the browser and the tests: `calendar-time` (the office's clock: an offset or a zone with summer time, the week's first day and the weekend, Doha's by default), `calendar-layout` (`placeDay`, `placeAllDay`, `warnings` with `clash`, `drive` and `away`, `dropAt`, `moveOf`), `calendar-repeat` (working days follow the weekend), `calendar-views` (the address, what a view shows and what a page loads), `calendar-words` (every word, in English, through the panel's translator), and `due`: a task list's groups (late, today, tomorrow, this week, later, no date), `lateDays` and the words on a due pill.
+- An item that ends at midnight stays in its day: the first panel drew a quarter-hour stub of it at the top of the next.
+- `calendar.css` (new, its own import after kit.css): the calendar's look, in Tailwind's `components` layer so a utility on the same element wins. Unlayered, `.cal-round`'s own display beat `lg:hidden`, and a room wrapped the button in a div to hide it. The fixture's CSS proof now checks the layer.
+- The fixture has a `/calendar` page with every piece wired.
+
 ## 0.1.16 — 11 Oct 2026
 
 The panel on a phone, like an app (Inception first). Every piece is one shared copy, and the arithmetic behind it is plain functions with tests.

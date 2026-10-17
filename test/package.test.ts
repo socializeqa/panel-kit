@@ -13,6 +13,8 @@ const pkg = JSON.parse(readFileSync(`${root}package.json`, "utf8")) as {
   peerDependencies: Record<string, string>;
 };
 const sources = readdirSync(`${root}src`).sort();
+// The stylesheets at the root: the tokens every panel takes, and the calendar's look for a panel with one.
+const STYLESHEETS = ["kit.css", "calendar.css"];
 const read = (file: string) => readFileSync(`${root}src/${file}`, "utf8");
 
 describe("package.json exports", () => {
@@ -25,10 +27,10 @@ describe("package.json exports", () => {
 
   it("points at nothing that isn't there", () => {
     for (const [name, target] of Object.entries(pkg.exports)) {
-      if (name === "./kit.css") continue;
+      if (STYLESHEETS.includes(name.slice(2))) continue;
       expect(sources, `${name} → ${target}`).toContain(target.replace("./src/", ""));
     }
-    expect(pkg.exports["./kit.css"]).toBe("./kit.css");
+    for (const sheet of STYLESHEETS) expect(pkg.exports[`./${sheet}`]).toBe(`./${sheet}`);
   });
 
   // A git dependency with any of these makes npm run a full install of the
@@ -40,8 +42,8 @@ describe("package.json exports", () => {
     }
   });
 
-  it("ships the source, the stylesheet, the checker and the words — no fixture", () => {
-    expect(pkg.files).toEqual(["src", "kit.css", "bin", "README.md", "CHANGELOG.md"]);
+  it("ships the source, the stylesheets, the checker and the words — no fixture", () => {
+    expect(pkg.files).toEqual(["src", ...STYLESHEETS, "bin", "README.md", "CHANGELOG.md"]);
   });
 
   // pnpm 11 refuses a git dependency of a dependency (blockExoticSubdeps), so
