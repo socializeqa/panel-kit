@@ -54,6 +54,11 @@ export interface HiringWords {
   fitCutoffs?: [number, number];
   /** A line the hire question adds about what a hire settles in this panel (that the file can no longer be deleted, say). */
   hireNote?: string;
+  /**
+   * A hire can't be reopened in this panel: hiring did more than move a file
+   * (Socialize's opens a payroll seat), so a hired file only reads.
+   */
+  hireIsFinal?: boolean;
 }
 
 const HIRED = "hired";
@@ -117,12 +122,13 @@ export interface Moves {
  * step, skip a skippable stage, hire from any open stage, let go; a settled
  * file only reopens.
  */
-export function offeredMoves(words: Pick<HiringWords, "stages" | "hired" | "rejected">, stage: string): Moves {
+export function offeredMoves(words: Pick<HiringWords, "stages" | "hired" | "rejected" | "hireIsFinal">, stage: string): Moves {
   const walk = walkStages(words);
   const hired = hiredOf(words);
   const first = walk[0]?.value ?? null;
   if (stage === hired || stage === rejectedOf(words)) {
-    return { settled: true, next: null, back: null, skip: null, hire: false, letGo: false, reopen: first };
+    const final = stage === hired && words.hireIsFinal === true;
+    return { settled: true, next: null, back: null, skip: null, hire: false, letGo: false, reopen: final ? null : first };
   }
   const at = Math.max(0, walk.findIndex((s) => s.value === stage));
   const following = walk[at + 1];
@@ -171,10 +177,31 @@ export interface LetterField {
   key: string;
   label: string;
   placeholder?: string;
-  /** "text" a line (the default), "long" a box, "day" the calendar, "time" the clock. */
-  kind?: "text" | "long" | "day" | "time";
-  /** What the field starts with: the office's address for "where". */
+  /** "text" a line (the default), "long" a box, "day" the calendar, "time" the clock, "choice" a row of pills. */
+  kind?: "text" | "long" | "day" | "time" | "choice";
+  /** A choice's answers: how long an interview runs, who sits in it. */
+  options?: { value: string; label: string }[];
+  /** A choice that takes several (the people in an interview): the values travel joined by commas. */
+  many?: boolean;
+  /** What the field starts with: the office's address for "where", the one writing for "who". */
   start?: string;
+}
+
+/** How long an interview may run, in minutes, as the pills offer it. */
+export const INTERVIEW_LENGTHS = [30, 45, 60, 90] as const;
+
+/** A length on a pill: "45 min", "1 h", "1 h 30". */
+export function lengthLabel(minutes: number): string {
+  if (minutes % 60 === 0) return `${minutes / 60} h`;
+  return minutes > 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60}` : `${minutes} min`;
+}
+
+/** A "many" choice's values, read back from the comma-joined detail. */
+export function manyOf(value: string | undefined): string[] {
+  return (value ?? "")
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 
 /** The fields each letter asks for, by letter. A letter with none sends as it is. */

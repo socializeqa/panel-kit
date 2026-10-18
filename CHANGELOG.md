@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.18 — 18 Oct 2026
+
+Interviews in the hiring rooms, and what the first house panel to move its own hiring onto them needed (Socialize; Damine: "of course using unified brain and components").
+
+- `InterviewCard` (new): the interview booked with a candidate, under where they stand in `CandidateFile` (its new `interview` slot): the day and the hours on the office's clock, where, with whom, how long, and whether they said yes. Before it: **They confirmed**, **Move it** (a form in place for the day, the time and the length; nothing moves until pressed) and **Cancel the interview** behind ⋯, asking first with an optional line for them. Once it is over and the file still waits on it: **Didn't come** or **They came**. Every act is the app's callback; the app tells the candidate.
+- `interviewColumns` and `InterviewChip` (new, server-safe): an interviews list (candidate, when, role, with, where, standing).
+- Letter fields take `kind: "choice"` with `options`, and `many` for several (who sits in an interview; the values travel joined by commas, `manyOf` reads them). `INTERVIEW_LENGTHS` and `lengthLabel` in `hiring-words`.
+- `LetterComposer`: `confirmBody` (what the send question says goes, for a panel whose letters ride WhatsApp too) and `previewAside` (the panel's own view under the email preview, from what its preview answers in `extra`: the same letter on the phone).
+- `StageMover` and `CandidateFile` take `onHire`: the panel's own hire step in place of the kit's question (a hire that asks the salary and the first day). `HiringWords.hireIsFinal`: a hire never reopens, and its walk takes no press.
+- `HiringTools` takes `onExport`: the spreadsheet made on the press, for a list paged in the browser whose filters the address can't carry.
+- `OpeningForm` takes `responsibilities={false}` (no "What you'll do" list, for role pages without one) and `recordHref` (where a new opening opens, for a panel whose drawers open from a search param).
+- The candidate's story gives interview and WhatsApp lines their own glyphs. `SentLetters` counts letters, not emails: a panel's letters may go by WhatsApp too.
+
 ## 0.1.17 — 17 Oct 2026
 
 One calendar for every panel, lifted from the first panel that built one and made to show items of any kind. The kit owns the views, the gestures, the warnings and the booking form; the app owns the items and every write.

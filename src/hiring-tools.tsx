@@ -29,6 +29,7 @@ export function HiringTools({
   words,
   candidates,
   exportHref,
+  onExport,
   canManage,
   regretLetter = true,
   reasonPlaceholder = "Not enough experience for the role",
@@ -39,6 +40,8 @@ export function HiringTools({
   candidates: ToolCandidate[];
   /** The spreadsheet, with the same filters as the list on screen; no seat when left out. */
   exportHref?: string;
+  /** The spreadsheet made on the press, for a list paged in the browser (its filters live there, not in the address). */
+  onExport?: () => void;
   canManage: boolean;
   /** Offer to send each the regret letter (a panel that writes no letters turns it off). */
   regretLetter?: boolean;
@@ -80,6 +83,10 @@ export function HiringTools({
         <a href={exportHref} download aria-label={exportLabel} title={exportLabel} className={CTRL_BTN}>
           <Download size={16} strokeWidth={2} aria-hidden="true" />
         </a>
+      ) : onExport ? (
+        <button type="button" onClick={onExport} aria-label={exportLabel} title={exportLabel} className={CTRL_BTN}>
+          <Download size={16} strokeWidth={2} aria-hidden="true" />
+        </button>
       ) : null}
       {canManage ? (
         <button

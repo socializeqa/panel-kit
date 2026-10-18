@@ -14,6 +14,7 @@ import { Hint } from "./hint";
 import {
   letterForFile,
   letterGate,
+  manyOf,
   readDraft,
   sayList,
   startDetails,
@@ -30,7 +31,7 @@ import { TimeField } from "./time-field";
 import { useToast } from "./toast";
 
 /** What a preview answers: the letter exactly as it would arrive, or why it can't be shown. */
-export type LetterPreview = { ok: true; subject: string; html: string } | { ok: false; error: string };
+export type LetterPreview = { ok: true; subject: string; html: string; extra?: Record<string, unknown> } | { ok: false; error: string };
 
 // A draft is kept in the tab (sessionStorage), per candidate, so switching to
 // another room of the file and back, or closing the drawer, loses nothing. It
@@ -71,6 +72,8 @@ export function LetterComposer({
   mailReady = true,
   notReady = "Letters can be written and previewed now. Sending opens once the panel's email is set up.",
   subtitle,
+  confirmBody,
+  previewAside,
   sent = [],
   hours = { from: 8, to: 20 },
   onPreview,
@@ -93,6 +96,17 @@ export function LetterComposer({
   notReady?: string;
   /** The line under the heading; "By email to … in …" when left out. */
   subtitle?: string;
+  /**
+   * What the send question says goes, for a letter: "It goes by email and on
+   * WhatsApp…" in a panel whose letters ride both. The kit's email line when
+   * left out or when it answers nothing.
+   */
+  confirmBody?: (letter: string, details: LetterDetails) => string | undefined;
+  /**
+   * The panel's own view beside the email preview, from what its preview
+   * answered in `extra`: the same letter on WhatsApp, drawn as their phone shows it.
+   */
+  previewAside?: (extra: Record<string, unknown> | undefined) => React.ReactNode;
   /** What went already, newest first. */
   sent?: SentLetter[];
   /** The clock's window for an interview time. */
@@ -123,7 +137,7 @@ export function LetterComposer({
     }
   }
   const { letter, details } = draft;
-  const [preview, setPreview] = useState<{ subject: string; html: string } | null>(null);
+  const [preview, setPreview] = useState<{ subject: string; html: string; extra?: Record<string, unknown> } | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [pending, start] = useTransition();
   useEffect(() => keep(draftKey, touched ? draft : null), [draftKey, draft, touched]);
@@ -151,7 +165,7 @@ export function LetterComposer({
         toast(res.error, "error");
         return;
       }
-      setPreview({ subject: res.subject, html: res.html });
+      setPreview({ subject: res.subject, html: res.html, extra: res.extra });
     });
   };
 
@@ -198,6 +212,18 @@ export function LetterComposer({
             const id = `letter-${f.key}`;
             const value = details[f.key] ?? "";
             const placeholder = f.placeholder ? t(f.placeholder) : undefined;
+            // A choice is a row of pills under its name, not a box with a label.
+            if (f.kind === "choice") {
+              return (
+                <FieldGroup key={f.key} label={f.label}>
+                  {f.many ? (
+                    <ChoicePills multiple wrap ariaLabel={t(f.label)} value={manyOf(value)} onChange={(v) => write(f.key, v.join(","))} options={f.options ?? []} />
+                  ) : (
+                    <ChoicePills wrap ariaLabel={t(f.label)} value={value} onChange={(v) => write(f.key, v)} options={f.options ?? []} />
+                  )}
+                </FieldGroup>
+              );
+            }
             return (
               <Field key={f.key} label={f.label} htmlFor={id}>
                 {f.kind === "day" ? (
@@ -234,6 +260,7 @@ export function LetterComposer({
                 most letters set no page colour of their own. Sandboxed, so the
                 letter's markup can run nothing. */}
             <iframe title={t("Letter preview")} srcDoc={preview.html} sandbox="" className="h-[560px] w-full rounded-control border border-ink/10 bg-white" />
+            {previewAside?.(preview.extra)}
           </Section>
         ) : null}
 
@@ -242,7 +269,7 @@ export function LetterComposer({
           onClose={() => setConfirming(false)}
           onConfirm={send}
           title={t("Send the {letter} to {name}?", { letter: letterName.toLowerCase(), name })}
-          body={t("It goes by email to {email} now, and lands in their story.", { email })}
+          body={confirmBody?.(letter, details) ?? t("It goes by email to {email} now, and lands in their story.", { email })}
           confirmLabel="Send"
           confirmIcon={Send}
           pendingLabel="Sending…"

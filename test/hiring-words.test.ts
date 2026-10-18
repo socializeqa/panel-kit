@@ -3,6 +3,7 @@ import {
   fitToneOf,
   letterForFile,
   letterGate,
+  manyOf,
   offeredMoves,
   questionCount,
   readDraft,
@@ -138,6 +139,20 @@ describe("offeredMoves — what a file offers at each stage", () => {
 
   it("an unknown stage moves like the first", () => {
     expect(offeredMoves(WORDS, "archived").next).toEqual({ to: "shortlist", hire: false });
+  });
+
+  it("a final hire never reopens, and a no still does", () => {
+    const words = { ...WORDS, hireIsFinal: true };
+    expect(offeredMoves(words, "hired")).toMatchObject({ settled: true, reopen: null });
+    expect(offeredMoves(words, "rejected").reopen).toBe("new");
+  });
+});
+
+describe("a choice that takes several", () => {
+  it("travels joined by commas and reads back clean", () => {
+    expect(manyOf("a, b,,c ")).toEqual(["a", "b", "c"]);
+    expect(manyOf(undefined)).toEqual([]);
+    expect(manyOf("")).toEqual([]);
   });
 });
 

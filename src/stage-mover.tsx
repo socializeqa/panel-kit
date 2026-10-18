@@ -24,6 +24,7 @@ export function StageMover({
   stage,
   name,
   onMove,
+  onHire,
   disabled = false,
 }: {
   words: HiringWords;
@@ -32,6 +33,12 @@ export function StageMover({
   name: string;
   /** The move; a reason comes with a hire, a let-go and a reopen, and lands in their story. */
   onMove: (to: string, reason?: string) => Promise<ActionResult>;
+  /**
+   * The panel's own hire, in place of the kit's question: a hire that needs
+   * more than a yes (Socialize's asks the salary and the first day, and opens
+   * a payroll seat). Every hire door opens it.
+   */
+  onHire?: () => void;
   disabled?: boolean;
 }) {
   const t = usePanelT();
@@ -61,12 +68,16 @@ export function StageMover({
       router.refresh();
     });
 
+  const hire = () => (onHire ? onHire() : setGate("hire"));
   const pick = (to: string) => {
     const kind = walkPick(words, stage, to);
     if (kind === "move") return move(to);
+    if (kind === "hire") return hire();
     if (kind === "reopen") setReopenTo(to);
     setGate(kind);
   };
+  // A file that can't be reopened (a final hire) reads; its walk takes no press.
+  const fixed = moves.settled && !moves.reopen;
 
   const stepWords = (to: string) => {
     const s = stageOf(words, to);
@@ -84,7 +95,7 @@ export function StageMover({
 
   return (
     <div className="flex flex-col gap-4">
-      <StageWalk steps={steps} current={stageOf(words, stage).value} exit={exit} onPick={pick} disabled={busy} />
+      <StageWalk steps={steps} current={stageOf(words, stage).value} exit={exit} onPick={fixed ? undefined : pick} disabled={busy} />
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink/[0.07] pt-4">
         <p className="text-[12px] text-quiet">
           {said ??
@@ -108,7 +119,7 @@ export function StageMover({
                 </DecisionItem>
               ) : null}
               {moves.hire ? (
-                <DecisionItem onClick={() => setGate("hire")} disabled={busy}>
+                <DecisionItem onClick={hire} disabled={busy}>
                   <UserRoundCheck size={15} strokeWidth={2} aria-hidden="true" /> {t("Hire them")}
                 </DecisionItem>
               ) : null}
@@ -120,24 +131,26 @@ export function StageMover({
             </RowMenu>
           ) : null}
           {moves.settled ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                setReopenTo(moves.reopen ?? stage);
-                setGate("reopen");
-              }}
-              disabled={busy}
-            >
-              <RotateCcw size={14} strokeWidth={2} aria-hidden="true" /> {t("Reopen")}
-            </Button>
+            fixed ? null : (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setReopenTo(moves.reopen ?? stage);
+                  setGate("reopen");
+                }}
+                disabled={busy}
+              >
+                <RotateCcw size={14} strokeWidth={2} aria-hidden="true" /> {t("Reopen")}
+              </Button>
+            )
           ) : next && !next.hire ? (
             <Button type="button" size="sm" onClick={() => move(next.to)} disabled={busy}>
               <ArrowRight size={14} strokeWidth={2} aria-hidden="true" /> {stepWords(next.to)}
             </Button>
           ) : (
-            <Button type="button" size="sm" onClick={() => setGate("hire")} disabled={busy}>
+            <Button type="button" size="sm" onClick={hire} disabled={busy}>
               <UserRoundCheck size={14} strokeWidth={2} aria-hidden="true" /> {hired.step ? t(hired.step) : t("Hire")}
             </Button>
           )}

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  CalendarClock,
   ExternalLink,
   FileText,
   FolderOpen,
@@ -101,6 +102,8 @@ const STORY_GLYPHS: TrailGlyphs = [
   [/^note/, StickyNote],
   [/^read/, ScanText],
   [/^language/, Languages],
+  [/^interview/, CalendarClock],
+  [/^whatsapp/, Send],
 ];
 
 const glyph = (Icon: LucideIcon) => <Icon size={15} strokeWidth={2} aria-hidden="true" />;
@@ -143,8 +146,10 @@ export function CandidateFile({
   letters,
   headerActions,
   language,
+  interview,
   canManage,
   onMove,
+  onHire,
   onRate,
   onAddNote,
   remove,
@@ -166,9 +171,13 @@ export function CandidateFile({
   /** More seats in the header, before delete. */
   headerActions?: React.ReactNode;
   language?: FileLanguage;
+  /** The interview booked with them (an InterviewCard), under where they stand. */
+  interview?: React.ReactNode;
   /** May move, rate, note and switch the language. */
   canManage: boolean;
   onMove: (to: string, reason?: string) => Promise<ActionResult>;
+  /** The panel's own hire step in place of the kit's question (StageMover's `onHire`). */
+  onHire?: () => void;
   /** 0 clears the rating. */
   onRate: (stars: number) => Promise<ActionResult>;
   onAddNote: (body: string) => Promise<ActionResult>;
@@ -252,11 +261,13 @@ export function CandidateFile({
     <div className={ROOM_COLUMN}>
       <Section plain title="Where they stand" subtitle={canManage ? "Press a stage to move them" : undefined}>
         {canManage ? (
-          <StageMover words={words} stage={stage} name={c.name} onMove={onMove} />
+          <StageMover words={words} stage={stage} name={c.name} onMove={onMove} onHire={onHire} />
         ) : (
           <StageWalk steps={steps} current={stage} exit={exit} />
         )}
       </Section>
+
+      {interview}
 
       <Section plain title="Details" action={languageSeat}>
         {/* Three facts a row on one grid; a hairline between the rows, none above the first. */}

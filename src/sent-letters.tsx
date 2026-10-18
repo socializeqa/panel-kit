@@ -27,7 +27,7 @@ export function SentLetters({ sent, title = "Already sent" }: { sent: SentLetter
   const t = usePanelT();
   if (!sent.length) return null;
   return (
-    <Section plain title={title} subtitle={sent.length === 1 ? t("1 email") : t("{n} emails", { n: sent.length })}>
+    <Section plain title={title} subtitle={sent.length === 1 ? t("1 letter") : t("{n} letters", { n: sent.length })}>
       <ul className="flex flex-col">
         {sent.map((s) => (
           <li key={s.id} className="flex items-baseline justify-between gap-4 border-t border-ink/[0.07] py-2.5 first:border-t-0 first:pt-0 last:pb-0">

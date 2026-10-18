@@ -149,6 +149,10 @@ type OpeningFormProps<R extends OpeningSaveResult> = {
   remove?: { action: (formData: FormData) => void | Promise<void | ActionResult> };
   /** False for a role that may only look at openings: no pencil, no way to edit. */
   canEdit?: boolean;
+  /** The "What you'll do" list, on unless the panel's role pages have no such list. */
+  responsibilities?: boolean;
+  /** Where a new opening opens once saved; `${listHref}/${id}` when left out. For a panel whose drawers open from a search param. */
+  recordHref?: (id: string) => string;
 };
 
 // An opening, new or on file, for a drawer, on the kit's one save model: what
@@ -184,6 +188,8 @@ function OpeningFields<R extends OpeningSaveResult>({
   publicUrl,
   remove,
   canEdit = true,
+  responsibilities = true,
+  recordHref,
 }: OpeningFormProps<R>) {
   const t = usePanelT();
   const router = useRouter();
@@ -326,7 +332,7 @@ function OpeningFields<R extends OpeningSaveResult>({
             setEditing(false);
             return;
           }
-          const target = r.id ? `${listHref}/${r.id}` : listHref;
+          const target = r.id ? (recordHref ? recordHref(r.id) : `${listHref}/${r.id}`) : listHref;
           if (inDrawer) closeTo(target);
           else router.replace(target);
         }}
@@ -394,15 +400,17 @@ function OpeningFields<R extends OpeningSaveResult>({
             <Field label="About the role" htmlFor="opening-description">
               <NoteBox id="opening-description" name="description" rows={7} defaultValue={opening?.description ?? ""} placeholder={t("What the role is and what a day looks like.")} />
             </Field>
-            <Field label="What you'll do" htmlFor="opening-responsibilities">
-              <NoteBox
-                id="opening-responsibilities"
-                name="responsibilities"
-                rows={6}
-                defaultValue={opening?.responsibilities ?? ""}
-                placeholder={t("One per line:\nKeep the office running day to day\nLook after visitors and calls")}
-              />
-            </Field>
+            {responsibilities ? (
+              <Field label="What you'll do" htmlFor="opening-responsibilities">
+                <NoteBox
+                  id="opening-responsibilities"
+                  name="responsibilities"
+                  rows={6}
+                  defaultValue={opening?.responsibilities ?? ""}
+                  placeholder={t("One per line:\nKeep the office running day to day\nLook after visitors and calls")}
+                />
+              </Field>
+            ) : null}
             <Field label="What we look for" htmlFor="opening-requirements">
               <NoteBox
                 id="opening-requirements"
@@ -438,9 +446,11 @@ function OpeningFields<R extends OpeningSaveResult>({
               <Field label="About the role in Arabic" htmlFor="opening-description-ar">
                 <NoteBox id="opening-description-ar" name="description_ar" dir="rtl" rows={6} defaultValue={opening?.description_ar ?? ""} />
               </Field>
-              <Field label="What you'll do in Arabic" htmlFor="opening-responsibilities-ar">
-                <NoteBox id="opening-responsibilities-ar" name="responsibilities_ar" dir="rtl" rows={5} defaultValue={opening?.responsibilities_ar ?? ""} />
-              </Field>
+              {responsibilities ? (
+                <Field label="What you'll do in Arabic" htmlFor="opening-responsibilities-ar">
+                  <NoteBox id="opening-responsibilities-ar" name="responsibilities_ar" dir="rtl" rows={5} defaultValue={opening?.responsibilities_ar ?? ""} />
+                </Field>
+              ) : null}
               <Field label="What we look for in Arabic" htmlFor="opening-requirements-ar">
                 <NoteBox id="opening-requirements-ar" name="requirements_ar" dir="rtl" rows={5} defaultValue={opening?.requirements_ar ?? ""} />
               </Field>
@@ -546,9 +556,11 @@ function OpeningFields<R extends OpeningSaveResult>({
                     <Field label="About the role" htmlFor={id("description")}>
                       <NoteBox id={id("description")} name={`tr.${l}.description`} rows={6} defaultValue={w.description ?? ""} />
                     </Field>
-                    <Field label="What you'll do" htmlFor={id("responsibilities")}>
-                      <NoteBox id={id("responsibilities")} name={`tr.${l}.responsibilities`} rows={5} defaultValue={w.responsibilities ?? ""} />
-                    </Field>
+                    {responsibilities ? (
+                      <Field label="What you'll do" htmlFor={id("responsibilities")}>
+                        <NoteBox id={id("responsibilities")} name={`tr.${l}.responsibilities`} rows={5} defaultValue={w.responsibilities ?? ""} />
+                      </Field>
+                    ) : null}
                     <Field label="What we look for" htmlFor={id("requirements")}>
                       <NoteBox id={id("requirements")} name={`tr.${l}.requirements`} rows={5} defaultValue={w.requirements ?? ""} />
                     </Field>
