@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.19 — 18 Oct 2026
+
+- `StageTabs` takes `home`: the view a list opens on, as the strip's first cell (a hiring list's **Active**, everyone not hired or let go), with **All** moved to the end after the ways out, under `allValue` ("all"). The big hiring tools open on the people still in play; the rejected stay one press away (Socialize: "the rejected application keep appearing").
+
 ## 0.1.18 — 18 Oct 2026
 
 Interviews in the hiring rooms, and what the first house panel to move its own hiring onto them needed (Socialize; Damine: "of course using unified brain and components").

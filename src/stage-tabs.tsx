@@ -25,10 +25,18 @@ const DOT = { ok: "bg-ok", danger: "bg-danger" } as const;
 // It replaces a row of figures: the stages ARE the figures. Too many for the
 // screen, it scrolls sideways rather than squeeze a name onto two lines.
 // X Capital's candidates, 4 Oct 2026 (Damine: "i dont see phases").
+//
+// With `home`, the list opens on the records still in play (a hiring list's
+// Active: everyone not hired or let go), as the strip's first cell; All
+// moves to the end, after the ways out, under `allValue`. The way the big
+// hiring tools open (Socialize, 18 Oct 2026: "the rejected application
+// keep appearing").
 export function StageTabs({
   steps,
   exits = [],
   total,
+  home,
+  allValue = "all",
   allLabel = "All",
   param = "status",
   label = "Stages",
@@ -37,6 +45,10 @@ export function StageTabs({
   steps: StageCount[];
   exits?: StageCount[];
   total: number;
+  /** The view the list opens on, with no stage in the address: its label and count. */
+  home?: { label: string; count: number };
+  /** With a home, the address value that shows every record. */
+  allValue?: string;
   allLabel?: string;
   /** The search param the list filters its stage by. */
   param?: string;
@@ -86,10 +98,11 @@ export function StageTabs({
   return (
     <nav aria-label={t(label)} className={cn(PANEL_SHELL, "overflow-hidden", className)}>
       <div className="flex gap-px overflow-x-auto bg-ink/[0.07] [scrollbar-width:none]">
-        {cell({ value: "", label: allLabel, count: total })}
+        {home ? cell({ value: "", label: home.label, count: home.count }) : cell({ value: "", label: allLabel, count: total })}
         {steps.map(cell)}
-        {exits.length ? <span aria-hidden className="w-1.5 shrink-0 bg-ink/[0.05]" /> : null}
+        {exits.length || home ? <span aria-hidden className="w-1.5 shrink-0 bg-ink/[0.05]" /> : null}
         {exits.map(cell)}
+        {home ? cell({ value: allValue, label: allLabel, count: total }) : null}
       </div>
     </nav>
   );
