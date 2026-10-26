@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { insidePath } from "./action-result";
 import { waitWords } from "./staff-door";
 
 // Two-step sign-in for every panel: the password, then six digits from an
@@ -77,7 +78,12 @@ export function twoStepDoor(deps: TwoStepDeps) {
   const take = (bucket: string): Promise<Verdict> => (deps.attempts ? deps.attempts.take(bucket) : Promise.resolve({ allowed: true }));
   const tooMany = (verdict: Verdict) => (verdict.allowed ? null : `Too many tries. Try again ${waitWords(verdict.waitSeconds)}.`);
 
-  /** The six digits after the password; right, and the session may read the panel. */
+  /**
+   * The six digits after the password; right, and the session may read the
+   * panel. It goes on to `then` when the form carries one (a reset link's new
+   * password, which the sign-in server only lets a session past its code
+   * choose), otherwise home.
+   */
   async function verify(_state: string | null, form: FormData): Promise<string | null> {
     const client = await deps.client();
     if (!client) redirect(paths.login);
@@ -91,7 +97,7 @@ export function twoStepDoor(deps: TwoStepDeps) {
     const { error } = await client.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
     if (error) return "That code didn't match. Try the one showing now.";
     await deps.attempts?.clear(bucket);
-    redirect(paths.home);
+    redirect(insidePath(form.get("then")) ?? paths.home);
   }
 
   /** A fresh code for this account and its QR. A setup left halfway is cleared first: the server refuses a second one. */

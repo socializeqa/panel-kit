@@ -207,7 +207,7 @@ function Rail({ onNavigate }: { onNavigate?: () => void }) {
             {user?.href ? (
               <Link
                 href={user.href}
-                title={t("Your account")}
+                title={t(user.title ?? "Your account")}
                 className="-m-1 flex min-w-0 flex-1 items-center gap-2.5 rounded-[6px] p-1 transition-colors duration-150 hover:bg-on-rail/[0.06]"
               >
                 {who}

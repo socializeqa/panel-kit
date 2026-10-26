@@ -13,6 +13,11 @@ export type ActionResult = { ok: true; message?: string } | { ok: false; error: 
  *   return { ok: true };
  */
 export function afterDeleteHref(form: FormData): string | null {
-  const after = String(form.get("after") ?? "");
-  return after.length <= 512 && /^\/(?![\/\\])[^\s]*$/.test(after) ? after : null;
+  return insidePath(form.get("after"));
+}
+
+/** A path inside the panel ("/requests?status=new"), or null for anything that could leave it: another site, "//host", "/\host", a scheme. */
+export function insidePath(raw: FormDataEntryValue | string | null | undefined): string | null {
+  const path = typeof raw === "string" ? raw : "";
+  return path.length <= 512 && /^\/(?![\/\\])[^\s]*$/.test(path) ? path : null;
 }

@@ -100,6 +100,14 @@ describe("contactLinks — call, WhatsApp, email (the house order)", () => {
     ]);
     expect(contactLinks({})).toEqual([]);
   });
+  it("opens WhatsApp and Email with a reply already typed, and a call with nothing", () => {
+    expect(contactLinks({ email: "someone@example.com", phone: "+40 712 345 678", message: { text: "Bună ziua, Ioana!", subject: "Your ring" } })).toEqual([
+      { way: "call", href: "tel:+40712345678" },
+      { way: "whatsapp", href: "https://wa.me/40712345678?text=Bun%C4%83%20ziua%2C%20Ioana!" },
+      { way: "email", href: "mailto:someone@example.com?subject=Your%20ring&body=Bun%C4%83%20ziua%2C%20Ioana!" },
+    ]);
+    expect(contactLinks({ email: "someone@example.com", message: { text: "  " } })).toEqual([{ way: "email", href: "mailto:someone@example.com" }]);
+  });
 });
 
 describe("internationalDigits — a number with its country", () => {

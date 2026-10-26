@@ -4,13 +4,14 @@ import { Mail, Phone } from "lucide-react";
 import { WhatsAppGlyph } from "./brand-glyphs";
 import { buttonClass } from "./classes";
 import { cn } from "./cn";
-import { contactLinks, type ContactWay } from "./contact";
+import { contactLinks, type ContactMessage, type ContactWay } from "./contact";
 import { usePanelT } from "./panel-provider";
 
 // A record's ways to reach a person — Call, WhatsApp, Email, in the house
 // order — as one row of equal buttons a thumb can hit; on a phone each opens
 // the phone's own app. A way with nothing behind it is left out, and a person
-// with none shows nothing.
+// with none shows nothing. With a `message` (a reply written in the panel)
+// WhatsApp and Email open with it already typed.
 
 const WORDS: Record<ContactWay, string> = { call: "Call", whatsapp: "WhatsApp", email: "Email" };
 const COLUMNS = ["", "grid-cols-1", "grid-cols-2", "grid-cols-3"];
@@ -25,16 +26,18 @@ export function ContactDoors({
   email,
   phone,
   whatsapp,
+  message,
   className,
 }: {
   email?: string | null;
   phone?: string | null;
   /** Their WhatsApp number, when it isn't the phone. */
   whatsapp?: string | null;
+  message?: ContactMessage | null;
   className?: string;
 }) {
   const t = usePanelT();
-  const links = contactLinks({ email, phone, whatsapp });
+  const links = contactLinks({ email, phone, whatsapp, message });
   if (!links.length) return null;
   return (
     <div className={cn("grid gap-2", COLUMNS[links.length], className)}>

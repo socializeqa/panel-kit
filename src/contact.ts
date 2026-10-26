@@ -25,6 +25,13 @@ export function internationalDigits(raw: string): string {
   return all.length <= 8 && home ? home.dial + all : all;
 }
 
+/** A reply made ready in the panel: WhatsApp opens with the text typed in, an
+ *  email with the subject and the text. A call carries nothing. */
+export interface ContactMessage {
+  text: string;
+  subject?: string;
+}
+
 /** The links a person's details allow, in the house order (call, WhatsApp,
  *  email); a way with nothing behind it is left out. `whatsapp` is their
  *  WhatsApp number when it differs from the phone. */
@@ -32,17 +39,23 @@ export function contactLinks({
   email,
   phone,
   whatsapp,
+  message,
 }: {
   email?: string | null;
   phone?: string | null;
   whatsapp?: string | null;
+  message?: ContactMessage | null;
 }): ContactLink[] {
   const links: ContactLink[] = [];
   const tel = internationalDigits(phone ?? "");
   if (tel) links.push({ way: "call", href: `tel:+${tel}` });
   const wa = internationalDigits(whatsapp || phone || "");
-  if (wa) links.push({ way: "whatsapp", href: whatsappLink(wa) });
+  const text = message?.text.trim() || undefined;
+  if (wa) links.push({ way: "whatsapp", href: whatsappLink(wa, text) });
   const mail = email?.trim();
-  if (mail && mail.includes("@")) links.push({ way: "email", href: `mailto:${mail}` });
+  if (mail && mail.includes("@")) {
+    const parts = [message?.subject?.trim() ? `subject=${encodeURIComponent(message.subject.trim())}` : "", text ? `body=${encodeURIComponent(text)}` : ""].filter(Boolean);
+    links.push({ way: "email", href: `mailto:${mail}${parts.length ? `?${parts.join("&")}` : ""}` });
+  }
   return links;
 }

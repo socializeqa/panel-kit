@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.27 — 26 Oct 2026
+
+- `NotificationBell` (new): the top bar's bell, in the header menus' dress: a count on the seat (9+ past nine), the newest lines dropped under it with a dot on the new ones, and Mark all as read. What counts as new and how it arrives live is the panel's (Lucce: new requests and sign-ups through Supabase Realtime); it goes in PanelProvider's `tools`.
+- `ReplyWriter` (new): a reply to someone who wrote in, ready before it is sent: the panel's ready replies as pills (already in the person's language), a box to change it, then WhatsApp or the email app opened with it typed, or Copy the reply. Nothing is sent from the panel.
+- `ContactDoors` and `contactLinks` take `message` (`{ text, subject? }`): WhatsApp opens with the text typed in, an email with the subject and the text; a call carries nothing. Tested.
+- Two-step: the code door takes `then` (`TwoStepForm then`, read by `twoStepDoor`'s `verify`), so a reset link goes code first, then the new password: the sign-in server refuses a password change from a session that owes its code, which left anyone with two-step on unable to reset (found by Lucce's copywriter). Only a path inside the panel is followed. `TwoStepSetup` and `TwoStepOff` take `backLabel`.
+- `insidePath(raw)` (in `action-result`): the one check for "a path inside the panel", shared by `afterDeleteHref` and two-step's `then`.
+- PanelProvider's `user` takes `title`, the tooltip on the name at the foot of the menu ("Your account" when left out).
+
 ## 0.1.26 — 26 Oct 2026
 
 - `TwoStepSetup`: the key to type by hand wraps only between its groups of four. It broke anywhere before, so a group could split across two lines ("TC4" / "E") and be typed wrong. Seen on Lucce's first real setup.

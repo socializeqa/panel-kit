@@ -370,16 +370,20 @@ export function TwoStepForm({
   action,
   signOut,
   lost = "Lost your phone? An owner can reset your two-step sign-in in Team.",
+  then,
 }: {
   action: DoorAction<string | null>;
   signOut: () => void | Promise<void>;
   lost?: string;
+  /** Where to go once the code is in, inside the panel (a reset link's new password); home when left out. */
+  then?: string;
 }) {
   const t = usePanelT();
   const [error, formAction, pending] = useActionState(action, null);
   return (
     <div className="flex flex-col gap-4">
       <form action={formAction} className="flex flex-col gap-4">
+        {then ? <input type="hidden" name="then" value={then} /> : null}
         <p className="px-1 text-pretty text-[14px] leading-relaxed text-[var(--door-quiet)]">{t("Open your authenticator app and type the six digits it shows.")}</p>
         <div className="door-group">
           <CodeRow />
@@ -407,11 +411,13 @@ export function TwoStepSetup({
   finish,
   doneHref,
   backHref,
+  backLabel = "Back to the panel",
 }: {
   begin: () => Promise<TwoStepStart>;
   finish: (factorId: string, code: string) => Promise<{ error?: string }>;
   doneHref: string;
   backHref?: string;
+  backLabel?: string;
 }) {
   const t = usePanelT();
   const router = useRouter();
@@ -421,7 +427,7 @@ export function TwoStepSetup({
   const [pending, start] = useTransition();
   const back = backHref ? (
     <p className="text-center">
-      <DoorLink href={backHref}>Back to the panel</DoorLink>
+      <DoorLink href={backHref}>{backLabel}</DoorLink>
     </p>
   ) : null;
 
@@ -511,10 +517,12 @@ export function TwoStepOff({
   since,
   turnOff,
   backHref,
+  backLabel = "Back to the panel",
 }: {
   since: string;
   turnOff: () => Promise<{ error?: string }>;
   backHref?: string;
+  backLabel?: string;
 }) {
   const t = usePanelT();
   const router = useRouter();
@@ -557,7 +565,7 @@ export function TwoStepOff({
       )}
       {backHref ? (
         <p className="text-center">
-          <DoorLink href={backHref}>Back to the panel</DoorLink>
+          <DoorLink href={backHref}>{backLabel}</DoorLink>
         </p>
       ) : null}
     </div>

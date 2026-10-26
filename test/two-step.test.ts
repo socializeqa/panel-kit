@@ -112,6 +112,19 @@ describe("twoStepDoor", () => {
     await expect(flow.verify(null, form("123456"))).rejects.toThrow("redirect:/");
   });
 
+  it("goes on to where the form asked, inside the panel only", async () => {
+    const { client } = fake({ factors: [verified], level: ["aal1", "aal2"] });
+    const flow = twoStepDoor({ client: async () => client, issuer: "Lucce" });
+    const withThen = (then: string) => {
+      const fd = form("123456");
+      fd.set("then", then);
+      return fd;
+    };
+    await expect(flow.verify(null, withThen("/set-password?door=reset"))).rejects.toThrow("redirect:/set-password?door=reset");
+    await expect(flow.verify(null, withThen("https://evil.example"))).rejects.toThrow("redirect:/");
+    await expect(flow.verify(null, withThen("//evil.example"))).rejects.toThrow(/^redirect:\/$/);
+  });
+
   it("sends someone who isn't signed in back to the door", async () => {
     const flow = twoStepDoor({ client: async () => null, issuer: "Lucce" });
     await expect(flow.verify(null, form("123456"))).rejects.toThrow("redirect:/login");

@@ -89,7 +89,7 @@ export interface PanelConfig {
   railTop?: ReactNode;
   /** Who is signed in, for the rail's foot. With `href` their name opens
    *  their own account (a new password, at X Capital). */
-  user?: { name: string | null; role?: string; href?: string };
+  user?: { name: string | null; role?: string; href?: string; /** The tooltip on the name; "Your account" when left out. */ title?: string };
   /** Sign out, from the rail's foot. */
   signOut?: () => void | Promise<void>;
   /** Seats after the list tools in the top bar: a global search, the bell. */
@@ -153,7 +153,7 @@ export interface ResolvedPanel {
   logoAlign: "start" | "center";
   barLogo: ReactNode;
   railTop: ReactNode;
-  user?: { name: string | null; role?: string; href?: string };
+  user?: { name: string | null; role?: string; href?: string; /** The tooltip on the name; "Your account" when left out. */ title?: string };
   signOut?: () => void | Promise<void>;
   tools: ReactNode;
   help?: string;
