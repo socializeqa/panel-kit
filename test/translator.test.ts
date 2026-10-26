@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { translator } from "../src/panel-provider";
+import { translator } from "../src/translate";
 
 describe("translator", () => {
   const ro = translator({ "Save changes": "Salvează", "{count} in stock": "{count} în stoc" });

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
-import { Check, ChevronRight, Copy, Eye, EyeOff, KeyRound, ShieldCheck } from "lucide-react";
+import { Check, ChevronRight, Copy, Eye, EyeOff, KeyRound, Languages, ShieldCheck } from "lucide-react";
 import { usePanelT } from "./panel-provider";
 import { PASSWORD_DOOR, PASSWORD_RULE, type LinkState, type PasswordDoor } from "./staff-door";
 import type { TwoStepCode, TwoStepStart } from "./two-step";
@@ -574,17 +574,21 @@ export function TwoStepOff({
 
 /**
  * A person's own sign-in, from their name at the foot of the menu: the
- * password, and two-step on or off, each a row that opens its own door.
+ * password, two-step on or off, and (for a panel in more than one language)
+ * the language the panel speaks to them, each a row that opens its own door.
  */
 export function SignInSettings({
   passwordHref,
   twoStepHref,
   twoStepOn,
+  language,
   backHref,
 }: {
   passwordHref: string;
   twoStepHref: string;
   twoStepOn: boolean;
+  /** The language row: the one in use, in its own words ("Română"), and where it changes. */
+  language?: { current: string; href: string };
   backHref?: string;
 }) {
   const t = usePanelT();
@@ -604,10 +608,56 @@ export function SignInSettings({
           <span className="door-row-value">{twoStepOn ? t("On") : t("Off")}</span>
           {chevron}
         </Link>
+        {language ? (
+          <Link href={language.href} className="door-row-link">
+            <Languages className="size-[18px] shrink-0 text-[var(--door-quiet)]" strokeWidth={1.8} aria-hidden />
+            {t("Language")}
+            <span className="door-row-value">{language.current}</span>
+            {chevron}
+          </Link>
+        ) : null}
       </nav>
       {backHref ? (
         <p className="text-center">
           <DoorLink href={backHref}>Back to the panel</DoorLink>
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * The panel's languages as rows, each named in its own words, the one in use
+ * ticked; pressing one posts it (`locale`) to the panel's action, which keeps
+ * the choice and goes on.
+ */
+export function LanguageChoice({
+  options,
+  current,
+  action,
+  backHref,
+  backLabel = "Back to the panel",
+}: {
+  options: { value: string; label: string }[];
+  current: string;
+  action: (form: FormData) => void | Promise<void>;
+  backHref?: string;
+  backLabel?: string;
+}) {
+  const t = usePanelT();
+  return (
+    <div className="flex flex-col gap-4">
+      <form action={action} className="door-group" aria-label={t("Language")}>
+        {options.map((o) => (
+          <button key={o.value} type="submit" name="locale" value={o.value} aria-pressed={o.value === current} lang={o.value} className="door-row-link w-full text-start">
+            {o.label}
+            {o.value === current ? <Check className="ms-auto size-4 shrink-0" strokeWidth={2.2} aria-hidden /> : null}
+          </button>
+        ))}
+      </form>
+      {backHref ? (
+        <p className="text-center">
+          <DoorLink href={backHref}>{backLabel}</DoorLink>
         </p>
       ) : null}
     </div>

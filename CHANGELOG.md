@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.31 — 26 Oct 2026
+
+- `translate` (new, server-safe): `fill`, `translator` and the `Translate` and `Vars` types, so a page rendered on the server can say the panel's words too (`panel-provider` was client-only). `panel-provider` re-exports them; nothing that imported them there changes.
+- `SignInSettings` takes `language` (`{ current, href }`): a Language row beside Password and Two-step sign-in.
+- `LanguageChoice` (new door form): the panel's languages as rows, each in its own words with `lang` set, the one in use ticked; a press posts `locale` to the panel's action. For Lucce's panel in English or Romanian.
+
 ## 0.1.30 — 26 Oct 2026
 
 - `ReplyWriter` never marks a drawer unsaved: typing a reply or picking another one isn't an edit of the record beside it, so Save stayed lit and closing asked "Discard changes?" over nothing (Lucce's requests). It sits under `DirtyExempt` with `data-dirty-exempt`.
