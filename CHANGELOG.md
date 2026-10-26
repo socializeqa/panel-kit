@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.32 — 26 Oct 2026
+
+- `Optional` (in `fields`): the green "(optional)" beside a label (`Field mark={<Optional />}`), in the panel's words. Lucce had three hand copies of it, none translated.
+
 ## 0.1.31 — 26 Oct 2026
 
 - `translate` (new, server-safe): `fill`, `translator` and the `Translate` and `Vars` types, so a page rendered on the server can say the panel's words too (`panel-provider` was client-only). `panel-provider` re-exports them; nothing that imported them there changes.

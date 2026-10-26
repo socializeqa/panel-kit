@@ -19,6 +19,11 @@ export function Lbl({ className, children }: { className?: string; children: Rea
   return <span className={cn("text-[12px] font-medium text-ink/70", className)}>{tx(children)}</span>;
 }
 
+/** The green "(optional)" beside a label the form can do without (Field's `mark`), in the panel's words. */
+export function Optional() {
+  return <span className="text-[12px] text-ok">{tx("(optional)")}</span>;
+}
+
 export function Field({
   label,
   htmlFor,
