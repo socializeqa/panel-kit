@@ -37,7 +37,8 @@ export function stepperEntry(
 // A compact − [number unit] + control for small counted figures (crew, days,
 // overtime hours). Empty means "not set"; blanking the box hands up null. A
 // step with decimals (0.5) takes them typed, too. Controlled — pass `name` to
-// also post the value as a hidden form field.
+// also post the value as a hidden form field. With no unit to show (a count
+// of pieces in a size), `label` names the figure for screen readers.
 export function NumberStepper({
   value,
   onChange,
@@ -48,6 +49,7 @@ export function NumberStepper({
   max = 9999,
   className,
   placeholder = "0",
+  label,
 }: {
   value: number | null;
   onChange: (value: number | null) => void;
@@ -60,6 +62,8 @@ export function NumberStepper({
   className?: string;
   /** What an empty box shows — "Any" where empty means no limit (Señorritas). */
   placeholder?: string;
+  /** The figure's name for screen readers ("Size 52 in stock"), in place of the unit. */
+  label?: string;
 }) {
   const t = usePanelT();
   // What is being typed, while the box has focus — "2." has to stay on screen
@@ -73,12 +77,13 @@ export function NumberStepper({
     onChange(clamp(n));
   };
   const unit = t(suffix);
+  const named = label ? t(label) : unit;
   return (
     <div className={cn(fieldBox("md"), "flex w-auto items-center gap-1 p-0.5", className)}>
       {name ? <input type="hidden" name={name} value={value ?? ""} /> : null}
       <button
         type="button"
-        aria-label={t("Fewer {unit}", { unit })}
+        aria-label={label ? t("Fewer: {label}", { label: named }) : t("Fewer {unit}", { unit })}
         onClick={() => stepTo((value ?? 0) - step)}
         disabled={(value ?? 0) <= min}
         className={cn(iconBtnClass(8, "ink"), "shrink-0")}
@@ -88,7 +93,7 @@ export function NumberStepper({
       <div className="flex flex-1 items-baseline justify-center gap-1.5">
         <input
           inputMode={places ? "decimal" : "numeric"}
-          aria-label={unit}
+          aria-label={named}
           value={draft ?? value ?? ""}
           onChange={(e) => {
             const next = stepperEntry(e.target.value.trim(), { step, min, max });
@@ -100,11 +105,11 @@ export function NumberStepper({
           placeholder={t(placeholder)}
           className="w-10 border-0 bg-transparent text-center text-[16px] font-semibold sm:text-[14px] tabular-nums text-ink outline-none"
         />
-        <span className="text-[12px] font-medium text-quiet">{unit}</span>
+        {unit ? <span className="text-[12px] font-medium text-quiet">{unit}</span> : null}
       </div>
       <button
         type="button"
-        aria-label={t("More {unit}", { unit })}
+        aria-label={label ? t("More: {label}", { label: named }) : t("More {unit}", { unit })}
         onClick={() => stepTo((value ?? 0) + step)}
         className={cn(iconBtnClass(8, "ink"), "shrink-0")}
       >

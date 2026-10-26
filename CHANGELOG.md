@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.22 — 26 Oct 2026
+
+- `NumberStepper` takes `label`: the figure's name for screen readers when there is no unit to show. Lucce's stock counts per size have no unit, and the box was read out as an unnamed field between "Fewer" and "More". With `label="Size 52 in stock"` the box carries that name and the buttons read "Fewer: Size 52 in stock" and "More: Size 52 in stock". An empty unit no longer leaves an empty span beside the number.
+
 ## 0.1.21 — 26 Oct 2026
 
 - `ReorderList` (new): an order set by hand (a shop's pieces, a listing's photos). A mouse drags a row by its grip; every row also carries move-to-the-top, up and down seats, so a keyboard and a phone do the same. Nothing saves while moving: Save the order and Put it back appear once the order differs, and Save hands the app the keys in their new order. `moveItem` is exported and tested. First in Lucce's Pieces room.
