@@ -6,6 +6,7 @@
 
 - `PhotoList` (new): a record's photos in the website's order, the first the cover, with make-it-the-cover, move and take-off seats and the drop tile; uploads go through the app's own `upload(file)`, the list rides in a hidden field and is saved with the record, and Save waits while photos are on their way. Built in X Capital's properties and copied into Lucce's pieces; one part for both now.
 - `DoorSignIn`: `magicLink` is optional. Without it the card is the password form alone, for a panel whose email isn't sending yet (Lucce, before its Resend domain): it no longer offers a link that can't arrive.
+- List controls: the second filter menu (a kind, a list, a category) wears a filter's mark (`ListFilter`) instead of the looping arrows, which read as "repeat" to a newcomer (Lucce's guide, 26 Oct 2026).
 
 ## 0.1.19 — 18 Oct 2026
 

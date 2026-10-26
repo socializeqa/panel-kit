@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowDown, ArrowUp, ArrowUpDown, Check, Repeat, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Check, ListFilter, Search, SlidersHorizontal, X } from "lucide-react";
 import { CTRL_BTN, CTRL_LABEL, iconBtnClass, MENU_ITEM, MENU_LABEL, MENU_PANEL } from "./classes";
 import { cn } from "./cn";
 import { FilterDrawer } from "./filter-drawer";
@@ -279,9 +279,10 @@ export function ListControls() {
               onSet={(v) => setParam("status", v || null)}
             />
           )}
+          {/* The second narrowing (a kind, a list, a category): a filter's own mark, not a loop, which read as "repeat". */}
           {extra && (
             <HeaderMenu
-              icon={<Repeat className="size-[18px]" strokeWidth={1.9} />}
+              icon={<ListFilter className="size-[18px]" strokeWidth={1.9} />}
               label={extra.label}
               sectionLabel={extra.label}
               options={extra.options}
