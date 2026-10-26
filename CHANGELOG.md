@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.21 — 26 Oct 2026
+
+- `ReorderList` (new): an order set by hand (a shop's pieces, a listing's photos). A mouse drags a row by its grip; every row also carries move-to-the-top, up and down seats, so a keyboard and a phone do the same. Nothing saves while moving: Save the order and Put it back appear once the order differs, and Save hands the app the keys in their new order. `moveItem` is exported and tested. First in Lucce's Pieces room.
+
 ## 0.1.20 — 26 Oct 2026
 
 - `StageTabs` with `home`: the first cell's key was "all", the same as the **All** cell at the end, and React warned of two children with one key in every list that opens on a home view (the hiring rooms, Lucce's requests). The first cell is keyed "home" now.
