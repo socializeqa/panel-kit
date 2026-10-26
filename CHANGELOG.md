@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.28 — 26 Oct 2026
+
+- Header menus (Sort, the filter menu, `HeaderMenu`, `NotificationBell`) hang from the top bar's foot at its end padding (`MENU_PANEL`: `top-full`, `end-4 sm:end-6 lg:end-8`). Left to their place in the strip, they centred on the seats' line and rose above the screen: on every panel the Sort menu's top sat 44px off-screen, hiding "Sort by" and covering the seats (seen on Lucce, 26 Oct 2026). The sticky bar is their frame, so this holds when the strip steps down to its own line on a phone.
+- `NotificationBell`'s number sits inside its seat: the strip clips its corners, so a badge hung outside the seat lost its top.
+
 ## 0.1.27 — 26 Oct 2026
 
 - `NotificationBell` (new): the top bar's bell, in the header menus' dress: a count on the seat (9+ past nine), the newest lines dropped under it with a dot on the new ones, and Mark all as read. What counts as new and how it arrives live is the panel's (Lucce: new requests and sign-ups through Supabase Realtime); it goes in PanelProvider's `tools`.

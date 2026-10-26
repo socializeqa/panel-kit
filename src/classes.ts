@@ -159,10 +159,13 @@ export const CTRL_BTN = cn(
 );
 // Icon-only seats keep their word for screen readers and the tooltip.
 export const CTRL_LABEL = "sr-only";
-// A header menu: dropped under its seat, in the popover's dress.
+// A header menu: dropped under the top bar at its end, in the popover's dress.
+// The bar is sticky, so it is the menu's frame: hung from its foot and its side
+// padding. Left to its place in the strip, a menu centred on the seat's line and
+// rose above the screen (the Sort menu's top sat 44px off it, Lucce, 26 Oct 2026).
 export const MENU_PANEL = cn(
   PANEL_SHELL,
-  "absolute end-0 z-40 mt-2 w-56 origin-top-right p-1.5 shadow-kit-menu animate-menu-in rtl:origin-top-left",
+  "absolute end-4 top-full z-40 mt-1 w-56 origin-top-right p-1.5 shadow-kit-menu animate-menu-in sm:end-6 lg:end-8 rtl:origin-top-left",
 );
 export const MENU_ITEM =
   "flex w-full items-center justify-between gap-2 rounded-control px-2.5 py-2 text-start text-[13px] transition-colors hover:bg-ink/[0.04]";

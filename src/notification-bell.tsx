@@ -69,7 +69,7 @@ export function NotificationBell({
         <Bell aria-hidden="true" />
         <span className={CTRL_LABEL}>{t(label)}</span>
         {count ? (
-          <span aria-hidden="true" className="absolute -end-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-deep px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-ground tabular-nums">
+          <span aria-hidden="true" className="absolute end-0.5 top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-brand-deep px-1 text-[9px] font-semibold leading-none text-white tabular-nums">
             {shown}
           </span>
         ) : null}
