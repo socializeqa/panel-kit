@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.23 — 26 Oct 2026
+
+- `afterDeleteHref(form)` (in `action-result`): the way out a `DeleteButton` sends with its action (the `after` field), when it is a path inside the panel. The button's comment always said the action should redirect there itself, since deleting the record a page is built on re-renders it as a 404 before the button's own push lands, but no action read the field. Lucce's Forget them showed a bare 404 in a drawer opened from the list; its deletes redirect with this now. Tested against addresses that would leave the panel.
+
 ## 0.1.22 — 26 Oct 2026
 
 - `NumberStepper` takes `label`: the figure's name for screen readers when there is no unit to show. Lucce's stock counts per size have no unit, and the box was read out as an unnamed field between "Fewer" and "More". With `label="Size 52 in stock"` the box carries that name and the buttons read "Fewer: Size 52 in stock" and "More: Size 52 in stock". An empty unit no longer leaves an empty span beside the number.
