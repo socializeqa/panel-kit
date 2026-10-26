@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { ChoicePills } from "./choice-pills";
 import { ContactDoors } from "./contact-doors";
+import { DirtyExempt } from "./drawer";
 import { Button, Textarea } from "./fields";
 import { usePanelT } from "./panel-provider";
 
@@ -12,6 +13,8 @@ import { usePanelT } from "./panel-provider";
 // in), change what needs changing, then open WhatsApp or the email app with
 // it typed, or copy it. Nothing is sent from here: the person's own WhatsApp
 // or mailbox sends it, so the reply comes from a number or address they know.
+// Typing a reply is not an edit of the record it sits beside, so it never
+// marks a drawer unsaved (DirtyExempt, data-dirty-exempt).
 // Born for Lucce's requests (9 languages); any panel with an inbox can use it.
 
 export interface ReadyReply {
@@ -40,7 +43,8 @@ export function ReplyWriter({
   const [copied, setCopied] = useState(false);
 
   return (
-    <div className="flex flex-col gap-3">
+    <DirtyExempt>
+    <div data-dirty-exempt className="flex flex-col gap-3">
       {replies.length > 1 ? (
         <ChoicePills
           wrap
@@ -84,5 +88,6 @@ export function ReplyWriter({
         </Button>
       </div>
     </div>
+    </DirtyExempt>
   );
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.30 — 26 Oct 2026
+
+- `ReplyWriter` never marks a drawer unsaved: typing a reply or picking another one isn't an edit of the record beside it, so Save stayed lit and closing asked "Discard changes?" over nothing (Lucce's requests). It sits under `DirtyExempt` with `data-dirty-exempt`.
+
 ## 0.1.29 — 26 Oct 2026
 
 - `ReplyWriter`: the reply box takes the direction of the text it holds (`dir="auto"`), so a ready reply in Arabic reads from the right (Lucce's copywriter).
