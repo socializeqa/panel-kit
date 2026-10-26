@@ -4,6 +4,9 @@
 
 - `StageTabs` with `home`: the first cell's key was "all", the same as the **All** cell at the end, and React warned of two children with one key in every list that opens on a home view (the hiring rooms, Lucce's requests). The first cell is keyed "home" now.
 
+- `PhotoList` (new): a record's photos in the website's order, the first the cover, with make-it-the-cover, move and take-off seats and the drop tile; uploads go through the app's own `upload(file)`, the list rides in a hidden field and is saved with the record, and Save waits while photos are on their way. Built in X Capital's properties and copied into Lucce's pieces; one part for both now.
+- `DoorSignIn`: `magicLink` is optional. Without it the card is the password form alone, for a panel whose email isn't sending yet (Lucce, before its Resend domain): it no longer offers a link that can't arrive.
+
 ## 0.1.19 — 18 Oct 2026
 
 - `StageTabs` takes `home`: the view a list opens on, as the strip's first cell (a hiring list's **Active**, everyone not hired or let go), with **All** moved to the end after the ways out, under `allValue` ("all"). The big hiring tools open on the people still in play; the rejected stay one press away (Socialize: "the rejected application keep appearing").

@@ -256,7 +256,9 @@ export function MagicLinkForm({
 
 /**
  * Both ways in on one card: a password, or a sign-in link by email, chosen
- * with a sliding control the way an iPhone chooses between two views.
+ * with a sliding control the way an iPhone chooses between two views. Without
+ * `magicLink` (a panel whose email isn't sending yet) the card is the password
+ * alone, so it never offers a link that can't arrive.
  */
 export function DoorSignIn({
   signIn,
@@ -268,7 +270,7 @@ export function DoorSignIn({
   mobileOnly,
 }: {
   signIn: DoorAction<string | null>;
-  magicLink: DoorAction<LinkState>;
+  magicLink?: DoorAction<LinkState>;
   label?: string;
   placeholder?: string;
   forgotHref?: string;
@@ -277,6 +279,7 @@ export function DoorSignIn({
 }) {
   const t = usePanelT();
   const [mode, setMode] = useState<"password" | "link">("password");
+  if (!magicLink) return <SignInForm action={signIn} label={label} placeholder={placeholder} forgotHref={forgotHref} notice={notice} />;
   return (
     <div className="flex flex-col gap-5">
       <div className="door-segments" data-at={mode === "link" ? 1 : 0} role="group" aria-label={t("How to sign in")}>

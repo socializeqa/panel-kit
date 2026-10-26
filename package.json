@@ -110,6 +110,7 @@
     "./phone-bar": "./src/phone-bar.tsx",
     "./phone-feed": "./src/phone-feed.tsx",
     "./phone-field": "./src/phone-field.tsx",
+    "./photo-list": "./src/photo-list.tsx",
     "./photo-field": "./src/photo-field.tsx",
     "./pill-tabs": "./src/pill-tabs.tsx",
     "./record": "./src/record.tsx",
