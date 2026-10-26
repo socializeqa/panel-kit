@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.24 — 26 Oct 2026
+
+- `NumberStepper` takes a minus where the figure may go below nothing (`min` under 0), and such a box opens the full keyboard on a phone, whose number pad has no minus key. Lucce's Change prices goes from -90 % to +300 %, yet the box refused the minus, so 10 % down took fifteen presses of −. Tested.
+
 ## 0.1.23 — 26 Oct 2026
 
 - `afterDeleteHref(form)` (in `action-result`): the way out a `DeleteButton` sends with its action (the `after` field), when it is a path inside the panel. The button's comment always said the action should redirect there itself, since deleting the record a page is built on re-renders it as a 404 before the button's own push lands, but no action read the field. Lucce's Forget them showed a bare 404 in a drawer opened from the list; its deletes redirect with this now. Tested against addresses that would leave the panel.

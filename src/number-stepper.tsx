@@ -26,9 +26,11 @@ export function stepperEntry(
 ): { text: string; value: number | null | undefined } | null {
   if (text === "") return { text: "", value: null };
   const places = placesOf(limits.step);
-  const shape = places > 0 ? new RegExp(`^\\d*(\\.\\d{0,${places}})?$`) : /^\d*$/;
+  // A minus only where the figure may go below nothing (a change in percent).
+  const sign = limits.min < 0 ? "-?" : "";
+  const shape = new RegExp(places > 0 ? `^${sign}\\d*(\\.\\d{0,${places}})?$` : `^${sign}\\d*$`);
   if (!shape.test(text)) return null;
-  if (text === ".") return { text, value: undefined };
+  if (text === "." || text === "-" || text === "-.") return { text, value: undefined };
   const n = Number(text);
   const held = Math.max(limits.min, Math.min(limits.max, n));
   return held === n ? { text, value: n } : { text: String(held), value: held };
@@ -92,7 +94,8 @@ export function NumberStepper({
       </button>
       <div className="flex flex-1 items-baseline justify-center gap-1.5">
         <input
-          inputMode={places ? "decimal" : "numeric"}
+          // A phone's number pad has no minus key: a figure that may go below nothing gets the full keyboard.
+          inputMode={min < 0 ? "text" : places ? "decimal" : "numeric"}
           aria-label={named}
           value={draft ?? value ?? ""}
           onChange={(e) => {

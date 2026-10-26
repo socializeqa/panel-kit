@@ -46,6 +46,13 @@ describe("typing into a stepper", () => {
     expect(typeInto("13")).toEqual({ text: "12", value: 12 });
   });
 
+  it("takes a minus only where the figure may go below nothing", () => {
+    expect(typeInto("-10", { step: 1, min: -90, max: 300 })).toEqual({ text: "-10", value: -10 });
+    expect(typeInto("-", { step: 1, min: -90, max: 300 })).toEqual({ text: "-", value: null });
+    expect(typeInto("-95", { step: 1, min: -90, max: 300 })).toEqual({ text: "-90", value: -90 });
+    expect(typeInto("-5", { step: 1 })).toEqual({ text: "5", value: 5 });
+  });
+
   it("refuses what could never be a number, and an empty box is not set", () => {
     expect(typeInto("abc")).toEqual({ text: "", value: null });
     expect(stepperEntry("", { step: 0.5, min: 0, max: 12 })).toEqual({ text: "", value: null });
