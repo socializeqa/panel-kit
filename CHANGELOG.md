@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.29 — 26 Oct 2026
+
+- `ReplyWriter`: the reply box takes the direction of the text it holds (`dir="auto"`), so a ready reply in Arabic reads from the right (Lucce's copywriter).
+- `translator(words, missing?)` (in `panel-provider`): a `t` from a word list, the panel's own words for each English text the kit and the app hand it, blanks filled after; a text with no entry stays English and `missing` hears it. For a panel in a second language (Lucce in Romanian). Tested.
+
 ## 0.1.28 — 26 Oct 2026
 
 - Header menus (Sort, the filter menu, `HeaderMenu`, `NotificationBell`) hang from the top bar's foot at its end padding (`MENU_PANEL`: `top-full`, `end-4 sm:end-6 lg:end-8`). Left to their place in the strip, they centred on the seats' line and rose above the screen: on every panel the Sort menu's top sat 44px off-screen, hiding "Sort by" and covering the seats (seen on Lucce, 26 Oct 2026). The sticky bar is their frame, so this holds when the strip steps down to its own line on a phone.

@@ -58,6 +58,8 @@ export function ReplyWriter({
       ) : null}
       <Textarea
         aria-label={t("The reply")}
+        // A reply in Arabic reads from the right; the box follows the text it holds.
+        dir="auto"
         rows={6}
         value={text}
         onChange={(e) => {

@@ -142,6 +142,20 @@ export function fill(text: string, vars?: Vars): string {
   );
 }
 
+/**
+ * A translator from a word list: the panel's own words for each English text
+ * the kit and the app hand to `t`, then the blanks filled. A text with no entry
+ * stays English (and `missing` hears it, so a panel can list what is left).
+ * Lucce's panel in Romanian, 26 Oct 2026.
+ */
+export function translator(words: Readonly<Record<string, string>>, missing?: (text: string) => void): Translate {
+  return (text, vars) => {
+    const said = words[text];
+    if (said === undefined) missing?.(text);
+    return fill(said ?? text, vars);
+  };
+}
+
 export interface ResolvedPanel {
   nav: NavGroup[];
   host: Required<Omit<PanelHost, "fold">> & { fold?: string };
