@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.20 — 26 Oct 2026
+
+- `StageTabs` with `home`: the first cell's key was "all", the same as the **All** cell at the end, and React warned of two children with one key in every list that opens on a home view (the hiring rooms, Lucce's requests). The first cell is keyed "home" now.
+
 ## 0.1.19 — 18 Oct 2026
 
 - `StageTabs` takes `home`: the view a list opens on, as the strip's first cell (a hiring list's **Active**, everyone not hired or let go), with **All** moved to the end after the ways out, under `allValue` ("all"). The big hiring tools open on the people still in play; the rejected stay one press away (Socialize: "the rejected application keep appearing").

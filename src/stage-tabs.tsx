@@ -74,7 +74,7 @@ export function StageTabs({
     const on = current === stage.value;
     return (
       <Link
-        key={stage.value || "all"}
+        key={stage.value || "home"}
         href={hrefFor(stage.value)}
         scroll={false}
         aria-current={on ? "page" : undefined}
