@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
-import { Check, Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useActionState, useState, useTransition } from "react";
+import { Check, ChevronRight, Copy, Eye, EyeOff, KeyRound, ShieldCheck } from "lucide-react";
 import { usePanelT } from "./panel-provider";
 import { PASSWORD_DOOR, PASSWORD_RULE, type LinkState, type PasswordDoor } from "./staff-door";
+import type { TwoStepCode, TwoStepStart } from "./two-step";
 
 // The forms that go inside a DoorPage: signing in with an email, a mobile or a
 // username, asking for a reset link or a sign-in link, and choosing a new
@@ -337,5 +339,269 @@ export function NewPasswordForm({
         </p>
       ) : null}
     </form>
+  );
+}
+
+/** The code box: six digits, spaced however the app or the person likes. */
+function CodeRow() {
+  return (
+    <Row
+      label="The six digits"
+      name="code"
+      placeholder="123 456"
+      inputMode="numeric"
+      autoComplete="one-time-code"
+      pattern="[0-9 ]{6,7}"
+      maxLength={7}
+      required
+      autoFocus
+      className="door-code"
+    />
+  );
+}
+
+/**
+ * The second step of a sign-in with two-step on: the password is done, the
+ * six digits from the authenticator app come next. The panel shows nothing
+ * to the session until they do (twoStepDoor's `verify`). `lost` names who
+ * resets the app when the phone is gone.
+ */
+export function TwoStepForm({
+  action,
+  signOut,
+  lost = "Lost your phone? An owner can reset your two-step sign-in in Team.",
+}: {
+  action: DoorAction<string | null>;
+  signOut: () => void | Promise<void>;
+  lost?: string;
+}) {
+  const t = usePanelT();
+  const [error, formAction, pending] = useActionState(action, null);
+  return (
+    <div className="flex flex-col gap-4">
+      <form action={formAction} className="flex flex-col gap-4">
+        <p className="px-1 text-pretty text-[14px] leading-relaxed text-[var(--door-quiet)]">{t("Open your authenticator app and type the six digits it shows.")}</p>
+        <div className="door-group">
+          <CodeRow />
+        </div>
+        <DoorNote text={error} />
+        <Cta pending={pending} idle="Enter" busy="Checking…" />
+      </form>
+      <p className="px-1 text-center text-pretty text-[13px] leading-relaxed text-[var(--door-quiet)]">{t(lost)}</p>
+      <form action={signOut} className="text-center">
+        <button type="submit" className="door-link">
+          {t("Sign out")}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/**
+ * Turning two-step on, in three plain moves: show the code, scan it with an
+ * authenticator app, type the six digits back. `begin` and `finish` are the
+ * panel's actions (twoStepDoor); `doneHref` is where it goes once it's on.
+ */
+export function TwoStepSetup({
+  begin,
+  finish,
+  doneHref,
+  backHref,
+}: {
+  begin: () => Promise<TwoStepStart>;
+  finish: (factorId: string, code: string) => Promise<{ error?: string }>;
+  doneHref: string;
+  backHref?: string;
+}) {
+  const t = usePanelT();
+  const router = useRouter();
+  const [code, setCode] = useState<TwoStepCode | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [pending, start] = useTransition();
+  const back = backHref ? (
+    <p className="text-center">
+      <DoorLink href={backHref}>Back to the panel</DoorLink>
+    </p>
+  ) : null;
+
+  if (!code) {
+    return (
+      <div className="flex flex-col gap-4">
+        <ol className="flex flex-col gap-2 px-1 text-pretty text-[14px] leading-relaxed text-[var(--door-quiet)]">
+          <li>{t("1. Install an authenticator app if you have none: Google Authenticator, Microsoft Authenticator or 1Password.")}</li>
+          <li>{t("2. Press Show my code, then scan it with the app.")}</li>
+          <li>{t("3. Type the six digits the app shows. From then on, every sign-in asks for them.")}</li>
+        </ol>
+        <DoorNote text={error} />
+        <button
+          type="button"
+          disabled={pending}
+          className="door-cta"
+          onClick={() =>
+            start(async () => {
+              setError(null);
+              const made = await begin();
+              if ("error" in made) setError(made.error);
+              else setCode(made);
+            })
+          }
+        >
+          {pending ? t("Making your code…") : t("Show my code")}
+        </button>
+        {back}
+      </div>
+    );
+  }
+
+  const grouped = code.secret.match(/.{1,4}/g)?.join(" ") ?? code.secret;
+  return (
+    <form
+      className="flex flex-col gap-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const typed = String(new FormData(event.currentTarget).get("code") ?? "");
+        start(async () => {
+          setError(null);
+          const done = await finish(code.factorId, typed);
+          if (done.error) return setError(done.error);
+          router.push(doneHref);
+          router.refresh();
+        });
+      }}
+    >
+      <div className="flex flex-wrap items-center gap-4">
+        {/* A data address made for this account: nothing for an image service to do. */}
+        <img src={code.qr} alt={t("QR code to scan with your authenticator app")} width={168} height={168} className="door-qr sentry-block" />
+        <div className="flex min-w-0 flex-1 flex-col gap-2 text-[13px] leading-relaxed text-[var(--door-quiet)]">
+          <p>{t("Scan this with your authenticator app.")}</p>
+          <p>{t("Can't scan it? Type this key into the app instead:")}</p>
+          <div className="flex items-center gap-2">
+            <span className="sentry-mask select-all break-all text-[14px] font-semibold text-[var(--door-ink)]">{grouped}</span>
+            <button
+              type="button"
+              className="door-copy"
+              aria-label={t("Copy the key")}
+              title={t("Copy the key")}
+              onClick={async () => {
+                await navigator.clipboard.writeText(code.secret);
+                setCopied(true);
+              }}
+            >
+              {copied ? <Check className="size-4" strokeWidth={2} /> : <Copy className="size-4" strokeWidth={2} />}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="door-group">
+        <CodeRow />
+      </div>
+      <DoorNote text={error} />
+      <Cta pending={pending} idle="Turn it on" busy="Checking…" />
+      {back}
+    </form>
+  );
+}
+
+/**
+ * Two-step is on: since when, and the way to turn it off, asked twice (once
+ * to arm, once to mean it). `since` comes formatted in the panel's own words.
+ */
+export function TwoStepOff({
+  since,
+  turnOff,
+  backHref,
+}: {
+  since: string;
+  turnOff: () => Promise<{ error?: string }>;
+  backHref?: string;
+}) {
+  const t = usePanelT();
+  const router = useRouter();
+  const [armed, setArmed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, start] = useTransition();
+  return (
+    <div className="flex flex-col gap-4">
+      <p className="px-1 text-pretty text-[14px] leading-relaxed text-[var(--door-quiet)]">
+        {t("On since {since}. Every sign-in asks for the six digits from your authenticator app.", { since })}
+      </p>
+      <DoorNote text={error} />
+      {armed ? (
+        <>
+          <p className="px-1 text-pretty text-[14px] leading-relaxed text-[var(--door-ink)]">{t("Your password alone will open the panel again.")}</p>
+          <button
+            type="button"
+            disabled={pending}
+            className="door-cta"
+            onClick={() =>
+              start(async () => {
+                const done = await turnOff();
+                if (done.error) return setError(done.error);
+                router.refresh();
+              })
+            }
+          >
+            {pending ? t("Turning it off…") : t("Yes, turn it off")}
+          </button>
+          <p className="text-center">
+            <button type="button" className="door-link" onClick={() => setArmed(false)} disabled={pending}>
+              {t("Keep it on")}
+            </button>
+          </p>
+        </>
+      ) : (
+        <button type="button" className="door-cta-quiet" onClick={() => setArmed(true)}>
+          {t("Turn it off")}
+        </button>
+      )}
+      {backHref ? (
+        <p className="text-center">
+          <DoorLink href={backHref}>Back to the panel</DoorLink>
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * A person's own sign-in, from their name at the foot of the menu: the
+ * password, and two-step on or off, each a row that opens its own door.
+ */
+export function SignInSettings({
+  passwordHref,
+  twoStepHref,
+  twoStepOn,
+  backHref,
+}: {
+  passwordHref: string;
+  twoStepHref: string;
+  twoStepOn: boolean;
+  backHref?: string;
+}) {
+  const t = usePanelT();
+  const chevron = <ChevronRight className="size-4 shrink-0 text-[var(--door-quiet)] rtl:-scale-x-100" strokeWidth={2} aria-hidden />;
+  return (
+    <div className="flex flex-col gap-4">
+      <nav className="door-group" aria-label={t("Your sign-in")}>
+        <Link href={passwordHref} className="door-row-link">
+          <KeyRound className="size-[18px] shrink-0 text-[var(--door-quiet)]" strokeWidth={1.8} aria-hidden />
+          {t("Password")}
+          <span className="door-row-value">{t("Change")}</span>
+          {chevron}
+        </Link>
+        <Link href={twoStepHref} className="door-row-link">
+          <ShieldCheck className="size-[18px] shrink-0 text-[var(--door-quiet)]" strokeWidth={1.8} aria-hidden />
+          {t("Two-step sign-in")}
+          <span className="door-row-value">{twoStepOn ? t("On") : t("Off")}</span>
+          {chevron}
+        </Link>
+      </nav>
+      {backHref ? (
+        <p className="text-center">
+          <DoorLink href={backHref}>Back to the panel</DoorLink>
+        </p>
+      ) : null}
+    </div>
   );
 }

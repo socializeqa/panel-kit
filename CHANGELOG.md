@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.25 — 26 Oct 2026
+
+Two-step sign-in for every panel (Lucce asked for it: "everyone may, nobody must"). Born in Socialize's own panel; here once.
+
+- `two-step` (new, server-safe): `twoStepOf(client)` (`passed`, `owed`, `none`, read from the session's own token), `verifiedFactor(client)` (the confirmed authenticator app and since when), `readCode(raw)`, and `twoStepDoor({ client, issuer, attempts?, record?, paths? })`, whose `verify`, `begin`, `finish` and `turnOff` a panel wraps in its own "use server" file. It takes any client with Supabase Auth's `mfa` calls (`MfaClient`), so the kit still needs no Supabase package. A setup left halfway is cleared before a new code is made; wrong codes go through the panel's counter; turning it on or off can keep a line in the panel's record. Tested with a fake client.
+- Door forms (new): `TwoStepForm` (the six digits after the password, with who resets a lost phone and Sign out), `TwoStepSetup` (show my code, the QR on white with its key and a copy button, then the first six digits), `TwoStepOff` (on since when, and Turn it off asked twice), and `SignInSettings` (a person's own sign-in: Password and Two-step sign-in as rows that open their doors). kit.css gains `door-cta-quiet`, `door-row-link`, `door-code`, `door-qr` and `door-copy`.
+- The database stays the wall: a panel's `has_capability()` should refuse a session that owes its code (Lucce's migration m is the pattern), so a page that forgot to ask still shows nothing.
+
 ## 0.1.24 — 26 Oct 2026
 
 - `NumberStepper` takes a minus where the figure may go below nothing (`min` under 0), and such a box opens the full keyboard on a phone, whose number pad has no minus key. Lucce's Change prices goes from -90 % to +300 %, yet the box refused the minus, so 10 % down took fifteen presses of −. Tested.
