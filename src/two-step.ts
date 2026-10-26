@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { insidePath } from "./action-result";
 import { waitWords } from "./staff-door";
+import { fill, type Translate } from "./translate";
 
 // Two-step sign-in for every panel: the password, then six digits from an
 // authenticator app (Supabase Auth's TOTP factors). Born in Socialize's own
@@ -71,12 +72,18 @@ export type TwoStepDeps = {
   record?: (userId: string, change: "on" | "off") => Promise<void>;
   /** The panel's paths; these are the defaults. */
   paths?: { home?: string; login?: string };
+  /** The person's language, for a sentence with a number in it (how long to wait); English when left out. */
+  words?: () => Translate | Promise<Translate>;
 };
 
 export function twoStepDoor(deps: TwoStepDeps) {
   const paths = { home: "/", login: "/login", ...deps.paths };
   const take = (bucket: string): Promise<Verdict> => (deps.attempts ? deps.attempts.take(bucket) : Promise.resolve({ allowed: true }));
-  const tooMany = (verdict: Verdict) => (verdict.allowed ? null : `Too many tries. Try again ${waitWords(verdict.waitSeconds)}.`);
+  const tooMany = async (verdict: Verdict) => {
+    if (verdict.allowed) return null;
+    const t = deps.words ? await deps.words() : fill;
+    return t("Too many tries. Try again {wait}.", { wait: waitWords(verdict.waitSeconds, t) });
+  };
 
   /**
    * The six digits after the password; right, and the session may read the
@@ -90,7 +97,7 @@ export function twoStepDoor(deps: TwoStepDeps) {
     const code = readCode(form.get("code"));
     if (!code) return "Type the six digits the app shows.";
     const bucket = `two-step:${client.userId}`;
-    const busy = tooMany(await take(bucket));
+    const busy = await tooMany(await take(bucket));
     if (busy) return busy;
     const factor = await verifiedFactor(client);
     if (!factor) redirect(paths.home);
@@ -122,7 +129,7 @@ export function twoStepDoor(deps: TwoStepDeps) {
     const code = readCode(raw);
     if (!code) return { error: "Type the six digits the app shows." };
     const bucket = `two-step:${client.userId}`;
-    const busy = tooMany(await take(bucket));
+    const busy = await tooMany(await take(bucket));
     if (busy) return { error: busy };
     const { error } = await client.auth.mfa.challengeAndVerify({ factorId, code });
     if (error) return { error: "That code didn't match. Try the one showing now." };

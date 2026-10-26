@@ -91,14 +91,14 @@ export function PhotoList<T>({
         ? t("Only photos can be added here.")
         : images.length < photos.length
           ? max === 1
-            ? t(`One ${noun} only: take this one off to put another.`)
-            : t(`${max} photos at most.`)
+            ? t("One {noun} only: take this one off to put another.", { noun: t(noun) })
+            : t("{max} photos at most.", { max })
           : null,
     );
     if (!images.length) return;
     let failed = 0;
     for (const [i, file] of images.entries()) {
-      setStatus(images.length > 1 ? t(`Adding ${i + 1} of ${images.length}…`) : t("Adding the photo…"));
+      setStatus(images.length > 1 ? t("Adding {n} of {total}…", { n: i + 1, total: images.length }) : t("Adding the photo…"));
       try {
         set([...current.current, await upload(file)]);
       } catch {
@@ -107,7 +107,7 @@ export function PhotoList<T>({
     }
     setStatus(null);
     setProblem((said) => (said === t(HOLD) ? null : said));
-    if (failed) setProblem(failed === 1 && images.length === 1 ? t(`The ${noun} didn't upload. Try again.`) : t(`${failed} of ${images.length} photos didn't upload. Try those again.`));
+    if (failed) setProblem(failed === 1 && images.length === 1 ? t("The {noun} didn't upload. Try again.", { noun: t(noun) }) : t("{failed} of {total} photos didn't upload. Try those again.", { failed, total: images.length }));
   };
 
   const move = (from: number, to: number) => {
@@ -164,7 +164,7 @@ export function PhotoList<T>({
           status={status}
           onFiles={add}
           accept="image/*"
-          title={max === 1 ? `Drop the ${noun} here` : "Drop the photos here"}
+          title={max === 1 ? t("Drop the {noun} here", { noun: t(noun) }) : t("Drop the photos here")}
           hint={max === 1 ? "or click to choose it." : "or click to choose them. The first one is the cover."}
           inputRef={inputRef}
         />

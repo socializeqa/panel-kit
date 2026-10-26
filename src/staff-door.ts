@@ -1,3 +1,4 @@
+import { fill, type Translate } from "./translate";
 import { digits } from "@socialize/team-kit/phone";
 
 // How a panel's door reads the person at it, and the password rule every door
@@ -66,10 +67,10 @@ export function loginWords(usernames = false) {
 }
 
 /** How long a closed door stays closed, said plainly: "in 45 seconds", "in 15 minutes". */
-export function waitWords(seconds: number): string {
-  if (seconds < 60) return `in ${Math.max(1, Math.round(seconds))} seconds`;
+export function waitWords(seconds: number, t: Translate = fill): string {
+  if (seconds < 60) return t("in {n} seconds", { n: Math.max(1, Math.round(seconds)) });
   const minutes = Math.ceil(seconds / 60);
-  return minutes === 1 ? "in a minute" : `in ${minutes} minutes`;
+  return minutes === 1 ? t("in a minute") : t("in {n} minutes", { n: minutes });
 }
 
 /**

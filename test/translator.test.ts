@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { waitWords } from "../src/staff-door";
 import { translator } from "../src/translate";
 
 describe("translator", () => {
@@ -14,5 +15,13 @@ describe("translator", () => {
     const t = translator({}, (text) => heard.push(text));
     expect(t("Cancel")).toBe("Cancel");
     expect(heard).toEqual(["Cancel"]);
+  });
+});
+
+describe("waitWords", () => {
+  it("says how long to wait, in English or in the panel's words", () => {
+    expect(waitWords(30)).toBe("in 30 seconds");
+    expect(waitWords(61)).toBe("in 2 minutes");
+    expect(waitWords(45, translator({ "in {n} seconds": "în {n} secunde" }))).toBe("în 45 secunde");
   });
 });

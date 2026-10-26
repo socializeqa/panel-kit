@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { loginWords, readLogin, waitWords, type LinkState, type Login } from "./staff-door";
+import { fill, type Translate } from "./translate";
 
 // The server half of every panel's door (Damine, 7 Oct 2026: "a premium login
 // page ... with phone or username or mobile number, remember me, forget
@@ -42,6 +43,8 @@ export type DoorDeps = {
   localLength?: number;
   /** The panel's door paths; these are the defaults. */
   paths?: { home?: string; login?: string; setPassword?: string; link?: string };
+  /** The visitor's language, for a sentence with a number in it (how long to wait); English when left out. */
+  words?: () => Translate | Promise<Translate>;
 };
 
 const key = (login: Login) => (login.kind === "email" ? login.email : login.kind === "phone" ? login.phone : login.username);
@@ -70,7 +73,10 @@ export function door(deps: DoorDeps) {
 
     const bucket = `login:${login.kind}:${key(login)}`;
     const verdict = await take(bucket);
-    if (!verdict.allowed) return `Too many tries. Try again ${waitWords(verdict.waitSeconds)}.`;
+    if (!verdict.allowed) {
+      const t = deps.words ? await deps.words() : fill;
+      return t("Too many tries. Try again {wait}.", { wait: waitWords(verdict.waitSeconds, t) });
+    }
 
     await deps.remember(form.get("remember") === "on");
     const person = await deps.find(login);
@@ -90,7 +96,10 @@ export function door(deps: DoorDeps) {
     const login = read(form);
     if (!login) return { sent: false, error: words.missing };
     const verdict = await take(`${kind}:${login.kind}:${key(login)}`);
-    if (!verdict.allowed) return { sent: false, error: `Too many requests. Try again ${waitWords(verdict.waitSeconds)}.` };
+    if (!verdict.allowed) {
+      const t = deps.words ? await deps.words() : fill;
+      return { sent: false, error: t("Too many requests. Try again {wait}.", { wait: waitWords(verdict.waitSeconds, t) }) };
+    }
 
     const mailIt = async () => {
       const person = await deps.find(login);

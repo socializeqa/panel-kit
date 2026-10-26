@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.33 — 26 Oct 2026
+
+Sentences the kit glued together before translating, so no word list could match them (found putting Lucce's panel into Romanian):
+- `waitWords(seconds, t?)` says the wait through the panel's words, and the door (`door({ words })`) and two-step (`twoStepDoor({ words })`) take an optional `words` source for the visitor's language: "Too many tries. Try again {wait}." is one key now.
+- `PhotoList`: "One {noun} only…", "{max} photos at most.", "Adding {n} of {total}…", "The {noun} didn't upload…", "{failed} of {total} photos didn't upload…" and "Drop the {noun} here" are keys with blanks.
+
 ## 0.1.32 — 26 Oct 2026
 
 - `Optional` (in `fields`): the green "(optional)" beside a label (`Field mark={<Optional />}`), in the panel's words. Lucce had three hand copies of it, none translated.
