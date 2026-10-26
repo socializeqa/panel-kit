@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.26 — 26 Oct 2026
+
+- `TwoStepSetup`: the key to type by hand wraps only between its groups of four. It broke anywhere before, so a group could split across two lines ("TC4" / "E") and be typed wrong. Seen on Lucce's first real setup.
+
 ## 0.1.25 — 26 Oct 2026
 
 Two-step sign-in for every panel (Lucce asked for it: "everyone may, nobody must"). Born in Socialize's own panel; here once.

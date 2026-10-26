@@ -477,7 +477,7 @@ export function TwoStepSetup({
           <p>{t("Scan this with your authenticator app.")}</p>
           <p>{t("Can't scan it? Type this key into the app instead:")}</p>
           <div className="flex items-center gap-2">
-            <span className="sentry-mask select-all break-all text-[14px] font-semibold text-[var(--door-ink)]">{grouped}</span>
+            <span className="sentry-mask select-all text-[14px] font-semibold text-[var(--door-ink)]">{grouped}</span>
             <button
               type="button"
               className="door-copy"
